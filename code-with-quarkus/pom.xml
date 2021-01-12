@@ -64,6 +64,23 @@
       <type>pom</type>
     </dependency>
 
+    <!--Dependencies for Cucumber testing-->
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-java</artifactId>
+      <version>6.9.1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-junit</artifactId>
+      <version>6.9.1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-picocontainer</artifactId>
+      <version>6.9.1</version>
+    </dependency>
+
   </dependencies>
   <build>
     <plugins>
