@@ -1,4 +1,4 @@
-package org.AccountManager;
+package com.Client;
 
 public class User {
     public String cprNo;
