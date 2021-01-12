@@ -18,6 +18,7 @@
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
   </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -29,6 +30,7 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -38,6 +40,7 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-jsonb</artifactId>
     </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy</artifactId>
@@ -46,6 +49,7 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
     </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
@@ -56,7 +60,14 @@
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency><groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-ri</artifactId>
+      <version>2.3.3</version>
+      <type>pom</type>
+    </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
@@ -82,10 +93,28 @@
         <configuration>
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-            <maven.home>${maven.home}</maven.home>
+            <maven.home>${env.MAVEN_HOME}</maven.home>
           </systemPropertyVariables>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxws-maven-plugin</artifactId>
+        <version>2.6</version>
+        <executions><execution>
+          <id>wsimport-from-jdk</id>
+          <goals><goal>wsimport</goal>
+          </goals></execution></executions>
+        <configuration><wsdlUrls><wsdlUrl>http://g-00.compute.dtu.dk/BankService.wsdl.xml</wsdlUrl>
+        </wsdlUrls>
+          <keep>true</keep>
+          <packageName>dtu.ws.fastmoney</packageName>
+          <sourceDestDir>src/main/java</sourceDestDir>
+        </configuration>
+      </plugin>
+
+
     </plugins>
   </build>
   <profiles>
@@ -111,7 +140,7 @@
                   <systemPropertyVariables>
                     <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
                     <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                    <maven.home>${maven.home}</maven.home>
+                    <maven.home>${env.MAVEN_HOME}</maven.home>
                   </systemPropertyVariables>
                 </configuration>
               </execution>
