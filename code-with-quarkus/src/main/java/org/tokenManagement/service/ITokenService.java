@@ -6,10 +6,12 @@ import org.tokenManagement.model.Token;
 
 public interface ITokenService {
 
-    List<Token> getToken(String cprNumber);
+    //List<Token> getToken(String cprNumber);
 
     List<Token> getAllTokens();
 
     void generateToken(String cprNumber, int amount);
+
+    int getRemainingTokenSize(String cprNumber);
 
 }

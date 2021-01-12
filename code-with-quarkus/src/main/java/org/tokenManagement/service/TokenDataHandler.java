@@ -16,10 +16,13 @@ public class TokenDataHandler {
 
     public TokenDataHandler() {
         allTokens = new HashMap<String, Token>();
-        Token initalToken1 = new Token("123","983012-9481");
-        Token initalToken2 = new Token("456","938101-7652");
+        Token initalToken1 = new Token("123","000000-0001");
+        Token initalToken2 = new Token("456","000000-0002");
+        Token initalToken3 = new Token("789","000000-0002");
         allTokens.put(initalToken1.getId(),initalToken1);
         allTokens.put(initalToken2.getId(),initalToken2);
+        allTokens.put(initalToken3.getId(),initalToken3);
+
 
     }
     public void addToken(Token token) {
