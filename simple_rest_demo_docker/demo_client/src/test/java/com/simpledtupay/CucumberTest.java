@@ -1,4 +1,4 @@
-package helloservice;
+package com.simpledtupay;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
