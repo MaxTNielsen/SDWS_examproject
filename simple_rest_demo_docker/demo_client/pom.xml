@@ -95,7 +95,8 @@
 			<scope>test</scope>
 		</dependency> -->
 
-		<dependency><groupId>com.sun.xml.ws</groupId>
+		<dependency>
+			<groupId>com.sun.xml.ws</groupId>
 			<artifactId>jaxws-ri</artifactId>
 			<version>2.3.3</version>
 			<type>pom</type>
