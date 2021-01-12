@@ -17,10 +17,22 @@ public class AccountManageServiceSteps {
         this.customerID = customerID;
     }
 
+    @Given("the merchant with ID {string} has a bank account")
+    public void merchantHasID(String ID)
+    {
+        this.merchantID = ID;
+    }
+
     @When("the customer register in DTUPay")
     public void registerCustomer()
     {
         service.registerCustomer(customerID);
+    }
+
+    @When("the merchant register in DTUPay")
+    public void registerMerchant()
+    {
+        service.registerMerchant(merchantID);
     }
 
     @Then("the customer is registered in DTUPay")
@@ -29,4 +41,9 @@ public class AccountManageServiceSteps {
         assertTrue(service.isCustomerRegistered(customerID));
     }
 
+    @Then("the merchant is registered in DTUPay")
+    public void theMerchantIsRegistered()
+    {
+        assertTrue(service.isMerchantRegistered(merchantID));
+    }
 }
