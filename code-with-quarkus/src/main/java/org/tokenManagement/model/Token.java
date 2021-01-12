@@ -1,4 +1,4 @@
-package org.tokenmanagement.model;
+package org.tokenManagement.model;
 public class Token
 {
 	private String id;
@@ -31,9 +31,5 @@ public class Token
 		return "Token [id=" + id + ", cprNumber=" + cprNumber + ", isUsed=" + isUsed + "]";
 	}
 	
-	
-	
-	
-
 
 }
