@@ -1,3 +1,4 @@
+/*
 package org.accountmanager.client;
 
 public class ClientFactory {
@@ -11,3 +12,4 @@ public class ClientFactory {
         return null;
     }
 }
+*/

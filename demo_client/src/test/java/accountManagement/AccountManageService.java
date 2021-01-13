@@ -19,10 +19,11 @@ import java.util.List;
 public class AccountManageService {
     WebTarget baseUrl;
     BankService bankService;
+    Client client;
 
     public AccountManageService() {
         bankService = new BankServiceService().getBankServicePort();
-        Client client = ClientBuilder.newClient();
+        client = ClientBuilder.newClient();
         baseUrl = client.target("http://localhost:8080/");
     }
 
