@@ -1,4 +1,7 @@
-package org.AccountManager;
+package org.accountmanager.resource;
+
+import org.accountmanager.client.Merchant;
+import org.accountmanager.model.AccountManager;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -18,7 +21,7 @@ public class MerchantsResource {
     @GET
     public Response getAllMerchants()
     {
-        return Response.ok(Entity.entity(manager.merchants, MediaType.APPLICATION_JSON)).build();
+        return Response.ok(Entity.entity(manager.getMerchants(), MediaType.APPLICATION_JSON)).build();
     }
 
     @GET
@@ -27,16 +30,16 @@ public class MerchantsResource {
     public Response getMerchant(@PathParam("id") String ID)
     {
 
-        if (!manager.merchants.containsKey(ID))
+        if (!manager.getMerchants().containsKey(ID))
             return Response.status(404, notFound).build();
-        return Response.ok(Entity.entity(manager.merchants.get(ID), MediaType.APPLICATION_JSON)).build();
+        return Response.ok(Entity.entity(manager.getMerchants().get(ID), MediaType.APPLICATION_JSON)).build();
     }
 
     // @Path("/customers")
     @POST
-    public Response createMerchant(String ID)
+    public Response createMerchant(String ID, String CPR)
     {
-        if (manager.hasMerchant(ID))
+        if (manager.hasMerchant(ID) && manager.checkIfClientHasABankAccount(CPR))
             return Response.status(406, existed).build();
         
         Merchant c = new Merchant(ID);

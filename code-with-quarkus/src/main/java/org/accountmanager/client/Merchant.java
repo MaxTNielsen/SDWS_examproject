@@ -1,0 +1,18 @@
+package org.accountmanager.client;
+
+/* implements Client */
+
+public class Merchant extends User{
+    public Merchant(String ID)
+    {
+        super(ID);
+    }
+
+    /*public Merchant(String cprNo, String ID) {
+        super(cprNo, ID);
+    }
+
+    public Merchant(String cprNo, String firstName, String lastName, String ID) {
+        super(cprNo, firstName, lastName, ID);
+    }*/
+}

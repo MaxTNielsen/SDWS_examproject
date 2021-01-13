@@ -10,9 +10,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * <p>transaction complex type的 Java 类。
+ * <p>Java class for transaction complex type.
  * 
- * <p>以下模式片段指定包含在此类中的预期内容。
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="transaction"&gt;
@@ -53,7 +53,7 @@ public class Transaction {
     protected XMLGregorianCalendar time;
 
     /**
-     * 获取amount属性的值。
+     * Gets the value of the amount property.
      * 
      * @return
      *     possible object is
@@ -65,7 +65,7 @@ public class Transaction {
     }
 
     /**
-     * 设置amount属性的值。
+     * Sets the value of the amount property.
      * 
      * @param value
      *     allowed object is
@@ -77,7 +77,7 @@ public class Transaction {
     }
 
     /**
-     * 获取balance属性的值。
+     * Gets the value of the balance property.
      * 
      * @return
      *     possible object is
@@ -89,7 +89,7 @@ public class Transaction {
     }
 
     /**
-     * 设置balance属性的值。
+     * Sets the value of the balance property.
      * 
      * @param value
      *     allowed object is
@@ -101,7 +101,7 @@ public class Transaction {
     }
 
     /**
-     * 获取creditor属性的值。
+     * Gets the value of the creditor property.
      * 
      * @return
      *     possible object is
@@ -113,7 +113,7 @@ public class Transaction {
     }
 
     /**
-     * 设置creditor属性的值。
+     * Sets the value of the creditor property.
      * 
      * @param value
      *     allowed object is
@@ -125,7 +125,7 @@ public class Transaction {
     }
 
     /**
-     * 获取debtor属性的值。
+     * Gets the value of the debtor property.
      * 
      * @return
      *     possible object is
@@ -137,7 +137,7 @@ public class Transaction {
     }
 
     /**
-     * 设置debtor属性的值。
+     * Sets the value of the debtor property.
      * 
      * @param value
      *     allowed object is
@@ -149,7 +149,7 @@ public class Transaction {
     }
 
     /**
-     * 获取description属性的值。
+     * Gets the value of the description property.
      * 
      * @return
      *     possible object is
@@ -161,7 +161,7 @@ public class Transaction {
     }
 
     /**
-     * 设置description属性的值。
+     * Sets the value of the description property.
      * 
      * @param value
      *     allowed object is
@@ -173,7 +173,7 @@ public class Transaction {
     }
 
     /**
-     * 获取time属性的值。
+     * Gets the value of the time property.
      * 
      * @return
      *     possible object is
@@ -185,7 +185,7 @@ public class Transaction {
     }
 
     /**
-     * 设置time属性的值。
+     * Sets the value of the time property.
      * 
      * @param value
      *     allowed object is

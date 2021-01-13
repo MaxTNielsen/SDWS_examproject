@@ -1,4 +1,4 @@
-package org.AccountManager;
+package org.accountmanager.resource;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

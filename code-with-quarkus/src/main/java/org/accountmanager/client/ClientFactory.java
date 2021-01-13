@@ -1,4 +1,5 @@
-package org.AccountManager;
+/*
+package org.accountmanager.client;
 
 public class ClientFactory {
     public static Client getClients(String identifier, String id) {
@@ -11,3 +12,4 @@ public class ClientFactory {
         return null;
     }
 }
+*/
