@@ -2,7 +2,7 @@
 set -e
 
 pushd code-with-quarkus
-mvn package -Dquarkus.package.type=uber-jar
+mvn package
 
 # Start the server in the background so that the
 # shell script is not blocked and can execute the tests
@@ -22,8 +22,9 @@ trap 'kill $server_pid' err exit
 popd
 
 # Give the Web server a chance to finish start up
-sleep 2s 
+sleep 3s 
 
 pushd demo_client
 mvn test
+sleep 15s 
 popd
