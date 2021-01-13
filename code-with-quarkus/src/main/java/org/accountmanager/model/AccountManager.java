@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class AccountManager implements IAccountManager{
     static AccountManager instance;
-    BankService bank;
+    BankService bank = new BankServiceService().getBankServicePort();
     Map<String, Customer> customers = new HashMap<>();
     Map<String, Merchant> merchants = new HashMap<>();
 
@@ -32,7 +32,6 @@ public class AccountManager implements IAccountManager{
 
     public AccountManager()
     {
-        bank = new BankServiceService().getBankServicePort();
         registerCustomer(new Customer("cid1"));
         registerMerchant(new Merchant("mid1"));
     }
