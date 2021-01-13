@@ -10,7 +10,7 @@ public class Token
 	public Token (String id, String cprNumber) {
 		this.id = id;
 		this.cprNumber = cprNumber;
-		this.isUsed = true;
+		this.isUsed = false;
 	}
 	public boolean isUsed() {
 		return isUsed;
