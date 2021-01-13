@@ -1,8 +1,5 @@
 package org.AccountManager;
 
-import com.Client.Customer;
-import com.Client.Merchant;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +7,6 @@ public class AccountManager {
     static AccountManager instance;
     Map<String, Customer> customers = new HashMap<>();
     Map<String, Merchant> merchants = new HashMap<>();
-
     
     public static AccountManager getInstance()
     {
