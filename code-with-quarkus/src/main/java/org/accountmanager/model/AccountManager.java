@@ -53,9 +53,9 @@ public class AccountManager implements IAccountManager{
         return true;
     }
 
-    public boolean checkIfClientHasABankAccount(String CPR){
+    public boolean checkIfClientHasABankAccount(String ID){
         try {
-            bank.getAccount(CPR);
+            bank.getAccount(ID);
             return true;
         } catch (BankServiceException_Exception e){
             System.out.println(e.getMessage());

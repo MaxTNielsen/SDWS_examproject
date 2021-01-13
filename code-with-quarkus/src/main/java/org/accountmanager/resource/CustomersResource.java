@@ -18,6 +18,7 @@ public class CustomersResource {
     AccountManager manager = AccountManager.getInstance();
     String customerNotFound = "customer not found";
     String customerExist = "customer already exist";
+    String customerHasNoBank = "customer has no bank account";
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -28,10 +29,14 @@ public class CustomersResource {
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response createCustomer(String ID, String CPR)
+    // public Response createCustomer(String ID, String CPR)
+    public Response createCustomer(String ID)
     {
-        if (manager.hasCustomer(ID) && manager.checkIfClientHasABankAccount(CPR))
-            return Response.status(406, customerNotFound).build();
+        if (manager.hasCustomer(ID))
+            return Response.status(406, customerExist).build();
+
+        if (!manager.checkIfClientHasABankAccount(ID))
+            return Response.status(406, customerHasNoBank).build();
         
         Customer c = new Customer(ID);
         manager.registerCustomer(c);
@@ -47,7 +52,7 @@ public class CustomersResource {
     {
 
         if (!manager.hasCustomer(ID))
-            return Response.status(404, customerExist).build();
+            return Response.status(404, customerNotFound).build();
         return Response.ok(Entity.entity(manager.getCustomers().get(ID), MediaType.APPLICATION_JSON)).build();
     }
 }

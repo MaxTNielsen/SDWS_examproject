@@ -38,9 +38,9 @@ public class AccountManageService {
         return response.getStatus() == 200;
     }
 
-    public String registerClientAtBank(String ID, String fname, String lname, BigDecimal balance) {
+    public String registerClientAtBank(String cpr, String fname, String lname, BigDecimal balance) {
         User user = new User();
-        user.setCprNumber(ID);
+        user.setCprNumber(cpr);
         user.setFirstName(fname);
         user.setLastName(lname);
         try {

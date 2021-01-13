@@ -15,8 +15,9 @@ import javax.ws.rs.core.Response;
 @Path("/merchants")
 public class MerchantsResource {
     AccountManager manager = AccountManager.getInstance();
-    String notFound = "customer not found";
+    String notFound = "merchant not found";
     String existed = "merchant already exist";
+    String noBankAccount = "merchant has no bank account";
 
     @GET
     public Response getAllMerchants()
@@ -39,8 +40,11 @@ public class MerchantsResource {
     @POST
     public Response createMerchant(String ID, String CPR)
     {
-        if (manager.hasMerchant(ID) && manager.checkIfClientHasABankAccount(CPR))
+        if (manager.hasMerchant(ID))
             return Response.status(406, existed).build();
+
+        if (!manager.checkIfClientHasABankAccount(CPR))
+            return Response.status(406, noBankAccount).build();
         
         Merchant c = new Merchant(ID);
         manager.registerMerchant(c);

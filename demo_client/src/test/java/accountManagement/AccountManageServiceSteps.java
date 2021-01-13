@@ -2,6 +2,7 @@ package accountManagement;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -59,28 +60,34 @@ public class AccountManageServiceSteps {
 
     /*NEW SCENARIO !!!!!!!!!!!!!!!!!!!!!!!!*/
 
-    @Given("the customer with ID {string} and with the name {string} {string} and the balance {int} kr")
-    public void theCustomerWithIDAndWithTheNameAndTheBalanceKr(String customerfname, String customerlname, String customerCPR, Integer int1) {
-        balance = balance.valueOf(int1);
+    @Given("the customer with CPR {string} and with the name {string} {string} and the balance {int} kr")
+    public void theCustomerWithIDAndWithTheNameAndTheBalanceKr(String customerCPR, String customerfname, String customerlname, Integer int1) {
+        balance = BigDecimal.valueOf(int1);
+        this.customerCPR = customerCPR;
         this.customerfname = customerfname;
         this.customerlname = customerlname;
-        this.customerCPR = customerCPR;
     }
 
     @When("the customer register in the bank")
     public void theCustomerRegisterInTheBank() {
         customerBankAccountID = service.registerClientAtBank(customerCPR, customerfname, customerlname, balance);
         bankAccounts.add(customerBankAccountID);
-        service.deleteBankAccounts(bankAccounts);
     }
 
     @When("the customer register in DTUPay with his CPR as ID")
     public void theCustomerRegisterInDTUPayWithHisCPRAsID() {
-        success = service.registerCustomer(customerCPR);
+        success = service.registerCustomer(customerBankAccountID);
+        // update customer info: cpr name
     }
 
     @Then("the customer has gotten an account in DTUPay")
     public void theCustomerHasGottenAnAccountInDTUPay() {
         assertTrue(success);
+    }
+
+    @After
+    public void end()
+    {
+        service.deleteBankAccounts(bankAccounts);
     }
 }
