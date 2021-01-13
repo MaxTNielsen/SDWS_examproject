@@ -1,4 +1,3 @@
-package accountManagement;
 import org.junit.runner.RunWith;
 
 import io.cucumber.junit.platform.engine.Cucumber;
