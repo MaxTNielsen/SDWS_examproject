@@ -1,8 +1,5 @@
-package accountManager;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.Test;
+package accountManagement;
+import org.junit.runner.RunWith;
 
 import io.cucumber.junit.platform.engine.Cucumber;
 
