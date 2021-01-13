@@ -1,10 +1,14 @@
 package TokenManagement;
+import org.apache.http.util.EntityUtils;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 
 public class TokenManagementService {
@@ -20,17 +24,9 @@ public class TokenManagementService {
         Response response = baseUrl.path("tokens").request()
                 .post(Entity.entity(cprNumber,MediaType.APPLICATION_JSON));
 
-        System.out.println(response.getClass());
-
         return response.getStatus() == 200;
     }
 
-    public boolean tokenExists(String ID)
-    {
-        Response response = baseUrl.path("tokens").path(ID).request()
-                .get();
-        return response.getStatus() == 200;
-    }
 
 
 }
