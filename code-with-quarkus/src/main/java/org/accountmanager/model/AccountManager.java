@@ -1,13 +1,20 @@
-package org.AccountManager;
+package org.accountmanager.model;
+
+import dtu.ws.fastmoney.BankService;
+import dtu.ws.fastmoney.BankServiceException_Exception;
+import dtu.ws.fastmoney.BankServiceService;
+import org.accountmanager.client.Customer;
+import org.accountmanager.client.Merchant;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class AccountManager {
+public class AccountManager implements IAccountManager{
     static AccountManager instance;
+    BankService bank;
     Map<String, Customer> customers = new HashMap<>();
     Map<String, Merchant> merchants = new HashMap<>();
-    
+
     public static AccountManager getInstance()
     {
         if (instance == null)
@@ -15,8 +22,17 @@ public class AccountManager {
         return instance;
     }
 
+    public Map<String, Customer> getCustomers() {
+        return customers;
+    }
+
+    public Map<String, Merchant> getMerchants() {
+        return merchants;
+    }
+
     public AccountManager()
     {
+        bank = new BankServiceService().getBankServicePort();
         registerCustomer(new Customer("cid1"));
         registerMerchant(new Merchant("mid1"));
     }
@@ -28,7 +44,6 @@ public class AccountManager {
         customers.put(c.ID, c);
         return true;
     }
-
     
     public boolean registerMerchant(Merchant m)
     {
@@ -36,6 +51,16 @@ public class AccountManager {
             return false;
         merchants.put(m.ID, m);
         return true;
+    }
+
+    public boolean checkIfClientHasABankAccount(String CPR){
+        try {
+            bank.getAccount(CPR);
+            return true;
+        } catch (BankServiceException_Exception e){
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
 
     public boolean hasCustomer(String ID)

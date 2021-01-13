@@ -11,3 +11,9 @@ Feature: AccountManagement
         Given the merchant with ID "061100-7172" has a bank account
         When the merchant register in DTUPay
         Then the merchant is registered in DTUPay
+
+    Scenario: Register a Customer in the Bank and in DTUPay
+        Given the customer with ID "761100-7172" and with the name "Pharles" "Sontana" and the balance 1000 kr
+        When the customer register in the bank
+        When the customer register in DTUPay with his CPR as ID
+        Then the customer has gotten an account in DTUPay

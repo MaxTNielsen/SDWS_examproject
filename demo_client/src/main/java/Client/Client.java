@@ -1,4 +1,4 @@
-package org.AccountManager;
+package Client;
 
 public interface Client {
 }

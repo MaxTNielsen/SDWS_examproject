@@ -1,4 +1,7 @@
-package org.AccountManager;
+package org.accountmanager.resource;
+
+import org.accountmanager.client.Customer;
+import org.accountmanager.model.AccountManager;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -20,14 +23,14 @@ public class CustomersResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllCustomers()
     {
-        return Response.ok(Entity.entity(manager.customers.values(), MediaType.APPLICATION_JSON)).build();
+        return Response.ok(Entity.entity(manager.getCustomers().values(), MediaType.APPLICATION_JSON)).build();
     }
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response createCustomer(String ID)
+    public Response createCustomer(String ID, String CPR)
     {
-        if (manager.hasCustomer(ID))
+        if (manager.hasCustomer(ID) && manager.checkIfClientHasABankAccount(CPR))
             return Response.status(406, customerNotFound).build();
         
         Customer c = new Customer(ID);
@@ -45,6 +48,6 @@ public class CustomersResource {
 
         if (!manager.hasCustomer(ID))
             return Response.status(404, customerExist).build();
-        return Response.ok(Entity.entity(manager.customers.get(ID), MediaType.APPLICATION_JSON)).build();
+        return Response.ok(Entity.entity(manager.getCustomers().get(ID), MediaType.APPLICATION_JSON)).build();
     }
 }
