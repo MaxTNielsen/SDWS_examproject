@@ -83,7 +83,8 @@ public class TokenManager {
         }
         else
         {
-            for(int i = numberOfAvailableTokens; i < 5; i++)
+            //If the number of available tokens are 0 or 1 the system will generate exactly 5 so the user will have 5 or 6 unused ones
+            for(int i = 0; i < 5; i++)
             {
                 tokens.add(generateToken(cprNumber));
             }
