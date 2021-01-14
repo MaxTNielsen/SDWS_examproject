@@ -47,7 +47,7 @@ public class NetworkModule {
         return responseMessage;
     }
 
-    //Funcion to start RabbitMQ server
+    //Function to start RabbitMQ server
     public void runNetworkModule() throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");

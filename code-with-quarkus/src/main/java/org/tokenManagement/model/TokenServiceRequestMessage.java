@@ -13,9 +13,9 @@ import java.io.Serializable;
 public class TokenServiceRequestMessage implements Serializable {
     public enum tokenServiceRequestMessageType
     {
-        GET_VALIDITY,
-        GET_ALL_TOKENS,
-        REQUEST_NEW_TOKENS,
+        GET_VALIDITY, //provide tokenID
+        GET_ALL_TOKENS, //provide userCpr
+        REQUEST_NEW_TOKENS, //provide userCpr
     }
 
     @JsonProperty("messageType")
@@ -27,7 +27,16 @@ public class TokenServiceRequestMessage implements Serializable {
 
     public TokenServiceRequestMessage ()
     {
+        this.messageType = null;
+        this.token = null;
+        this.userCpr = null;
+    }
 
+    public TokenServiceRequestMessage (tokenServiceRequestMessageType _messageType)
+    {
+        this.messageType = _messageType;
+        this.token = null;
+        this.userCpr = null;
     }
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
@@ -55,6 +64,7 @@ public class TokenServiceRequestMessage implements Serializable {
         return mapper.writeValueAsString(this);
     }
 
+    @JsonIgnore
     public tokenServiceRequestMessageType getType()
     {
         return this.messageType;
@@ -72,4 +82,28 @@ public class TokenServiceRequestMessage implements Serializable {
         return this.userCpr;
     }
 
+    @JsonIgnore
+    public void setToken(String _tokenId)
+    {
+        this.token = _tokenId;
+    }
+
+    @JsonIgnore
+    public void setUserCpr(String _userCpr)
+    {
+        this.userCpr = _userCpr;
+    }
+
+    @JsonIgnore
+    public boolean equals(TokenServiceRequestMessage obj)
+    {
+        if(this.messageType == obj.getType() && this.userCpr.equals(obj.getUserCpr()) && this.token.equals(obj.getToken()))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

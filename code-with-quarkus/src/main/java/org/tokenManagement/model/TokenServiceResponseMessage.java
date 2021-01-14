@@ -12,9 +12,9 @@ import java.util.ArrayList;
 public class TokenServiceResponseMessage {
     public enum tokenServiceResponseMessageType
     {
-        RESPONSE_GET_VALIDITY,
-        RESPONSE_GET_ALL_TOKENS,
-        RESPONSE_NEW_TOKENS
+        RESPONSE_GET_VALIDITY, // only the isValid argument is required
+        RESPONSE_GET_ALL_TOKENS, // only the list of tokenID-s is required
+        RESPONSE_NEW_TOKENS // only the list of tokenID-s is required
     }
 
     @JsonProperty("messageType")
@@ -26,7 +26,16 @@ public class TokenServiceResponseMessage {
 
     public TokenServiceResponseMessage ()
     {
+        this.messageType = null;
+        this.isValid = false;
+        this.tokens = null;
+    }
 
+    public TokenServiceResponseMessage (tokenServiceResponseMessageType _messageType)
+    {
+        this.messageType = _messageType;
+        this.isValid = false;
+        this.tokens = null;
     }
 
     public TokenServiceResponseMessage (tokenServiceResponseMessageType _messageType, boolean _isValid)
@@ -62,12 +71,14 @@ public class TokenServiceResponseMessage {
         this.tokens = temporaryObject.tokens;
     }
 
+    @JsonIgnore
     public String toJson() throws JsonProcessingException
     {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(this);
     }
 
+    @JsonIgnore
     public tokenServiceResponseMessageType getType()
     {
         return this.messageType;
@@ -85,13 +96,46 @@ public class TokenServiceResponseMessage {
         return this.tokens;
     }
 
-    public void addToken(String _newToken) { this.tokens.add(_newToken); }
+    @JsonIgnore
+    public void addToken(String _newToken) {
+        if(tokens == null)
+        {
+            tokens = new ArrayList<>();
+        }
+        this.tokens.add(_newToken); }
 
-    public void addTokens(ArrayList<String> _newTokens){this.tokens.addAll(_newTokens);}
+    @JsonIgnore
+    public void addTokens(ArrayList<String> _newTokens){
+        if(tokens == null)
+        {
+            tokens = new ArrayList<>();
+        }
+        this.tokens.addAll(_newTokens);}
 
+    @JsonIgnore
     public void setValidity(boolean _newValidityState)
     {
         this.isValid = _newValidityState;
     }
 
+    @JsonIgnore
+    public void setValid(boolean _newValue) { this.isValid = _newValue; }
+
+    @JsonIgnore
+    public boolean equals(TokenServiceResponseMessage obj)
+    {
+        if(this.messageType != obj.getType() || this.isValid != obj.getValidity())
+        {
+            return false;
+        }
+        ArrayList<String> objectTokens = obj.getTokens();
+        for(String currentToken:objectTokens)
+        {
+            if(!this.tokens.contains(currentToken))
+            {
+                return false;
+            }
+        }
+            return true;
+    }
 }
