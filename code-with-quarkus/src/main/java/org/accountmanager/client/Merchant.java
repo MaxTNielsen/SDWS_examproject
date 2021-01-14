@@ -1,8 +1,6 @@
 package org.accountmanager.client;
 
-/* implements Client */
-
-public class Merchant extends User{
+public class Merchant extends User {
     public Merchant(String ID)
     {
         super(ID);

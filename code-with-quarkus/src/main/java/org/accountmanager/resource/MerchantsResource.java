@@ -1,5 +1,6 @@
 package org.accountmanager.resource;
 
+import org.accountmanager.client.ClientFactory;
 import org.accountmanager.client.Merchant;
 import org.accountmanager.model.AccountManager;
 
@@ -15,6 +16,7 @@ import javax.ws.rs.core.Response;
 @Path("/merchants")
 public class MerchantsResource {
     AccountManager manager = AccountManager.getInstance();
+    ClientFactory factory = new ClientFactory();
     String notFound = "merchant not found";
     String existed = "merchant already exist";
     String noBankAccount = "merchant has no bank account";
@@ -28,7 +30,7 @@ public class MerchantsResource {
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMerchant(@PathParam("id") String ID)
+    public Response getClient(@PathParam("id") String ID)
     {
 
         if (!manager.getMerchants().containsKey(ID))
@@ -46,7 +48,7 @@ public class MerchantsResource {
         if (!manager.checkIfClientHasABankAccount(CPR))
             return Response.status(406, noBankAccount).build();
         
-        Merchant c = new Merchant(ID);
+        Merchant c = factory.buildMerchant(ID);
         manager.registerMerchant(c);
         return Response.ok().build();
         

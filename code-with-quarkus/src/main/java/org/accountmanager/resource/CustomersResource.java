@@ -1,5 +1,6 @@
 package org.accountmanager.resource;
 
+import org.accountmanager.client.ClientFactory;
 import org.accountmanager.client.Customer;
 import org.accountmanager.model.AccountManager;
 
@@ -16,6 +17,7 @@ import javax.ws.rs.core.Response;
 @Path("/customers")
 public class CustomersResource {
     AccountManager manager = AccountManager.getInstance();
+    ClientFactory factory = new ClientFactory();
     String customerNotFound = "customer not found";
     String customerExist = "customer already exist";
     String customerHasNoBank = "customer has no bank account";
@@ -38,7 +40,7 @@ public class CustomersResource {
         if (!manager.checkIfClientHasABankAccount(ID))
             return Response.status(406, customerHasNoBank).build();
         
-        Customer c = new Customer(ID);
+        Customer c = factory.buildCustomer(ID);
         manager.registerCustomer(c);
         return Response.ok().build();
         

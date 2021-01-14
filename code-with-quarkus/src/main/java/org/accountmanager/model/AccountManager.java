@@ -22,18 +22,18 @@ public class AccountManager implements IAccountManager{
         return instance;
     }
 
+    public AccountManager()
+    {
+        registerCustomer(new Customer("cid1"));
+        registerMerchant(new Merchant("mid1"));
+    }
+
     public Map<String, Customer> getCustomers() {
         return customers;
     }
 
     public Map<String, Merchant> getMerchants() {
         return merchants;
-    }
-
-    public AccountManager()
-    {
-        registerCustomer(new Customer("cid1"));
-        registerMerchant(new Merchant("mid1"));
     }
 
     public boolean registerCustomer(Customer c)
