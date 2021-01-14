@@ -44,8 +44,11 @@ public class TokenManager {
         {
             return false;
         }
-        if ( !tokens.get(tokenId).isUsed())
+        if ( !tokens.get(tokenId).isUsed()) {
+            //set token as used
+            tokens.get(tokenId).setUsed(true);
             return true;
+        }
         else return false;
     }
 
@@ -90,36 +93,6 @@ public class TokenManager {
         }
         return tokens;
     }
-
-//    public boolean generateToken(String cprNumber, int amount){
-//        if (getAvailableTokenAmount(cprNumber) <= 1){
-//            for (int i=0; i<amount; i++){
-//                Token token = new Token(TokenGenerator.createToken(), cprNumber);
-//                tokens.put(token.getId(),token);
-//            }
-//            return true;
-//        }
-//        else
-//            return false;
-//    }
-    //    public List<Token> getAvailableTokens(String cprNumber){
-//        List<Token> result = null;
-//        for (Map.Entry<String, Token> entry : tokens.entrySet()) {
-//            if (validateToken(entry.getValue().getId(),entry.getValue().getCprNumber()))
-//                    result.add(entry.getValue());
-//        }
-//        return result;
-//
-//    }
-//    public List<Token> getAllTokens(){
-//        List<Token> result = null;
-//        for (Map.Entry<String, Token> entry : tokens.entrySet()) {
-//            if (validateToken(entry.getValue().getId(),entry.getValue().getCprNumber()))
-//                result.add(entry.getValue());
-//        }
-//        return result;
-//
-//    }
 
 
 
