@@ -11,12 +11,13 @@ import java.util.concurrent.TimeoutException;
 
 public class NetworkModule {
     private static final String RPC_QUEUE_NAME = "token_management_queue";
+    private static final String RABBITMQ_HOST = "rabbitMq";
     private static ConnectionFactory factory;
     TokenManager manager;
 
     public NetworkModule () {
         factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost(RABBITMQ_HOST);
         manager = TokenManager.getInstance();
     }
 
@@ -73,7 +74,7 @@ public class NetworkModule {
     //Function to start RabbitMQ server
     public void runNetworkModule() throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost(RABBITMQ_HOST);
 
         try (Connection connection = factory.newConnection();
              Channel channel = connection.createChannel()) {
