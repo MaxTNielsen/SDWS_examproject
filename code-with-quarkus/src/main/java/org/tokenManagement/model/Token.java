@@ -2,14 +2,12 @@ package org.tokenManagement.model;
 public class Token
 {
 	private String id;
-	private String cprNumber;
+	private String userId;
 	private boolean isUsed;
-	//public Token() {}
 	
-	
-	public Token (String id, String cprNumber) {
+	public Token (String id, String userId) {
 		this.id = id;
-		this.cprNumber = cprNumber;
+		this.userId = userId;
 		this.isUsed = false;
 	}
 	public boolean isUsed() {
@@ -21,14 +19,12 @@ public class Token
 	public String getId() {
 		return id;
 	}
-	public String getCprNumber() {
-		return cprNumber;
+	public String getUserId () {
+		return userId;
 	}
-
-
 	@Override
 	public String toString() {
-		return "Token [id=" + id + ", cprNumber=" + cprNumber + ", isUsed=" + isUsed + "]";
+		return "Token [id=" + id + ", userId=" + userId + ", isUsed=" + isUsed + "]";
 	}
 	
 

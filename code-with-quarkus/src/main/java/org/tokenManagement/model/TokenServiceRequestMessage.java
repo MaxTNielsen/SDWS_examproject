@@ -13,40 +13,46 @@ import java.io.Serializable;
 public class TokenServiceRequestMessage implements Serializable {
     public enum tokenServiceRequestMessageType
     {
-        GET_VALIDITY, //provide tokenID
-        GET_ALL_TOKENS, //provide userCpr
-        REQUEST_NEW_TOKENS, //provide userCpr
+        REQUEST_PAYMENT_VALIDATION, //provide tokenID
+        GET_ALL_TOKENS, //provide userId
+        REQUEST_NEW_TOKENS, //provide userId and the number of the requested tokens
     }
 
     @JsonProperty("messageType")
     private tokenServiceRequestMessageType messageType;
     @JsonProperty("token")
     private String token;
-    @JsonProperty("userCpr")
-    private String userCpr;
+    @JsonProperty("userId")
+    private String userId;
+    @JsonProperty("tokenNumber")
+    private int tokenNumber;
 
     public TokenServiceRequestMessage ()
     {
         this.messageType = null;
         this.token = null;
-        this.userCpr = null;
+        this.userId = null;
+        this.tokenNumber = 0;
     }
 
     public TokenServiceRequestMessage (tokenServiceRequestMessageType _messageType)
     {
         this.messageType = _messageType;
         this.token = null;
-        this.userCpr = null;
+        this.userId = null;
+        this.tokenNumber = 0;
     }
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public TokenServiceRequestMessage (@JsonProperty("messageType") tokenServiceRequestMessageType _messageType,
                                        @JsonProperty("token") String _token,
-                                       @JsonProperty("userCpr")String _userCpr)
+                                       @JsonProperty("userId")String _userId,
+                                       @JsonProperty("tokenNumber")int _tokenNumber)
     {
         this.messageType = _messageType;
         this.token = _token;
-        this.userCpr = _userCpr;
+        this.userId = _userId;
+        this.tokenNumber = _tokenNumber;
     }
 
     public TokenServiceRequestMessage (String json) throws IOException
@@ -55,7 +61,8 @@ public class TokenServiceRequestMessage implements Serializable {
         TokenServiceRequestMessage temporaryObject = mapper.readValue(json,TokenServiceRequestMessage.class);
         this.messageType = temporaryObject.messageType;
         this.token = temporaryObject.token;
-        this.userCpr = temporaryObject.userCpr;
+        this.userId = temporaryObject.userId;
+        this.tokenNumber = temporaryObject.tokenNumber;
     }
 
     public String toJson() throws JsonProcessingException
@@ -77,10 +84,13 @@ public class TokenServiceRequestMessage implements Serializable {
     }
 
     @JsonIgnore
-    public String getUserCpr()
+    public String getUserId ()
     {
-        return this.userCpr;
+        return this.userId;
     }
+
+    @JsonIgnore
+    public int getRequestedTokenNumber(){return this.tokenNumber;}
 
     @JsonIgnore
     public void setToken(String _tokenId)
@@ -89,15 +99,18 @@ public class TokenServiceRequestMessage implements Serializable {
     }
 
     @JsonIgnore
-    public void setUserCpr(String _userCpr)
+    public void setUserId (String _userId)
     {
-        this.userCpr = _userCpr;
+        this.userId = _userId;
     }
+
+    @JsonIgnore
+    public void setRequestedTokenNumber(int _newNumber){this.tokenNumber = _newNumber;}
 
     @JsonIgnore
     public boolean equals(TokenServiceRequestMessage obj)
     {
-        if(this.messageType == obj.getType() && this.userCpr.equals(obj.getUserCpr()) && this.token.equals(obj.getToken()))
+        if(this.messageType == obj.getType() && this.userId.equals(obj.getUserId()) && this.token.equals(obj.getToken()) && this.tokenNumber == obj.getRequestedTokenNumber())
         {
             return true;
         }

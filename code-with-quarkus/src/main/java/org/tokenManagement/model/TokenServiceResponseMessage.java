@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class TokenServiceResponseMessage {
     public enum tokenServiceResponseMessageType
     {
-        RESPONSE_GET_VALIDITY, // only the isValid argument is required
+        RESPONSE_PAYMENT_VALIDATION, // the isValid and the userId arguments are required
         RESPONSE_GET_ALL_TOKENS, // only the list of tokenID-s is required
         RESPONSE_NEW_TOKENS // only the list of tokenID-s is required
     }
@@ -23,12 +23,15 @@ public class TokenServiceResponseMessage {
     private boolean isValid;
     @JsonProperty("tokens")
     private ArrayList<String> tokens;
+    @JsonProperty("userId")
+    private String userId;
 
     public TokenServiceResponseMessage ()
     {
         this.messageType = null;
         this.isValid = false;
         this.tokens = null;
+        this.userId = null;
     }
 
     public TokenServiceResponseMessage (tokenServiceResponseMessageType _messageType)
@@ -36,13 +39,15 @@ public class TokenServiceResponseMessage {
         this.messageType = _messageType;
         this.isValid = false;
         this.tokens = null;
+        this.userId = null;
     }
 
-    public TokenServiceResponseMessage (tokenServiceResponseMessageType _messageType, boolean _isValid)
+    public TokenServiceResponseMessage (tokenServiceResponseMessageType _messageType, boolean _isValid, String _userId)
     {
         this.messageType = _messageType;
         this.isValid = _isValid;
         this.tokens = null;
+        this.userId = _userId;
     }
 
     public TokenServiceResponseMessage (tokenServiceResponseMessageType _messageType, ArrayList<String> _tokens)
@@ -50,16 +55,19 @@ public class TokenServiceResponseMessage {
         this.messageType = _messageType;
         this.isValid = true;
         this.tokens = _tokens;
+        this.userId = null;
     }
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public TokenServiceResponseMessage (@JsonProperty("messageType") tokenServiceResponseMessageType _messageType,
                                         @JsonProperty("isValid")boolean _isValid,
-                                        @JsonProperty("tokens") ArrayList<String> _tokens)
+                                        @JsonProperty("tokens") ArrayList<String> _tokens,
+                                        @JsonProperty("userId") String _userId)
     {
         this.messageType = _messageType;
         this.isValid = _isValid;
         this.tokens = _tokens;
+        this.userId = _userId;
     }
 
     public TokenServiceResponseMessage (String json) throws IOException
@@ -69,6 +77,7 @@ public class TokenServiceResponseMessage {
         this.messageType = temporaryObject.messageType;
         this.isValid = temporaryObject.isValid;
         this.tokens = temporaryObject.tokens;
+        this.userId = temporaryObject.userId;
     }
 
     @JsonIgnore
@@ -97,6 +106,9 @@ public class TokenServiceResponseMessage {
     }
 
     @JsonIgnore
+    public String getUserId(){return this.userId;}
+
+    @JsonIgnore
     public void addToken(String _newToken) {
         if(tokens == null)
         {
@@ -119,12 +131,12 @@ public class TokenServiceResponseMessage {
     }
 
     @JsonIgnore
-    public void setValid(boolean _newValue) { this.isValid = _newValue; }
+    public void setUserId(String _newUserId){this.userId = _newUserId;}
 
     @JsonIgnore
     public boolean equals(TokenServiceResponseMessage obj)
     {
-        if(this.messageType != obj.getType() || this.isValid != obj.getValidity())
+        if(this.messageType != obj.getType() || this.isValid != obj.getValidity() || this.userId != obj.getUserId())
         {
             return false;
         }

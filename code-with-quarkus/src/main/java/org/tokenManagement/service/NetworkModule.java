@@ -26,9 +26,10 @@ public class NetworkModule {
         System.out.println("received");
         switch (request.getType())
         {
-            case GET_VALIDITY:
+            case REQUEST_PAYMENT_VALIDATION:
                 boolean result = manager.validateToken(request.getToken());
-                responseMessage = new TokenServiceResponseMessage(TokenServiceResponseMessage.tokenServiceResponseMessageType.RESPONSE_GET_VALIDITY,result);
+                String userId = manager.getUserIdbyTokenId(request.getToken());
+                responseMessage = new TokenServiceResponseMessage(TokenServiceResponseMessage.tokenServiceResponseMessageType.RESPONSE_PAYMENT_VALIDATION,result, userId);
                 break;
             case GET_ALL_TOKENS:
                 ArrayList<Token> tokens = new ArrayList<Token>(manager.tokens.values());
@@ -40,7 +41,7 @@ public class NetworkModule {
                 responseMessage = new TokenServiceResponseMessage(TokenServiceResponseMessage.tokenServiceResponseMessageType.RESPONSE_GET_ALL_TOKENS, tokenIDs);
                 break;
             case REQUEST_NEW_TOKENS:
-                ArrayList<String> newTokenIds = manager.getNewTokens(request.getUserCpr());
+                ArrayList<String> newTokenIds = manager.getNewTokens(request.getUserId(),request.getRequestedTokenNumber());
                 responseMessage = new TokenServiceResponseMessage(TokenServiceResponseMessage.tokenServiceResponseMessageType.RESPONSE_NEW_TOKENS,newTokenIds);
                 break;
         }

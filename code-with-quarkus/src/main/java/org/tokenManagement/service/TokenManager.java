@@ -1,5 +1,4 @@
 package org.tokenManagement.service;
-import io.cucumber.java.bs.A;
 import org.tokenManagement.model.Token;
 import org.tokenManagement.utils.TokenGenerator;
 
@@ -32,9 +31,9 @@ public class TokenManager {
     public void addToken(Token token){
         tokens.put(token.getId(),token);
     }
-    public String generateToken(String cprNumber)
+    public String generateToken(String userId)
     {
-        Token token = new Token(TokenGenerator.createToken(),cprNumber);
+        Token token = new Token(TokenGenerator.createToken(),userId);
         tokens.put(token.getId(),token);
         return token.getId();
     }
@@ -53,18 +52,20 @@ public class TokenManager {
     }
 
 
-    public int getAvailableTokenAmount(String cprNumber){
+    public int getAvailableTokenAmount(String userId){
         int result = 0;
-        for (Map.Entry<String, Token> entry : tokens.entrySet()) {
-            if (validateToken(entry.getValue().getId())&& (entry.getValue().getCprNumber().equals(cprNumber)))
+        for (Map.Entry<String, Token> entry : tokens.entrySet())
+        {
+            if (entry.getValue().getUserId().equals(userId) && !entry.getValue().isUsed())
                 result+=1;
         }
         return result;
     }
-    public String getToken(String cprNumber){
+
+    public String getToken(String userId){
         String result = "";
         for (Map.Entry<String, Token> entry : tokens.entrySet()) {
-            if (entry.getValue().getCprNumber().equals(cprNumber) && !entry.getValue().isUsed()) {
+            if (entry.getValue().getUserId().equals(userId) && !entry.getValue().isUsed()) {
                 result=entry.getValue().getId();
                 break;
             }
@@ -76,18 +77,18 @@ public class TokenManager {
         tokens.get(tokenId).setUsed(true);
     }
 
-    public ArrayList<String> getNewTokens(String cprNumber)
+    public ArrayList<String> getNewTokens(String cprNumber, int requestedTokenNumber)
     {
         ArrayList<String> tokens = new ArrayList<>();
         int numberOfAvailableTokens = this.getAvailableTokenAmount(cprNumber);
-        if(numberOfAvailableTokens > 1)
+        if(numberOfAvailableTokens > 1 || requestedTokenNumber > 5 || requestedTokenNumber < 1)
         {
             return tokens;
         }
         else
         {
-            //If the number of available tokens are 0 or 1 the system will generate exactly 5 so the user will have 5 or 6 unused ones
-            for(int i = 0; i < 5; i++)
+            //If the number of available tokens are 0 or 1 the system will generate the requested number of tokens if it's less or eqal than 5
+            for(int i = 0; i < requestedTokenNumber; i++)
             {
                 tokens.add(generateToken(cprNumber));
             }
@@ -95,6 +96,9 @@ public class TokenManager {
         return tokens;
     }
 
-
+    public String getUserIdbyTokenId(String tokenId)
+    {
+        return this.tokens.get(tokenId).getUserId();
+    }
 
 }

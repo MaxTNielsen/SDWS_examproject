@@ -27,7 +27,7 @@ public class MessageSerializationTestSteps {
     public void a_token_service_request_message_class_instance() {
         requestMessage = new TokenServiceRequestMessage(TokenServiceRequestMessage.tokenServiceRequestMessageType.GET_ALL_TOKENS);
         requestMessage.setToken("TOKENID-123456789");
-        requestMessage.setUserCpr("USERCPR-+987654321");
+        requestMessage.setUserId("USERCPR-+987654321");
     }
 
     @When("Serialize TokenServiceRequestMessage to byte[] and deserialize it")
