@@ -71,6 +71,7 @@ public class TokenServiceResponseMessage {
         this.tokens = temporaryObject.tokens;
     }
 
+    @JsonIgnore
     public String toJson() throws JsonProcessingException
     {
         ObjectMapper mapper = new ObjectMapper();
@@ -95,14 +96,46 @@ public class TokenServiceResponseMessage {
         return this.tokens;
     }
 
-    public void addToken(String _newToken) { this.tokens.add(_newToken); }
+    @JsonIgnore
+    public void addToken(String _newToken) {
+        if(tokens == null)
+        {
+            tokens = new ArrayList<>();
+        }
+        this.tokens.add(_newToken); }
 
-    public void addTokens(ArrayList<String> _newTokens){this.tokens.addAll(_newTokens);}
+    @JsonIgnore
+    public void addTokens(ArrayList<String> _newTokens){
+        if(tokens == null)
+        {
+            tokens = new ArrayList<>();
+        }
+        this.tokens.addAll(_newTokens);}
 
+    @JsonIgnore
     public void setValidity(boolean _newValidityState)
     {
         this.isValid = _newValidityState;
     }
 
+    @JsonIgnore
     public void setValid(boolean _newValue) { this.isValid = _newValue; }
+
+    @JsonIgnore
+    public boolean equals(TokenServiceResponseMessage obj)
+    {
+        if(this.messageType != obj.getType() || this.isValid != obj.getValidity())
+        {
+            return false;
+        }
+        ArrayList<String> objectTokens = obj.getTokens();
+        for(String currentToken:objectTokens)
+        {
+            if(!this.tokens.contains(currentToken))
+            {
+                return false;
+            }
+        }
+            return true;
+    }
 }

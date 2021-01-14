@@ -64,6 +64,7 @@ public class TokenServiceRequestMessage implements Serializable {
         return mapper.writeValueAsString(this);
     }
 
+    @JsonIgnore
     public tokenServiceRequestMessageType getType()
     {
         return this.messageType;
@@ -81,14 +82,28 @@ public class TokenServiceRequestMessage implements Serializable {
         return this.userCpr;
     }
 
+    @JsonIgnore
     public void setToken(String _tokenId)
     {
         this.token = _tokenId;
     }
 
+    @JsonIgnore
     public void setUserCpr(String _userCpr)
     {
         this.userCpr = _userCpr;
     }
 
+    @JsonIgnore
+    public boolean equals(TokenServiceRequestMessage obj)
+    {
+        if(this.messageType == obj.getType() && this.userCpr.equals(obj.getUserCpr()) && this.token.equals(obj.getToken()))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
