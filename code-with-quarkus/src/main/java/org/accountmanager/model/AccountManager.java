@@ -27,7 +27,6 @@ public class AccountManager implements IAccountManager{
     {
         registerCustomer(new Customer("cid1"));
         registerMerchant(new Merchant("mid1"));
-        // AccountEventController controller = new AccountEventController();
         AccountEventController.listen();
     }
 
@@ -43,6 +42,9 @@ public class AccountManager implements IAccountManager{
     {
         if (customers.containsKey(c.ID))
             return false;
+
+        if (!checkIfClientHasABankAccount(c.ID))
+            return false;
         customers.put(c.ID, c);
         return true;
     }
@@ -51,6 +53,9 @@ public class AccountManager implements IAccountManager{
     {
         if (merchants.containsKey(m.ID))
             return false;
+
+        if (!checkIfClientHasABankAccount(m.ID))
+            return false;    
         merchants.put(m.ID, m);
         return true;
     }
