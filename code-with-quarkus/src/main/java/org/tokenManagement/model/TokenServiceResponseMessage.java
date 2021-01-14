@@ -14,7 +14,8 @@ public class TokenServiceResponseMessage {
     {
         RESPONSE_PAYMENT_VALIDATION, // the isValid and the userId arguments are required
         RESPONSE_GET_ALL_TOKENS, // only the list of tokenID-s is required
-        RESPONSE_NEW_TOKENS // only the list of tokenID-s is required
+        RESPONSE_NEW_TOKENS, // only the list of tokenID-s is required
+        RESPONSE_INVALID_REQUEST // This is send back when a request cannot be executed
     }
 
     @JsonProperty("messageType")

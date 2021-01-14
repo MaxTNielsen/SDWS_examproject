@@ -27,22 +27,44 @@ public class NetworkModule {
         switch (request.getType())
         {
             case REQUEST_PAYMENT_VALIDATION:
-                boolean result = manager.validateToken(request.getToken());
-                String userId = manager.getUserIdbyTokenId(request.getToken());
-                responseMessage = new TokenServiceResponseMessage(TokenServiceResponseMessage.tokenServiceResponseMessageType.RESPONSE_PAYMENT_VALIDATION,result, userId);
+                if(request.getToken() == null)
+                {
+                    System.out.println("Invalid request -> No token ID provided");
+                    responseMessage = new TokenServiceResponseMessage(TokenServiceResponseMessage.tokenServiceResponseMessageType.RESPONSE_INVALID_REQUEST);
+                }
+                else
+                {
+                    boolean result = manager.validateToken(request.getToken());
+                    String userId = manager.getUserIdbyTokenId(request.getToken());
+                    responseMessage = new TokenServiceResponseMessage(TokenServiceResponseMessage.tokenServiceResponseMessageType.RESPONSE_PAYMENT_VALIDATION,result, userId);
+                }
                 break;
             case GET_ALL_TOKENS:
-                ArrayList<Token> tokens = new ArrayList<Token>(manager.tokens.values());
-                ArrayList<String> tokenIDs = new ArrayList<String>();
-                for(Token currentToken:tokens)
+                if(request.getUserId() == null)
                 {
-                    tokenIDs.add(currentToken.getId());
+                    responseMessage = new TokenServiceResponseMessage(TokenServiceResponseMessage.tokenServiceResponseMessageType.RESPONSE_INVALID_REQUEST);
                 }
-                responseMessage = new TokenServiceResponseMessage(TokenServiceResponseMessage.tokenServiceResponseMessageType.RESPONSE_GET_ALL_TOKENS, tokenIDs);
+                else
+                {
+                    ArrayList<Token> tokens = new ArrayList<Token>(manager.tokens.values());
+                    ArrayList<String> tokenIDs = new ArrayList<String>();
+                    for(Token currentToken:tokens)
+                    {
+                        tokenIDs.add(currentToken.getId());
+                    }
+                    responseMessage = new TokenServiceResponseMessage(TokenServiceResponseMessage.tokenServiceResponseMessageType.RESPONSE_GET_ALL_TOKENS, tokenIDs);
+                }
                 break;
             case REQUEST_NEW_TOKENS:
-                ArrayList<String> newTokenIds = manager.getNewTokens(request.getUserId(),request.getRequestedTokenNumber());
-                responseMessage = new TokenServiceResponseMessage(TokenServiceResponseMessage.tokenServiceResponseMessageType.RESPONSE_NEW_TOKENS,newTokenIds);
+                if(request.getUserId() == null)
+                {
+                    responseMessage = new TokenServiceResponseMessage(TokenServiceResponseMessage.tokenServiceResponseMessageType.RESPONSE_INVALID_REQUEST);
+                }
+                else
+                {
+                    ArrayList<String> newTokenIds = manager.getNewTokens(request.getUserId(),request.getRequestedTokenNumber());
+                    responseMessage = new TokenServiceResponseMessage(TokenServiceResponseMessage.tokenServiceResponseMessageType.RESPONSE_NEW_TOKENS, newTokenIds);
+                }
                 break;
         }
         return responseMessage;

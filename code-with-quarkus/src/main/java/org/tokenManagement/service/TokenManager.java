@@ -4,6 +4,7 @@ import org.tokenManagement.utils.TokenGenerator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 
@@ -54,10 +55,13 @@ public class TokenManager {
 
     public int getAvailableTokenAmount(String userId){
         int result = 0;
-        for (Map.Entry<String, Token> entry : tokens.entrySet())
+        for (Map.Entry<String,Token> entry : tokens.entrySet())
         {
+            //System.out.println(entry.getKey() + ":::::::" + entry.getValue());
             if (entry.getValue().getUserId().equals(userId) && !entry.getValue().isUsed())
+            {
                 result+=1;
+            }
         }
         return result;
     }
@@ -77,20 +81,21 @@ public class TokenManager {
         tokens.get(tokenId).setUsed(true);
     }
 
-    public ArrayList<String> getNewTokens(String cprNumber, int requestedTokenNumber)
+    public ArrayList<String> getNewTokens(String userId, int requestedTokenNumber)
     {
-        ArrayList<String> tokens = new ArrayList<>();
-        int numberOfAvailableTokens = this.getAvailableTokenAmount(cprNumber);
+        ArrayList<String> tokens = null;
+        int numberOfAvailableTokens = this.getAvailableTokenAmount(userId);
         if(numberOfAvailableTokens > 1 || requestedTokenNumber > 5 || requestedTokenNumber < 1)
         {
-            return tokens;
+            return null;
         }
         else
         {
-            //If the number of available tokens are 0 or 1 the system will generate the requested number of tokens if it's less or eqal than 5
+            //If the number of available tokens are 0 or 1 the system will generate the requested number of tokens if it's less or equal to 5
+            tokens = new ArrayList<>();
             for(int i = 0; i < requestedTokenNumber; i++)
             {
-                tokens.add(generateToken(cprNumber));
+                tokens.add(generateToken(userId));
             }
         }
         return tokens;
