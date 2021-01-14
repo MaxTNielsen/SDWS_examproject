@@ -12,9 +12,9 @@ import java.util.ArrayList;
 public class TokenServiceResponseMessage {
     public enum tokenServiceResponseMessageType
     {
-        RESPONSE_GET_VALIDITY,
-        RESPONSE_GET_ALL_TOKENS,
-        RESPONSE_NEW_TOKENS
+        RESPONSE_GET_VALIDITY, // only the isValid argument is required
+        RESPONSE_GET_ALL_TOKENS, // only the list of tokenID-s is required
+        RESPONSE_NEW_TOKENS // only the list of tokenID-s is required
     }
 
     @JsonProperty("messageType")
@@ -26,7 +26,16 @@ public class TokenServiceResponseMessage {
 
     public TokenServiceResponseMessage ()
     {
+        this.messageType = null;
+        this.isValid = false;
+        this.tokens = null;
+    }
 
+    public TokenServiceResponseMessage (tokenServiceResponseMessageType _messageType)
+    {
+        this.messageType = _messageType;
+        this.isValid = false;
+        this.tokens = null;
     }
 
     public TokenServiceResponseMessage (tokenServiceResponseMessageType _messageType, boolean _isValid)
@@ -68,6 +77,7 @@ public class TokenServiceResponseMessage {
         return mapper.writeValueAsString(this);
     }
 
+    @JsonIgnore
     public tokenServiceResponseMessageType getType()
     {
         return this.messageType;
@@ -94,4 +104,5 @@ public class TokenServiceResponseMessage {
         this.isValid = _newValidityState;
     }
 
+    public void setValid(boolean _newValue) { this.isValid = _newValue; }
 }
