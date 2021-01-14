@@ -5,6 +5,7 @@ import dtu.ws.fastmoney.BankServiceException_Exception;
 import dtu.ws.fastmoney.BankServiceService;
 import org.accountmanager.client.Customer;
 import org.accountmanager.client.Merchant;
+import org.accountmanager.controller.AccountEventController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,8 @@ public class AccountManager implements IAccountManager{
     {
         registerCustomer(new Customer("cid1"));
         registerMerchant(new Merchant("mid1"));
+        // AccountEventController controller = new AccountEventController();
+        AccountEventController.listen();
     }
 
     public Map<String, Customer> getCustomers() {

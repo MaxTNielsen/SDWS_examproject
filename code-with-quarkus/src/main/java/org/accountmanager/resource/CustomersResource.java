@@ -29,22 +29,22 @@ public class CustomersResource {
         return Response.ok(Entity.entity(manager.getCustomers().values(), MediaType.APPLICATION_JSON)).build();
     }
 
-    @POST
-    @Consumes(MediaType.TEXT_PLAIN)
-    // public Response createCustomer(String ID, String CPR)
-    public Response createCustomer(String ID)
-    {
-        if (manager.hasCustomer(ID))
-            return Response.status(406, customerExist).build();
+    // @POST
+    // @Consumes(MediaType.TEXT_PLAIN)
+    // // public Response createCustomer(String ID, String CPR)
+    // public Response createCustomer(String ID)
+    // {
+    //     if (manager.hasCustomer(ID))
+    //         return Response.status(406, customerExist).build();
 
-        if (!manager.checkIfClientHasABankAccount(ID))
-            return Response.status(406, customerHasNoBank).build();
+    //     if (!manager.checkIfClientHasABankAccount(ID))
+    //         return Response.status(406, customerHasNoBank).build();
         
-        Customer c = factory.buildCustomer(ID);
-        manager.registerCustomer(c);
-        return Response.ok().build();
+    //     Customer c = ClientFactory.buildCustomer(ID);
+    //     manager.registerCustomer(c);
+    //     return Response.ok().build();
         
-    }
+    // }
 
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
