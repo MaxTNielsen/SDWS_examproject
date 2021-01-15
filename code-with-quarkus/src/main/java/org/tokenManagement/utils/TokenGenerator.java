@@ -25,7 +25,6 @@ public class TokenGenerator {
 
         NetworkModule network = new NetworkModule();
         network.runNetworkModule();
-
     }
 
 }

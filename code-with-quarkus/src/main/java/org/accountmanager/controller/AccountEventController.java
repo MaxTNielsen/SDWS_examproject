@@ -19,7 +19,6 @@ public class AccountEventController {
     static final String CUSTOMER_REG_QUEUE = "CUSTOMER_REG_QUEUE";
     static final String CUSTOMER_REG_RESPONSE_QUEUE = "CUSTOMER_REG_RESPONSE_QUEUE";
 
-
     public static void listen()
     {
         ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -42,7 +41,6 @@ public class AccountEventController {
                 boolean successful = AccountManager.getInstance().registerCustomer(ClientFactory.buildCustomer(ID));
                 sendRegResponse(ID, successful);
             };
-            
 
             // channel.basicPublish("", CUSTOMER_REG_QUEUE, null, message.getBytes());
             channel.basicConsume("", true, deliverCallback, consumerTag -> {

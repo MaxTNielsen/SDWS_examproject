@@ -3,6 +3,8 @@ package org.accountmanager.model;
 import dtu.ws.fastmoney.BankService;
 import dtu.ws.fastmoney.BankServiceException_Exception;
 import dtu.ws.fastmoney.BankServiceService;
+import io.quarkus.runtime.Quarkus;
+import io.quarkus.runtime.annotations.QuarkusMain;
 import org.accountmanager.client.Customer;
 import org.accountmanager.client.Merchant;
 import org.accountmanager.controller.AccountEventController;
@@ -10,23 +12,19 @@ import org.accountmanager.controller.AccountEventController;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AccountManager implements IAccountManager{
+public class AccountManager implements IAccountManager {
     static AccountManager instance;
     BankService bank = new BankServiceService().getBankServicePort();
     Map<String, Customer> customers = new HashMap<>();
     Map<String, Merchant> merchants = new HashMap<>();
 
-    public static AccountManager getInstance()
-    {
+    public static AccountManager getInstance() {
         if (instance == null)
             instance = new AccountManager();
         return instance;
     }
 
-    public AccountManager()
-    {
-        registerCustomer(new Customer("cid1"));
-        registerMerchant(new Merchant("mid1"));
+    public AccountManager() {
         AccountEventController.listen();
     }
 
@@ -38,8 +36,7 @@ public class AccountManager implements IAccountManager{
         return merchants;
     }
 
-    public boolean registerCustomer(Customer c)
-    {
+    public boolean registerCustomer(Customer c) {
         if (customers.containsKey(c.ID))
             return false;
 
@@ -48,35 +45,32 @@ public class AccountManager implements IAccountManager{
         customers.put(c.ID, c);
         return true;
     }
-    
-    public boolean registerMerchant(Merchant m)
-    {
+
+    public boolean registerMerchant(Merchant m) {
         if (merchants.containsKey(m.ID))
             return false;
 
         if (!checkIfClientHasABankAccount(m.ID))
-            return false;    
+            return false;
         merchants.put(m.ID, m);
         return true;
     }
 
-    public boolean checkIfClientHasABankAccount(String ID){
+    public boolean checkIfClientHasABankAccount(String ID) {
         try {
             bank.getAccount(ID);
             return true;
-        } catch (BankServiceException_Exception e){
+        } catch (BankServiceException_Exception e) {
             System.out.println(e.getMessage());
         }
         return false;
     }
 
-    public boolean hasCustomer(String ID)
-    {
+    public boolean hasCustomer(String ID) {
         return customers.containsKey(ID);
     }
 
-    public boolean hasMerchant(String ID)
-    {
+    public boolean hasMerchant(String ID) {
         return merchants.containsKey(ID);
     }
 }

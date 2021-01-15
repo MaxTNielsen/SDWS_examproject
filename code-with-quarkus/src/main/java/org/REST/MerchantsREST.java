@@ -1,4 +1,4 @@
-package org.accountmanager.resource;
+package org.REST;
 
 import org.accountmanager.client.ClientFactory;
 import org.accountmanager.client.Merchant;
@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/merchants")
-public class MerchantsResource {
+public class MerchantsREST {
     AccountManager manager = AccountManager.getInstance();
     ClientFactory factory = new ClientFactory();
     String notFound = "merchant not found";
@@ -51,6 +51,5 @@ public class MerchantsResource {
         Merchant c = factory.buildMerchant(ID);
         manager.registerMerchant(c);
         return Response.ok().build();
-        
     }
 }

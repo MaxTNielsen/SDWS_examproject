@@ -48,6 +48,7 @@ public class AccountManageService {
             return bankService.createAccountWithBalance(user, balance);
         } catch (BankServiceException_Exception e) {
             System.out.println(e.getMessage());
+            System.out.println("Inside the bank exception ");
             return null;
         }
     }
@@ -69,7 +70,7 @@ public class AccountManageService {
             try {
                 bankService.retireAccount(s);
             } catch (BankServiceException_Exception e) {
-                System.out.println(e);
+                System.out.println("THIS IS A BANK ERROR");
             }
         }
     }
