@@ -18,6 +18,10 @@ public class AccountManageServiceSteps {
     String customerBankAccountID;
     String customerID;
     String merchantID;
+    String merchantCPR;
+    String merchantfname;
+    String merchantlname;
+    String merchantBankAccountID;
 
     boolean success = false;
 
@@ -82,6 +86,32 @@ public class AccountManageServiceSteps {
 
     @Then("the customer has gotten an account in DTUPay")
     public void theCustomerHasGottenAnAccountInDTUPay() {
+        assertTrue(success);
+    }
+
+    /*NEW SCENARIO !!!!!!!!!!!!!!!!!!!!!!*/
+
+    @Given("the merchant with CPR {string} and with the name {string} {string} and the balance {int} kr")
+    public void theMerchantWithCPRAndWithTheNameAndTheBalanceKr(String merchantCPR, String merchantfname, String merchantlname, Integer int1) {
+        balance = BigDecimal.valueOf(int1);
+        this.merchantCPR = merchantCPR;
+        this.merchantfname = merchantfname;
+        this.merchantlname = merchantlname;
+    }
+
+    @When("the merchant register in the bank")
+    public void theMerchantRegisterInTheBank() {
+        merchantBankAccountID = service.registerClientAtBank(merchantCPR, merchantfname, merchantlname, balance);
+        bankAccounts.add(merchantBankAccountID);
+    }
+
+    @When("the mechant register in DTUPay with his CPR as ID")
+    public void theMechantRegisterInDTUPayWithHisCPRAsID() {
+        success = service.registerMerchant(merchantBankAccountID);
+    }
+
+    @Then("the merchant has gotten an account in DTUPay")
+    public void theMerchantHasGottenAnAccountInDTUPay() {
         assertTrue(success);
     }
 

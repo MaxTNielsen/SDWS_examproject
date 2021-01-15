@@ -17,3 +17,9 @@ Feature: AccountManagement
         When the customer register in the bank
         When the customer register in DTUPay with his CPR as ID
         Then the customer has gotten an account in DTUPay
+
+    Scenario:  Register a Merchant in the Bank and in DTUPay
+        Given the merchant with CPR "231100-8080" and with the name "Hubert" "Claus" and the balance 1000 kr
+        When the merchant register in the bank
+        When the mechant register in DTUPay with his CPR as ID
+        Then the merchant has gotten an account in DTUPay

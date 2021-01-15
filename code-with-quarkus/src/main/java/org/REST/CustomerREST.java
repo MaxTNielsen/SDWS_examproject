@@ -14,11 +14,7 @@ import javax.ws.rs.core.Response;
 
 @Path("/customers")
 public class CustomerREST {
-    DTUPay dtuPay;
-
-    public CustomerREST() {
-        this.dtuPay = DTUPay.getInstance();
-    }
+    DTUPay dtuPay = DTUPay.getInstance();
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)

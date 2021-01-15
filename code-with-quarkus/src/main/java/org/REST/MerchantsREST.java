@@ -1,27 +1,33 @@
 package org.REST;
 
-import org.accountmanager.client.ClientFactory;
-import org.accountmanager.client.Merchant;
-import org.accountmanager.model.AccountManager;
+import org.dtupay.DTUPay;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.client.Entity;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 @Path("/merchants")
 public class MerchantsREST {
-    AccountManager manager = AccountManager.getInstance();
-    ClientFactory factory = new ClientFactory();
     String notFound = "merchant not found";
     String existed = "merchant already exist";
     String noBankAccount = "merchant has no bank account";
+    DTUPay dtuPay = DTUPay.getInstance();
 
-    @GET
+    @POST
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response RegisterMerchant(String ID) throws IOException, TimeoutException, NotFoundException {
+        dtuPay.sendMSGToRegMerchant(ID);
+        System.out.println("After registration ");
+        System.out.println("containsKey " + dtuPay.getAccountRegMap().containsKey(ID));
+        if (dtuPay.getAccountRegMap().containsKey(ID) && dtuPay.getAccountRegMap().get(ID))
+            return Response.ok().build();
+        else
+            return Response.status(400, "Registration failed").build();
+    }
+
+   /* @GET
     public Response getAllMerchants()
     {
         return Response.ok(Entity.entity(manager.getMerchants(), MediaType.APPLICATION_JSON)).build();
@@ -51,5 +57,5 @@ public class MerchantsREST {
         Merchant c = factory.buildMerchant(ID);
         manager.registerMerchant(c);
         return Response.ok().build();
-    }
+    }*/
 }

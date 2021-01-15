@@ -3,8 +3,6 @@ package org.accountmanager.model;
 import dtu.ws.fastmoney.BankService;
 import dtu.ws.fastmoney.BankServiceException_Exception;
 import dtu.ws.fastmoney.BankServiceService;
-import io.quarkus.runtime.Quarkus;
-import io.quarkus.runtime.annotations.QuarkusMain;
 import org.accountmanager.client.Customer;
 import org.accountmanager.client.Merchant;
 import org.accountmanager.controller.AccountEventController;
@@ -25,7 +23,8 @@ public class AccountManager implements IAccountManager {
     }
 
     public AccountManager() {
-        AccountEventController.listen();
+        AccountEventController.listenCustomer();
+        AccountEventController.listenMerchant();
     }
 
     public Map<String, Customer> getCustomers() {
