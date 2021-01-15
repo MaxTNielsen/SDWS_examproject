@@ -5,9 +5,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
-import io.quarkus.runtime.Quarkus;
-import io.quarkus.runtime.QuarkusApplication;
-import io.quarkus.runtime.annotations.QuarkusMain;
 import org.Json.AccountRegistrationReponse;
 import org.accountmanager.model.AccountManager;
 
@@ -24,18 +21,19 @@ public class DTUPay {
     private static final String MERCHANT_REG_QUEUE = "MERCHANT_REG_QUEUE";
     private static final String CUSTOMER_REG_RESPONSE_QUEUE = "CUSTOMER_REG_RESPONSE_QUEUE";
     private static final String MERCHANT_REG_RESPONSE_QUEUE = "MERCHANT_REG_RESPONSE_QUEUE";
+    Connection DTUPayConnection;
     Channel customerRegistrationChannel;
     Channel merchantRegistrationChannel;
+    Channel customerRegistrationResponseChannel;
+    Channel merchantRegistrationResponseChannel;
 
     AccountManager m = AccountManager.getInstance();
-    ;
+
     private Map<String, Boolean> accountRegMap = new HashMap<>();
     static DTUPay instance;
 
     public DTUPay() {
         startUp();
-        listenMsgCustomerRegResponse();
-        listenMsgMerchantRegResponse();
     }
 
     public static DTUPay getInstance() {
@@ -61,40 +59,54 @@ public class DTUPay {
     }*/
 
     public void startUp() {
+        dtuPayConnection();
+        connectRegistration();
+        connectListen();
+        listenMsgCustomerRegResponse();
+        listenMsgMerchantRegResponse();
+    }
+
+    public void dtuPayConnection() {
         try {
             ConnectionFactory customerConnectionFactory = new ConnectionFactory();
             customerConnectionFactory.setHost("localhost");
-            Connection DTUPayConnection = customerConnectionFactory.newConnection();
-            customerRegistrationChannel = DTUPayConnection.createChannel();
-            System.out.println("Customer channel created");
-            merchantRegistrationChannel = DTUPayConnection.createChannel();
-            System.out.println("Merchant channel created");
+            DTUPayConnection = customerConnectionFactory.newConnection();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public void sendMSGToRegCustomer(String ID) throws IOException, TimeoutException {
-        //Response r = Response.status(406, "Create account fail").build();
+    public void connectRegistration() {
+        try {
+            customerRegistrationChannel = DTUPayConnection.createChannel();
+            System.out.println("Registration customer channel created");
+            merchantRegistrationChannel = DTUPayConnection.createChannel();
+            System.out.println("Registration merchant channel created");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void connectListen() {
+        try {
+            customerRegistrationResponseChannel = DTUPayConnection.createChannel();
+            System.out.println("Connect customer channel created");
+            merchantRegistrationResponseChannel = DTUPayConnection.createChannel();
+            System.out.println("Connect merchant channel created");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void sendMSGToRegCustomer(String ID) throws IOException {
         customerRegistrationChannel.queueDeclare(CUSTOMER_REG_QUEUE, false, false, false, null);
         customerRegistrationChannel.basicPublish("", CUSTOMER_REG_QUEUE, null, ID.getBytes());
-        /*channel.close();
-        connection.close();*/
     }
 
     void listenMsgCustomerRegResponse() {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("localhost");
-        Connection connection;
         try {
-            connection = connectionFactory.newConnection();
-            Channel channel = connection.createChannel();
-
-            channel.queueDeclare(CUSTOMER_REG_RESPONSE_QUEUE, false, false, false, null);
+            customerRegistrationResponseChannel.queueDeclare(CUSTOMER_REG_RESPONSE_QUEUE, false, false, false, null);
             System.out.println("register customer reg response queue");
-            // channel.exchangeDeclare(EXCHANGE_NAME, QUEUE_TYPE);
-            // String queueName = channel.queueDeclare().getQueue();
-            // channel.queueBind(queueName, EXCHANGE_NAME, TOPIC);
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 Gson gson = new Gson();
@@ -106,41 +118,23 @@ public class DTUPay {
                 accountRegMap.put(r.ID, r.status);
             };
 
-            channel.basicConsume("", true, deliverCallback, consumerTag -> {
+            customerRegistrationResponseChannel.basicConsume("", true, deliverCallback, consumerTag -> {
             });
 
-        } catch (TimeoutException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void sendMSGToRegMerchant(String ID) throws IOException, TimeoutException {
-        /*Response r = Response.status(406, "Create account fail").build();
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("localhost");*//**//*
-        Connection connection = connectionFactory.newConnection();*//*
-        Channel channel = connection.createChannel();*/
+    public void sendMSGToRegMerchant(String ID) throws IOException {
         merchantRegistrationChannel.queueDeclare(MERCHANT_REG_QUEUE, false, false, false, null);
         merchantRegistrationChannel.basicPublish("", MERCHANT_REG_QUEUE, null, ID.getBytes());
-        /*channel.close();
-        connection.close();*/
     }
 
     void listenMsgMerchantRegResponse() {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("localhost");
-        Connection connection;
         try {
-            connection = connectionFactory.newConnection();
-            Channel channel = connection.createChannel();
-
-            channel.queueDeclare(MERCHANT_REG_RESPONSE_QUEUE, false, false, false, null);
+            merchantRegistrationResponseChannel.queueDeclare(MERCHANT_REG_RESPONSE_QUEUE, false, false, false, null);
             System.out.println("register merchant reg response queue");
-            // channel.exchangeDeclare(EXCHANGE_NAME, QUEUE_TYPE);
-            // String queueName = channel.queueDeclare().getQueue();
-            // channel.queueBind(queueName, EXCHANGE_NAME, TOPIC);
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 Gson gson = new Gson();
@@ -152,11 +146,8 @@ public class DTUPay {
                 accountRegMap.put(r.ID, r.status);
             };
 
-            channel.basicConsume("", false, deliverCallback, consumerTag -> {
-            }); //changed to false
-
-        } catch (TimeoutException e) {
-            e.printStackTrace();
+            merchantRegistrationResponseChannel.basicConsume("", true, deliverCallback, consumerTag -> {
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
