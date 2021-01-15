@@ -5,15 +5,19 @@ import com.rabbitmq.client.ConnectionFactory;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DeliverCallback;
 
+import org.Json.AccountRegistrationReponse;
 import org.accountmanager.client.ClientFactory;
 import org.accountmanager.model.AccountManager;
 
 public class AccountEventController {
     static final String CUSTOMER_REG_QUEUE = "CUSTOMER_REG_QUEUE";
+    static final String CUSTOMER_REG_RESPONSE_QUEUE = "CUSTOMER_REG_RESPONSE_QUEUE";
 
 
     public static void listen()
@@ -35,7 +39,8 @@ public class AccountEventController {
                 String ID = message;
                 System.out.println("[x] receiving "+message);
 
-                AccountManager.getInstance().registerCustomer(ClientFactory.buildCustomer(ID));
+                boolean successful = AccountManager.getInstance().registerCustomer(ClientFactory.buildCustomer(ID));
+                sendRegResponse(ID, successful);
             };
             
 
@@ -51,5 +56,34 @@ public class AccountEventController {
         }
         
 
+    }
+
+    static void sendRegResponse(String ID, boolean status)
+    {
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost("localhost");
+		Connection connection;
+        try {
+            connection = connectionFactory.newConnection();
+            Channel channel = connection.createChannel();
+        
+            channel.queueDeclare(CUSTOMER_REG_RESPONSE_QUEUE, false, false, false, null);
+
+            AccountRegistrationReponse r = new AccountRegistrationReponse(ID, status);
+            // JsonObject jsonObject = new JsonObject();
+            Gson gson = new Gson();
+            String s = gson.toJson(r);
+            channel.basicPublish("", CUSTOMER_REG_RESPONSE_QUEUE, null, s.getBytes("utf-8"));
+            // channel.addConfirmListener(ackCallback, nackCallback)
+            channel.close();
+            connection.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
     }
 }
