@@ -1,36 +1,109 @@
 package org.tokenManagement.service;
+import com.google.gson.Gson;
 import org.tokenManagement.model.Token;
 import org.tokenManagement.utils.TokenGenerator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 
-public class TokenManager {
-    static TokenManager instance;
+import org.tokenManagement.messaging.*;
+
+
+public class TokenManager implements EventReceiver{
+
+    private EventSender eventSender;
+    //private CompletableFuture<Boolean> result;
 
     public Map<String, Token> tokens = new HashMap<>();
 
 
-
-    public static TokenManager getInstance()
+    public TokenManager(EventSender eventSender)
     {
-        if (instance == null)
-            instance = new TokenManager();
-        return instance;
-    }
-
-    public TokenManager()
-    {
+        this.eventSender = eventSender;
         addToken(new Token("123","000000-0001"));
         addToken(new Token("456","000000-0002"));
         addToken(new Token("789","000000-0002"));
+
     }
+
+    //implement EventReceiver
+    @Override
+    public void receiveEvent(Event event) throws Exception {
+        if (event.getEventType().equals("TOKEN_GENERATION_REQUEST")) {
+            //Translate received event
+            Gson gson = new Gson();
+            String jsonString = gson.toJson(event.getArguments()[0]);
+            TokenGenerationRequest received_event = gson.fromJson(jsonString,TokenGenerationRequest.class);
+
+            //prepare response
+            TokenGenerationResponse response_event = new TokenGenerationResponse();
+            Event event_to_sendback = new Event("TOKEN_GENERATION_RESPONSE", new Object[] { response_event });
+
+            //call business logic of handling token generation
+            ArrayList<String> tokens=getNewTokens(received_event.getCustomerId(), received_event.getNumberOfTokens());
+            System.out.println("event handled: "+"GENERATE_TOKEN");
+
+            //set response
+            response_event.setTokens(tokens);
+            response_event.setCustomerId(received_event.getCustomerId());
+
+            //send response
+            eventSender.sendEvent(event_to_sendback);
+            System.out.println("I have sent response: "+event_to_sendback.toString());
+            System.out.println("----------------------------");
+
+        } else if (event.getEventType().equals("TOKEN_VALIDATION_REQUEST")) {
+            //Translate received event
+            Gson gson = new Gson();
+            String jsonString = gson.toJson(event.getArguments()[0]);
+            TokenValidationRequest received_event = gson.fromJson(jsonString,TokenValidationRequest.class);
+
+            //prepare response
+            TokenValidationResponse response_event = new TokenValidationResponse();
+            Event event_to_sendback = new Event("TOKEN_VALIDATION_RESPONSE", new Object[] { response_event });
+
+            //business logic
+            Boolean isValid = false;
+            String customerId = "";
+            String tokenId = received_event.getToken();
+            //check if the token exists
+            if (tokens.containsKey(tokenId)) {
+                //get customer if token exists
+                customerId=tokens.get(tokenId).getUserId();
+                if (!tokens.get(tokenId).isUsed()) {
+                    isValid = true;
+                    //after validation, set the token as used
+                    tokens.get(tokenId).setUsed(true);
+                }
+
+            }
+
+            System.out.println("event handled: "+"VALIDATE_TOKEN");
+
+            //set response
+            response_event.setCustomerId(customerId);
+            response_event.setValid(isValid);
+            //send response
+            eventSender.sendEvent(event_to_sendback);
+            System.out.println("I have sent response: "+event_to_sendback.toString());
+            System.out.println("----------------------------");
+
+        }
+        else {
+            System.out.println("event ignored: "+event);
+        }
+
+    }
+
+
 
     public void addToken(Token token){
         tokens.put(token.getId(),token);
+    }
+    public String getUserId(String tokenId) {
+        return tokens.get(tokenId).getUserId();
     }
     public String generateToken(String userId)
     {
@@ -38,6 +111,7 @@ public class TokenManager {
         tokens.put(token.getId(),token);
         return token.getId();
     }
+
     public boolean validateToken(String tokenId){
         boolean exist = tokens.containsKey(tokenId);
         if(!exist)
@@ -66,20 +140,7 @@ public class TokenManager {
         return result;
     }
 
-    public String getToken(String userId){
-        String result = "";
-        for (Map.Entry<String, Token> entry : tokens.entrySet()) {
-            if (entry.getValue().getUserId().equals(userId) && !entry.getValue().isUsed()) {
-                result=entry.getValue().getId();
-                break;
-            }
-        }
-        return result;
-    }
-    public void setUsed(String tokenId)
-    {
-        tokens.get(tokenId).setUsed(true);
-    }
+
 
     public ArrayList<String> getNewTokens(String userId, int requestedTokenNumber)
     {
@@ -101,9 +162,5 @@ public class TokenManager {
         return tokens;
     }
 
-    public String getUserIdbyTokenId(String tokenId)
-    {
-        return this.tokens.get(tokenId).getUserId();
-    }
 
 }
