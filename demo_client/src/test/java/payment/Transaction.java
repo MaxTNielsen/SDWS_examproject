@@ -1,6 +1,9 @@
 package payment;
 
 public class Transaction {
+	private String token;
+	
+
 	private String merchId;
     private String customId;
     private int amount;
@@ -11,6 +14,13 @@ public class Transaction {
     }
 
     public Transaction(String merchId, String customId, int amount) {
+        this.merchId = merchId;
+        this.customId = customId;
+        this.amount = amount;
+    }
+    
+    public Transaction(String token, String merchId, String customId, int amount) {
+    	this.token = token;
         this.merchId = merchId;
         this.customId = customId;
         this.amount = amount;
@@ -46,4 +56,12 @@ public class Transaction {
     public void setAmount(int amount) {
         this.amount = amount;
     }
+    
+    public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
 }

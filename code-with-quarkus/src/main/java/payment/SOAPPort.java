@@ -9,14 +9,13 @@ import dtu.ws.fastmoney.BankServiceService;
 public class SOAPPort {
 	BankService bank = new BankServiceService().getBankServicePort();
 	
-	public boolean TransferMoney(String cid, String mid, int amount) {
+	public void TransferMoney(Transaction t) {
 		try {
-			bank.transferMoneyFromTo(cid, mid, BigDecimal.valueOf(amount), "Payment");
-			return true;
+			bank.transferMoneyFromTo(t.getCustomId(), t.getMerchId(), BigDecimal.valueOf(t.getAmount()), "Payment");
+			t.setApproved(true);
 		} catch (BankServiceException_Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return false;
 		}
 	}
 	

@@ -1,4 +1,4 @@
-package payment;
+package org.dtupay;
 
 public class Transaction {
 	

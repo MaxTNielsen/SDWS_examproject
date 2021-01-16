@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import org.dtupay.DTUPay;
+import org.dtupay.Transaction;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.NotFoundException;
@@ -27,4 +28,14 @@ public class CustomerREST {
         else
             return Response.status(400, "Registration failed").build();
     }
+    @Path("/payment")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response doTransaction(Transaction t) throws IOException {
+	   	dtuPay.sendPaymentRequest(t);
+	    if (dtuPay.getTransactionMap().containsKey(t.getToken()) && dtuPay.getTransactionMap().get(t.getToken()))
+	          return Response.ok().build();
+	        else
+	            return Response.status(400, "Registration failed").build();
+	    }
 }

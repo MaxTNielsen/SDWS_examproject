@@ -5,6 +5,8 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
+
+
 import org.Json.AccountRegistrationReponse;
 import org.accountmanager.model.AccountManager;
 
@@ -22,11 +24,15 @@ public class DTUPay {
     private static final String MERCHANT_REG_QUEUE = "MERCHANT_REG_QUEUE";
     private static final String CUSTOMER_REG_RESPONSE_QUEUE = "CUSTOMER_REG_RESPONSE_QUEUE";
     private static final String MERCHANT_REG_RESPONSE_QUEUE = "MERCHANT_REG_RESPONSE_QUEUE";
+    private static final String PAYMENT_REQ_QUEUE = "payment_req_queue";
+    private static final String PAYMENT_RESP_QUEUE = "payment_resp_queue";
     Connection DTUPayConnection;
     Channel customerRegistrationChannel;
     Channel customerRegistrationResponseChannel;
     Channel merchantRegistrationChannel;
     Channel merchantRegistrationResponseChannel;
+    Channel paymentChannel;
+    Channel paymentResponseChannel;
 
     AccountManager m = AccountManager.getInstance();
 
@@ -93,6 +99,8 @@ public class DTUPay {
             System.out.println("Registration customer channel created");
             merchantRegistrationChannel = DTUPayConnection.createChannel();
             System.out.println("Registration merchant channel created");
+            paymentChannel = DTUPayConnection.createChannel();
+            System.out.println("Payment channel created");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -158,6 +166,41 @@ public class DTUPay {
             };
 
             merchantRegistrationResponseChannel.basicConsume("", true, deliverCallback, consumerTag -> {
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private Map<String, Boolean> transactionMap = new HashMap<>();
+    
+    public Map<String, Boolean> getTransactionMap() {
+		return transactionMap;
+	}
+
+	public void sendPaymentRequest(Transaction t) throws IOException {
+        paymentChannel.queueDeclare(PAYMENT_REQ_QUEUE, false, false, false, null);
+        Gson gson = new Gson();
+        String s = gson.toJson(t);
+        paymentChannel.basicPublish("", PAYMENT_REQ_QUEUE, null, s.getBytes());
+    }
+
+    void listenPaymentResponse() {
+        try {
+            paymentResponseChannel.queueDeclare(PAYMENT_RESP_QUEUE, false, false, false, null);
+            System.out.println("payment response queue");
+
+            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                Gson gson = new Gson();
+                String json = new String(delivery.getBody());
+                System.out.println("Transaction: " + json);
+                Transaction t = gson.fromJson(json, Transaction.class);
+                System.out.println("Token" + t.getToken());
+                System.out.println("Transaction was " + t.isApproved());
+                transactionMap.put(t.getToken(), t.isApproved());
+            };
+
+            paymentResponseChannel.basicConsume("", true, deliverCallback, consumerTag -> {
             });
         } catch (IOException e) {
             e.printStackTrace();

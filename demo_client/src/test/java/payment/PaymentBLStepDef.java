@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 
 import Client.Customer;
 import Client.Merchant;
+import TokenManagement.TokenManagementService;
 import dtu.ws.fastmoney.BankService;
 import dtu.ws.fastmoney.BankServiceException_Exception;
 import dtu.ws.fastmoney.BankServiceService;
@@ -19,12 +20,13 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 public class PaymentBLStepDef {
-	String cid, mid, accountID;
+	String cid, mid, token;
 	Customer customer;
 	Merchant merchant;
     int amount;
     BigDecimal balance;
     Exception exception;
+    TokenManagementService tokens = new TokenManagementService();
     PaymentService payment = new PaymentService();
     BankService bank = new BankServiceService().getBankServicePort();
     boolean successful, unsuccessful;
@@ -73,10 +75,14 @@ public class PaymentBLStepDef {
 
     }
     
+    @Given("the customer has {int} tokens")
+    public void theCustomerHasTokens(Integer int1) {
+    }
+    
     @When("the merchant initiates a payment for {int} kr by the customer")
     public void theMerchantInitiatesAPaymentForKrByTheCustomer(int amount) {
         this.amount = amount;
-        successful = payment.pay(payment.userList.get(1), payment.userList.get(0), amount);
+        successful = payment.pay(merchant.ID, customer.ID, amount);
     }
 
     @Then("the payment is successful")
