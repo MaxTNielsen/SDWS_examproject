@@ -13,26 +13,23 @@ import org.accountmanager.model.AccountManager;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 /*@QuarkusMain
 implements QuarkusApplication*/
 public class DTUPay {
-    String hostName = "localhost";
 
-    private static final String CUSTOMER_REG_QUEUE = "CUSTOMER_REG_QUEUE";
-    private static final String MERCHANT_REG_QUEUE = "MERCHANT_REG_QUEUE";
+    String hostName = "localhost";
     private static final String CUSTOMER_REG_RESPONSE_QUEUE = "CUSTOMER_REG_RESPONSE_QUEUE";
     private static final String MERCHANT_REG_RESPONSE_QUEUE = "MERCHANT_REG_RESPONSE_QUEUE";
     private static final String PAYMENT_REQ_QUEUE = "payment_req_queue";
     private static final String PAYMENT_RESP_QUEUE = "payment_resp_queue";
+    private static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
     Connection DTUPayConnection;
-    Channel customerRegistrationChannel;
     Channel customerRegistrationResponseChannel;
-    Channel merchantRegistrationChannel;
     Channel merchantRegistrationResponseChannel;
     Channel paymentChannel;
     Channel paymentResponseChannel;
+    Channel microservicesChannel;
 
     AccountManager m = AccountManager.getInstance();
 
@@ -71,14 +68,13 @@ public class DTUPay {
         listenChannels();
     }
 
-    void createChannels()
-    {
-        createChannelRegistration();
+    void createChannels() {
+        initializeAllChannels();
         createChannelRegistrationResponse();
+
     }
 
-    void listenChannels()
-    {
+    void listenChannels() {
         listenMsgCustomerRegResponse();
         listenMsgMerchantRegResponse();
     }
@@ -93,14 +89,12 @@ public class DTUPay {
         }
     }
 
-    void createChannelRegistration() {
+    void initializeAllChannels() {
         try {
-            customerRegistrationChannel = DTUPayConnection.createChannel();
-            System.out.println("Registration customer channel created");
-            merchantRegistrationChannel = DTUPayConnection.createChannel();
-            System.out.println("Registration merchant channel created");
             paymentChannel = DTUPayConnection.createChannel();
             System.out.println("Payment channel created");
+            microservicesChannel = DTUPayConnection.createChannel();
+            System.out.println("Topic channel initialized");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -117,9 +111,13 @@ public class DTUPay {
         }
     }
 
-    public void sendMSGToRegCustomer(String ID) throws IOException {
-        customerRegistrationChannel.queueDeclare(CUSTOMER_REG_QUEUE, false, false, false, null);
-        customerRegistrationChannel.basicPublish("", CUSTOMER_REG_QUEUE, null, ID.getBytes());
+    public void forwardMQtoMicroservices(String message, String routingKey) {
+        try {
+            microservicesChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
+            microservicesChannel.basicPublish(EXCHANGE_NAME, routingKey, null, message.getBytes("UTF-8"));
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     void listenMsgCustomerRegResponse() {
@@ -145,11 +143,6 @@ public class DTUPay {
         }
     }
 
-    public void sendMSGToRegMerchant(String ID) throws IOException {
-        merchantRegistrationChannel.queueDeclare(MERCHANT_REG_QUEUE, false, false, false, null);
-        merchantRegistrationChannel.basicPublish("", MERCHANT_REG_QUEUE, null, ID.getBytes());
-    }
-
     void listenMsgMerchantRegResponse() {
         try {
             merchantRegistrationResponseChannel.queueDeclare(MERCHANT_REG_RESPONSE_QUEUE, false, false, false, null);
@@ -171,14 +164,14 @@ public class DTUPay {
             e.printStackTrace();
         }
     }
-    
-    private Map<String, Boolean> transactionMap = new HashMap<>();
-    
-    public Map<String, Boolean> getTransactionMap() {
-		return transactionMap;
-	}
 
-	public void sendPaymentRequest(Transaction t) throws IOException {
+    private Map<String, Boolean> transactionMap = new HashMap<>();
+
+    public Map<String, Boolean> getTransactionMap() {
+        return transactionMap;
+    }
+
+    public void sendPaymentRequest(Transaction t) throws IOException {
         paymentChannel.queueDeclare(PAYMENT_REQ_QUEUE, false, false, false, null);
         Gson gson = new Gson();
         String s = gson.toJson(t);

@@ -20,7 +20,8 @@ public class CustomerREST {
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
     public Response RegisterCostumer(String ID) throws IOException, TimeoutException, NotFoundException {
-        dtuPay.sendMSGToRegCustomer(ID);
+        String getRouting = "accountmanager.customer";
+        dtuPay.forwardMQtoMicroservices(ID, getRouting);
         System.out.println("After registration ");
         System.out.println("containsKey " + dtuPay.getAccountRegMap().containsKey(ID));
         if (dtuPay.getAccountRegMap().containsKey(ID) && dtuPay.getAccountRegMap().get(ID))
@@ -28,14 +29,15 @@ public class CustomerREST {
         else
             return Response.status(400, "Registration failed").build();
     }
+
     @Path("/payment")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response doTransaction(Transaction t) throws IOException {
-	   	dtuPay.sendPaymentRequest(t);
-	    if (dtuPay.getTransactionMap().containsKey(t.getToken()) && dtuPay.getTransactionMap().get(t.getToken()))
-	          return Response.ok().build();
-	        else
-	            return Response.status(400, "Registration failed").build();
-	    }
+        dtuPay.sendPaymentRequest(t);
+        if (dtuPay.getTransactionMap().containsKey(t.getToken()) && dtuPay.getTransactionMap().get(t.getToken()))
+            return Response.ok().build();
+        else
+            return Response.status(400, "Registration failed").build();
+    }
 }

@@ -23,8 +23,7 @@ public class AccountManager implements IAccountManager {
     }
 
     public AccountManager() {
-        AccountEventController.listenCustomer();
-        AccountEventController.listenMerchant();
+        AccountEventController.listenToEverything();
     }
 
     public Map<String, Customer> getCustomers() {

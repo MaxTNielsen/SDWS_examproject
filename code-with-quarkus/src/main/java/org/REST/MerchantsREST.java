@@ -18,7 +18,8 @@ public class MerchantsREST {
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
     public Response RegisterMerchant(String ID) throws IOException, TimeoutException, NotFoundException {
-        dtuPay.sendMSGToRegMerchant(ID);
+        String getRouting = "accountmanager.merchant";
+        dtuPay.forwardMQtoMicroservices(ID, getRouting);
         System.out.println("After registration ");
         System.out.println("containsKey " + dtuPay.getAccountRegMap().containsKey(ID));
         if (dtuPay.getAccountRegMap().containsKey(ID) && dtuPay.getAccountRegMap().get(ID))

@@ -15,143 +15,106 @@ import org.accountmanager.client.ClientFactory;
 import org.accountmanager.model.AccountManager;
 
 public class AccountEventController {
-    static final String CUSTOMER_REG_QUEUE = "CUSTOMER_REG_QUEUE";
+
+    static String hostName = "localhost";
     static final String CUSTOMER_REG_RESPONSE_QUEUE = "CUSTOMER_REG_RESPONSE_QUEUE";
-    static final String MERCHANT_REG_QUEUE = "MERCHANT_REG_QUEUE";
     static final String MERCHANT_REG_RESPONSE_QUEUE = "MERCHANT_REG_RESPONSE_QUEUE";
+    static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
+    static final String CUSTOMER_ROUTING_KEY = "accountmanager.customer";
+    static final String MERCHANT_ROUTING_KEY = "accountmanager.merchant";
+    static Connection accountEventControllerConnection;
+    static Channel customerChannel;
+    static Channel customerRegResponseChannel;
+    static Channel merchantChannel;
+    static Channel merchantRegResponseChannel;
 
-    public static void listenCustomer()
-    {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("localhost");
-		Connection connection;
+    private static void ACEConnection() {
         try {
-            connection = connectionFactory.newConnection();
-            Channel channel = connection.createChannel();
-        
-            channel.queueDeclare(CUSTOMER_REG_QUEUE, false, false, false, null);
-            // channel.exchangeDeclare(EXCHANGE_NAME, QUEUE_TYPE);
-            // String queueName = channel.queueDeclare().getQueue();
-            // channel.queueBind(queueName, EXCHANGE_NAME, TOPIC);
+            ConnectionFactory connectionFactory = new ConnectionFactory();
+            connectionFactory.setHost(hostName);
+            accountEventControllerConnection = connectionFactory.newConnection();
 
+            customerChannel = accountEventControllerConnection.createChannel();
+            customerChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
+            customerRegResponseChannel = accountEventControllerConnection.createChannel();
+            customerRegResponseChannel.queueDeclare(CUSTOMER_REG_RESPONSE_QUEUE, false, false, false, null);
+
+            merchantChannel = accountEventControllerConnection.createChannel();
+            merchantChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
+            merchantRegResponseChannel = accountEventControllerConnection.createChannel();
+            merchantRegResponseChannel.queueDeclare(MERCHANT_REG_RESPONSE_QUEUE, false, false, false, null);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void listenToEverything() {
+        ACEConnection();
+        listenCustomer();
+        listenMerchant();
+    }
+
+    public static void listenCustomer() {
+        try {
+            String queueName = customerChannel.queueDeclare().getQueue();
+            customerChannel.queueBind(queueName, EXCHANGE_NAME, CUSTOMER_ROUTING_KEY);
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
                 String ID = message;
-                System.out.println("CUSTOMER [x] receiving "+message);
-
+                System.out.println("CUSTOMER [x] receiving " + message);
                 boolean successful = AccountManager.getInstance().registerCustomer(ClientFactory.buildCustomer(ID));
                 sendCustomerRegResponse(ID, successful);
             };
-
-            // channel.basicPublish("", CUSTOMER_REG_QUEUE, null, message.getBytes());
-            channel.basicConsume("", true, deliverCallback, consumerTag -> {
+            customerChannel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
             });
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
-
     }
 
-    static void sendCustomerRegResponse(String ID, boolean status)
-    {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("localhost");
-		Connection connection;
+    static void sendCustomerRegResponse(String ID, boolean status) {
         try {
-            connection = connectionFactory.newConnection();
-            Channel channel = connection.createChannel();
-        
-            channel.queueDeclare(CUSTOMER_REG_RESPONSE_QUEUE, false, false, false, null);
-
             AccountRegistrationReponse r = new AccountRegistrationReponse(ID, status);
-            // JsonObject jsonObject = new JsonObject();
             Gson gson = new Gson();
             String s = gson.toJson(r);
-            channel.basicPublish("", CUSTOMER_REG_RESPONSE_QUEUE, null, s.getBytes("utf-8"));
-            // channel.addConfirmListener(ackCallback, nackCallback)
-            /*channel.close();
-            connection.close();*/
+            customerRegResponseChannel.basicPublish("", CUSTOMER_REG_RESPONSE_QUEUE, null, s.getBytes("utf-8"));
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (TimeoutException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
-        
     }
 
     /*!!!!!!!!!!!! MERCHANT !!!!!!!!!!!!*/
 
-    public static void listenMerchant()
-    {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("localhost");
-        Connection connection;
+    public static void listenMerchant() {
         try {
-            connection = connectionFactory.newConnection();
-            Channel channel = connection.createChannel();
-
-            channel.queueDeclare(MERCHANT_REG_QUEUE, false, false, false, null);
-            // channel.exchangeDeclare(EXCHANGE_NAME, QUEUE_TYPE);
-            // String queueName = channel.queueDeclare().getQueue();
-            // channel.queueBind(queueName, EXCHANGE_NAME, TOPIC);
+            String queueName = merchantChannel.queueDeclare().getQueue();
+            merchantChannel.queueBind(queueName, EXCHANGE_NAME, MERCHANT_ROUTING_KEY);
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
                 String ID = message;
-                System.out.println("MERCHANT [x] receiving "+message);
+                System.out.println("MERCHANT [x] receiving " + message);
 
                 boolean successful = AccountManager.getInstance().registerCustomer(ClientFactory.buildCustomer(ID));
                 sendMerchantRegResponse(ID, successful);
             };
-
-            // channel.basicPublish("", CUSTOMER_REG_QUEUE, null, message.getBytes());
-            channel.basicConsume("", true, deliverCallback, consumerTag -> {
+            merchantChannel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
             });
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-
     }
 
-
-    static void sendMerchantRegResponse(String ID, boolean status)
-    {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("localhost");
-        Connection connection;
+    static void sendMerchantRegResponse(String ID, boolean status) {
         try {
-            connection = connectionFactory.newConnection();
-            Channel channel = connection.createChannel();
-
-            channel.queueDeclare(MERCHANT_REG_RESPONSE_QUEUE, false, false, false, null);
-
             AccountRegistrationReponse r = new AccountRegistrationReponse(ID, status);
-            // JsonObject jsonObject = new JsonObject();
             Gson gson = new Gson();
             String s = gson.toJson(r);
-            channel.basicPublish("", MERCHANT_REG_RESPONSE_QUEUE, null, s.getBytes("utf-8"));
-            // channel.addConfirmListener(ackCallback, nackCallback)
-            /*channel.close();
-            connection.close();*/
+            merchantRegResponseChannel.basicPublish("", MERCHANT_REG_RESPONSE_QUEUE, null, s.getBytes("utf-8"));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 }
