@@ -11,9 +11,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for account complex type.
+ * <p>account complex type的 Java 类。
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>以下模式片段指定包含在此类中的预期内容。
  * 
  * <pre>
  * &lt;complexType name="account"&gt;
@@ -48,7 +48,7 @@ public class Account {
     protected User user;
 
     /**
-     * Gets the value of the balance property.
+     * 获取balance属性的值。
      * 
      * @return
      *     possible object is
@@ -60,7 +60,7 @@ public class Account {
     }
 
     /**
-     * Sets the value of the balance property.
+     * 设置balance属性的值。
      * 
      * @param value
      *     allowed object is
@@ -72,7 +72,7 @@ public class Account {
     }
 
     /**
-     * Gets the value of the id property.
+     * 获取id属性的值。
      * 
      * @return
      *     possible object is
@@ -84,7 +84,7 @@ public class Account {
     }
 
     /**
-     * Sets the value of the id property.
+     * 设置id属性的值。
      * 
      * @param value
      *     allowed object is
@@ -125,7 +125,7 @@ public class Account {
     }
 
     /**
-     * Gets the value of the user property.
+     * 获取user属性的值。
      * 
      * @return
      *     possible object is
@@ -137,7 +137,7 @@ public class Account {
     }
 
     /**
-     * Sets the value of the user property.
+     * 设置user属性的值。
      * 
      * @param value
      *     allowed object is
