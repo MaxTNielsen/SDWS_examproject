@@ -16,6 +16,7 @@ import java.util.concurrent.TimeoutException;
 /*@QuarkusMain
 implements QuarkusApplication*/
 public class DTUPay {
+    String hostName = "localhost";
 
     private static final String CUSTOMER_REG_QUEUE = "CUSTOMER_REG_QUEUE";
     private static final String MERCHANT_REG_QUEUE = "MERCHANT_REG_QUEUE";
@@ -23,8 +24,8 @@ public class DTUPay {
     private static final String MERCHANT_REG_RESPONSE_QUEUE = "MERCHANT_REG_RESPONSE_QUEUE";
     Connection DTUPayConnection;
     Channel customerRegistrationChannel;
-    Channel merchantRegistrationChannel;
     Channel customerRegistrationResponseChannel;
+    Channel merchantRegistrationChannel;
     Channel merchantRegistrationResponseChannel;
 
     AccountManager m = AccountManager.getInstance();
@@ -60,23 +61,33 @@ public class DTUPay {
 
     public void startUp() {
         dtuPayConnection();
-        connectRegistration();
-        connectListen();
+        createChannels();
+        listenChannels();
+    }
+
+    void createChannels()
+    {
+        createChannelRegistration();
+        createChannelRegistrationResponse();
+    }
+
+    void listenChannels()
+    {
         listenMsgCustomerRegResponse();
         listenMsgMerchantRegResponse();
     }
 
-    public void dtuPayConnection() {
+    void dtuPayConnection() {
         try {
-            ConnectionFactory customerConnectionFactory = new ConnectionFactory();
-            customerConnectionFactory.setHost("localhost");
-            DTUPayConnection = customerConnectionFactory.newConnection();
+            ConnectionFactory connectionFactory = new ConnectionFactory();
+            connectionFactory.setHost(hostName);
+            DTUPayConnection = connectionFactory.newConnection();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public void connectRegistration() {
+    void createChannelRegistration() {
         try {
             customerRegistrationChannel = DTUPayConnection.createChannel();
             System.out.println("Registration customer channel created");
@@ -87,7 +98,7 @@ public class DTUPay {
         }
     }
 
-    public void connectListen() {
+    void createChannelRegistrationResponse() {
         try {
             customerRegistrationResponseChannel = DTUPayConnection.createChannel();
             System.out.println("Connect customer channel created");
