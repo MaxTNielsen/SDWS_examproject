@@ -5,7 +5,7 @@ import io.quarkus.runtime.annotations.QuarkusMain;
 import org.tokenManagement.messaging.*;
 import org.tokenManagement.service.TokenManager;
 
-@QuarkusMain
+
 public class StartUp {
     public static void main(String[] args) throws Exception {
     	new StartUp().startUp();
