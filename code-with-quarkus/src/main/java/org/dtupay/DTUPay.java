@@ -7,15 +7,17 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
 
+import io.quarkus.runtime.ShutdownEvent;
 import org.Json.AccountRegistrationReponse;
 import org.accountmanager.model.AccountManager;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/*@QuarkusMain
-implements QuarkusApplication*/
+@ApplicationScoped
 public class DTUPay {
 
     String hostName = "localhost";
@@ -30,6 +32,18 @@ public class DTUPay {
     Channel paymentChannel;
     Channel paymentResponseChannel;
     Channel microservicesChannel;
+
+    /*  void onStart(@Observes StartupEvent ev) {
+            LOGGER.info("The application is starting...");
+        }*/
+
+    void onStop(@Observes ShutdownEvent ev) {
+        try {
+            DTUPayConnection.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
     AccountManager m = AccountManager.getInstance();
 
@@ -160,6 +174,7 @@ public class DTUPay {
 
             merchantRegistrationResponseChannel.basicConsume("", true, deliverCallback, consumerTag -> {
             });
+
         } catch (IOException e) {
             e.printStackTrace();
         }
