@@ -3,7 +3,6 @@ package org.tokenManagement.messaging;
 import com.rabbitmq.client.*;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
-import org.tokenManagement.messaging.model.EventReceiver;
 import org.tokenManagement.service.TokenManager;
 
 import javax.enterprise.context.ApplicationScoped;

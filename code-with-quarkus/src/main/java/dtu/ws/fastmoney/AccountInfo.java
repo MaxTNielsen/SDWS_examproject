@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for accountInfo complex type.
+ * <p>accountInfo complex type的 Java 类。
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>以下模式片段指定包含在此类中的预期内容。
  * 
  * <pre>
  * &lt;complexType name="accountInfo"&gt;
@@ -37,7 +37,7 @@ public class AccountInfo {
     protected User user;
 
     /**
-     * Gets the value of the accountId property.
+     * 获取accountId属性的值。
      * 
      * @return
      *     possible object is
@@ -49,7 +49,7 @@ public class AccountInfo {
     }
 
     /**
-     * Sets the value of the accountId property.
+     * 设置accountId属性的值。
      * 
      * @param value
      *     allowed object is
@@ -61,7 +61,7 @@ public class AccountInfo {
     }
 
     /**
-     * Gets the value of the user property.
+     * 获取user属性的值。
      * 
      * @return
      *     possible object is
@@ -73,7 +73,7 @@ public class AccountInfo {
     }
 
     /**
-     * Sets the value of the user property.
+     * 设置user属性的值。
      * 
      * @param value
      *     allowed object is
