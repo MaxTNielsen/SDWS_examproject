@@ -11,10 +11,15 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DeliverCallback;
 
+import io.quarkus.runtime.ShutdownEvent;
 import org.Json.AccountRegistrationReponse;
 import org.accountmanager.client.ClientFactory;
 import org.accountmanager.model.AccountManager;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
+
+@ApplicationScoped
 public class AccountEventController {
 
     static String hostName = "localhost";
@@ -28,6 +33,18 @@ public class AccountEventController {
     static Channel customerRegResponseChannel;
     static Channel merchantChannel;
     static Channel merchantRegResponseChannel;
+
+      /*  void onStart(@Observes StartupEvent ev) {
+            LOGGER.info("The application is starting...");
+        }*/
+
+    void onStop(@Observes ShutdownEvent ev) {
+        try {
+            accountEventControllerConnection.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
     private static void ACEConnection() {
         try {

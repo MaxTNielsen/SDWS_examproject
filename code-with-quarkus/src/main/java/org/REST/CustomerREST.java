@@ -6,10 +6,9 @@ import java.util.concurrent.TimeoutException;
 import org.dtupay.DTUPay;
 import org.dtupay.Transaction;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.annotation.PostConstruct;
+import javax.ws.rs.*;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -50,5 +49,18 @@ public class CustomerREST {
             return Response.ok().build();
         else
             return Response.status(400, "Registration failed").build();
+    }
+
+    @Path("/report/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public Response createReport(@PathParam("id") String ID)
+    {
+        String getRouting = "reporting.customer";
+        dtuPay.forwardMQtoMicroservices(ID, getRouting);
+        System.out.println("Customer report generation for " + ID +" has started");
+        return Response.status(404, "Report generation failure").build();
+        //TODO finish it
+        //return Response.ok(Entity.entity(manager.getCustomers().get(ID), MediaType.APPLICATION_JSON)).build();
     }
 }
