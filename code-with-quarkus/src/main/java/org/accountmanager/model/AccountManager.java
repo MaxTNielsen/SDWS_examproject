@@ -59,6 +59,7 @@ public class AccountManager implements IAccountManager {
             bank.getAccount(ID);
             return true;
         } catch (BankServiceException_Exception e) {
+            System.out.println("Error message in bankregistration");
             System.out.println(e.getMessage());
         }
         return false;
