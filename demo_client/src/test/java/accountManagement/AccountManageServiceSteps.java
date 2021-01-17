@@ -104,6 +104,7 @@ public class AccountManageServiceSteps {
     public void theMerchantRegisterInTheBank() {
         merchantBankAccountID = service.registerClientAtBank(merchantCPR, merchantfname, merchantlname, balance);
         bankAccounts.add(merchantBankAccountID);
+        System.out.println("Merchant is registered in the bank " + merchantBankAccountID);
     }
 
     @When("the mechant register in DTUPay with his CPR as ID")
