@@ -28,6 +28,19 @@ public class MerchantsREST {
             return Response.status(400, "Registration failed").build();
     }
 
+    @Path("/report")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public Response createReport()
+    {
+        /*String getRouting = "reporting.manager";
+        dtuPay.forwardMQtoMicroservices(ID, getRouting);
+        System.out.println("Customer report generation for " + ID +" has started");*/
+        return Response.status(404, "Report generation failure").build();
+        //TODO finish it
+        //return Response.ok(Entity.entity(manager.getCustomers().get(ID), MediaType.APPLICATION_JSON)).build();
+    }
+
    /* @GET
     public Response getAllMerchants()
     {
