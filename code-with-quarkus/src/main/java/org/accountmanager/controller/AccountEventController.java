@@ -1,9 +1,6 @@
 package org.accountmanager.controller;
 
 import com.rabbitmq.client.ConnectionFactory;
-
-import java.io.IOException;
-
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -11,11 +8,14 @@ import com.rabbitmq.client.DeliverCallback;
 
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
+
 import org.accountmanager.client.ClientFactory;
 import org.accountmanager.model.AccountManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+
+import java.io.IOException;
 
 @ApplicationScoped
 public class AccountEventController {
