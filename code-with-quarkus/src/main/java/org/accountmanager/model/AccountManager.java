@@ -3,6 +3,7 @@ package org.accountmanager.model;
 import dtu.ws.fastmoney.BankService;
 import dtu.ws.fastmoney.BankServiceException_Exception;
 import dtu.ws.fastmoney.BankServiceService;
+
 import org.accountmanager.client.Customer;
 import org.accountmanager.client.Merchant;
 import org.accountmanager.controller.AccountEventController;
@@ -30,9 +31,9 @@ public class AccountManager implements IAccountManager {
         return customers;
     }
 
-    public Map<String, Merchant> getMerchants() {
+   /* public Map<String, Merchant> getMerchants() {
         return merchants;
-    }
+    }*/
 
     public boolean registerCustomer(Customer c) {
         if (customers.containsKey(c.ID))
