@@ -27,7 +27,7 @@ public class PaymentBL {
 
     public void validateToken(Transaction t) {
         TokenServiceRequestMessage requestMessage = new TokenServiceRequestMessage(TokenServiceRequestMessage.tokenServiceRequestMessageType.REQUEST_PAYMENT_VALIDATION);
-        requestMessage.setToken("TOKENID-" + t.getToken());
+        requestMessage.setToken("TOKENID-" + t.getTokenID());
         try {
             msg.validateToken(requestMessage, t);
         } catch (IOException e) {

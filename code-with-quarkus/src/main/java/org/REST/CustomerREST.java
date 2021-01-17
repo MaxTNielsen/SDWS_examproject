@@ -40,7 +40,6 @@ public class CustomerREST {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response doTransaction(Transaction t) throws IOException {
-
         if (dtuPay.DTUPayDoPayment(t)) {
             return Response.ok().build();
         }

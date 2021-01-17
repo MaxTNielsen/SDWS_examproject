@@ -47,7 +47,7 @@ public class MessageParsingPort {
                 TokenServiceResponseMessage response = new TokenServiceResponseMessage(new String(delivery.getBody(), "UTF-8"));
                 ;
                 String CID = response.getUserId();
-                t.setToken(CID);
+                t.setTokenID(CID);
                 System.out.println("[x] receiving " + CID);
 
                 payment.makeTransaction(response, t);

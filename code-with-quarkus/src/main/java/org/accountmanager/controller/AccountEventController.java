@@ -1,5 +1,6 @@
 package org.accountmanager.controller;
 
+import com.google.gson.Gson;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -7,8 +8,8 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DeliverCallback;
 
 import io.quarkus.runtime.ShutdownEvent;
-import io.quarkus.runtime.StartupEvent;
 
+import org.Json.Event;
 import org.accountmanager.client.ClientFactory;
 import org.accountmanager.model.AccountManager;
 
@@ -24,12 +25,13 @@ public class AccountEventController {
     static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
     static final String CUSTOMER_REG_ROUTING_KEY = "accountmanager.customer.registration";
     static final String MERCHANT_REG_ROUTING_KEY = "accountmanager.merchant.registration";
-    static final String CUSTOMER_VALIDATION_ROUTING_KEY = "accountmanager.customer.validation";
-    static final String MERCHANT_VALIDATION_ROUTING_KEY = "accountmanager.merchant.validation";
+    /*    static final String CUSTOMER_VALIDATION_ROUTING_KEY = "accountmanager.customer.validation";
+        static final String MERCHANT_VALIDATION_ROUTING_KEY = "accountmanager.merchant.validation";*/
+    static final String ACCOUNT_VALIDATION_ROUTING_KEY = "accountmanager.validation.*";
     static Connection accountEventControllerConnection;
     static Channel customerRegChannel;
     static Channel merchantRegChannel;
-    static Channel customerValidationChannel;
+    static Channel accountValidationChannel;
     static Channel merchantValidationChannel;
 
     void onStop(@Observes ShutdownEvent ev) {
@@ -52,8 +54,8 @@ public class AccountEventController {
             merchantRegChannel = accountEventControllerConnection.createChannel();
             merchantRegChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
 
-            customerValidationChannel = accountEventControllerConnection.createChannel();
-            customerValidationChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
+            accountValidationChannel = accountEventControllerConnection.createChannel();
+            accountValidationChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
 
             merchantValidationChannel = accountEventControllerConnection.createChannel();
             merchantValidationChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
@@ -67,6 +69,7 @@ public class AccountEventController {
         ACEConnection();
         listenCustomer();
         listenMerchant();
+        listenAccountIDValidation();
         // listenCustomerIDValidation();
         // listenMerchantIDValidation();
     }
@@ -156,10 +159,11 @@ public class AccountEventController {
         }
     }
 
-    static void listenCustomerIDValidation() {
+
+    static void listenAccountIDValidation() {
         try {
-            String queueName = customerValidationChannel.queueDeclare().getQueue();
-            customerValidationChannel.queueBind(queueName, EXCHANGE_NAME, CUSTOMER_VALIDATION_ROUTING_KEY);
+            String queueName = accountValidationChannel.queueDeclare().getQueue();
+            accountValidationChannel.queueBind(queueName, EXCHANGE_NAME, ACCOUNT_VALIDATION_ROUTING_KEY);
 
             Object monitor = new Object();
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
@@ -171,30 +175,35 @@ public class AccountEventController {
                 String response = "";
 
                 try {
-                    String message = new String(delivery.getBody(), "UTF-8");
-                    String ID = message;
-                    System.out.println("[x] Customer validation receiving " + message);
-                    boolean ans = AccountManager.getInstance().hasCustomer(ID);
+                    Gson gson = new Gson();
+                    String json = new String(delivery.getBody());
+                    System.out.println("Transaction: " + json);
+                    Event e = gson.fromJson(json, Event.class);
+                    String ID = e.getArguments()[1].toString();
+                    boolean ans;
+
+                    if (e.getArguments()[0].toString().equals("m")) {
+                        ans = AccountManager.getInstance().hasMerchant(ID);
+                    } else
+                        ans = AccountManager.getInstance().hasCustomer(ID);
+
                     response = Boolean.toString(ans);
+
                 } catch (RuntimeException e) {
                     System.out.println(" [.] " + e.toString());
                 } finally {
-                    customerValidationChannel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
-                    customerValidationChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                    accountValidationChannel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
+                    accountValidationChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 
                     synchronized (monitor) {
                         monitor.notify();
                     }
                 }
             };
-            customerValidationChannel.basicConsume(queueName, false, deliverCallback, consumerTag -> {
+            accountValidationChannel.basicConsume(queueName, false, deliverCallback, consumerTag -> {
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    static void listenMerchantIDValidation() {
-
     }
 }

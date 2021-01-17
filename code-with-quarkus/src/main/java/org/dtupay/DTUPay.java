@@ -35,6 +35,7 @@ public class DTUPay {
     private static final String PAYMENT_RESP_QUEUE = "payment_resp_queue";
     private static final String TOKEN_ROUTING_KEY = "token.request";
     private static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
+    static final String ACCOUNT_VALIDATION_ROUTING_KEY = "accountmanager.validation.*";
 
 
     Connection DTUPayConnection;
@@ -98,18 +99,18 @@ public class DTUPay {
         }
     }
 
-    public String forwardMQtoMicroservices(String message, String routingKey) {
+    public String forwardMQtoMicroservices(String serializedMessage, String routingKey) {
         String correlateID = UUID.randomUUID().toString();
         try {
             String replyQueueName = replyChannel.queueDeclare("reply " + routingKey, false, true, false, null).getQueue();
             AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().correlationId(correlateID)
                     .replyTo(replyQueueName).build();
             microservicesChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
-            // System.out.println("DTU publish: " + message);
+            // System.out.println("DTU publish: " + serializedMessage);
             // System.out.println("replyQueueName: " + replyQueueName);
 
             // System.out.println("routingKey: " + routingKey);
-            microservicesChannel.basicPublish(EXCHANGE_NAME, routingKey, properties, message.getBytes("UTF-8"));
+            microservicesChannel.basicPublish(EXCHANGE_NAME, routingKey, properties, serializedMessage.getBytes("UTF-8"));
             final BlockingQueue<String> response = new ArrayBlockingQueue<>(1);
 
             String ctag = microservicesChannel.basicConsume(replyQueueName, true, (consumerTag, delivery) -> {
@@ -158,9 +159,9 @@ public class DTUPay {
                 String json = new String(delivery.getBody());
                 System.out.println("Transaction: " + json);
                 Transaction t = gson.fromJson(json, Transaction.class);
-                System.out.println("Token" + t.getToken());
+                System.out.println("Token" + t.getTokenID());
                 System.out.println("Transaction was " + t.isApproved());
-                transactionMap.put(t.getToken(), t.isApproved());
+                transactionMap.put(t.getTokenID(), t.isApproved());
             };
 
             paymentResponseChannel.basicConsume("", true, deliverCallback, consumerTag -> {
@@ -181,9 +182,17 @@ public class DTUPay {
 
     public boolean DTUPayDoPayment(Transaction t) {
         //Check merchant ID first
-        //arguments: merchantID
+        //arguments: m, merchantID
         //return boolean
+        Object[] objects = new Object[4];
+        objects[0] = "m";
+        objects[1] = t.getMerchId();
+        objects[2] = t.getTokenID();
+        Event e = new Event("", objects);
+        if(!Boolean.parseBoolean(forwardMQtoMicroservices(e.toString(), ACCOUNT_VALIDATION_ROUTING_KEY)))
+            return false;
 
+        //if(
         //Check if token is valid
         //arguments: tokenID
         //return boolean
@@ -195,6 +204,9 @@ public class DTUPay {
     }
 
     public boolean generateTokens(){
+        //Check customer ID first
+        //arguments: customertID, c
+        //return boolean
         return true;
     }
 
