@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.quarkus.runtime.annotations.QuarkusMain;
+import org.Json.TokenGenerationRequest;
 import org.dtupay.DTUPay;
 import org.dtupay.Transaction;
 import reporting.model.Event;
@@ -41,15 +42,21 @@ public class CustomerREST {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response doTransaction(Transaction t) throws IOException {
         if (dtuPay.DTUPayDoPayment(t)) {
+
+    	String result = dtuPay.sendPaymentRequest(t);
+        boolean b = Boolean.parseBoolean(result);
+        
+        if (b) {	
+            System.out.println("Transaction successful");
+
             return Response.ok().build();
         }
-        return Response.status(400, "Transcation not completed").build();
-
-        /*if (dtuPay.getTransactionMap().containsKey(t.getToken()) && dtuPay.getTransactionMap().get(t.getToken()))
-            return Response.ok().build();
-        else
-            return Response.status(400, "Registration failed").build();*/
+        else {
+            System.out.println("Transaction failed");
+            return Response.status(400, "Transaction failed").build();
+        }
     }
+
 
 
     @Path("/report")
@@ -78,5 +85,20 @@ public class CustomerREST {
             return Response.status(404, "Report generation failure").build();
         }
         return Response.ok(response.getArguments()[0], MediaType.APPLICATION_JSON).build();
+    }
+
+    @Path("/tokens")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response requestTokens(TokenGenerationRequest request) throws IOException {
+        System.out.println("[REST] POST: " + request.toString());
+        //dtuPay.startUp();
+        String response = dtuPay.sendTokenGenerationRequest(request);
+        System.out.println("[REST] Response: "+ response);
+        if (!response.equals(""))
+            return Response.ok(response,MediaType.APPLICATION_JSON).build();
+        else
+            return Response.status(400, "Token Generation Failed").build();
+
     }
 }

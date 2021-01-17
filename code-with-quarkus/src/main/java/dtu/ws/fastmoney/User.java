@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for user complex type.
+ * <p>user complex type的 Java 类。
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>以下模式片段指定包含在此类中的预期内容。
  * 
  * <pre>
  * &lt;complexType name="user"&gt;
@@ -40,7 +40,7 @@ public class User {
     protected String lastName;
 
     /**
-     * Gets the value of the cprNumber property.
+     * 获取cprNumber属性的值。
      * 
      * @return
      *     possible object is
@@ -52,7 +52,7 @@ public class User {
     }
 
     /**
-     * Sets the value of the cprNumber property.
+     * 设置cprNumber属性的值。
      * 
      * @param value
      *     allowed object is
@@ -64,7 +64,7 @@ public class User {
     }
 
     /**
-     * Gets the value of the firstName property.
+     * 获取firstName属性的值。
      * 
      * @return
      *     possible object is
@@ -76,7 +76,7 @@ public class User {
     }
 
     /**
-     * Sets the value of the firstName property.
+     * 设置firstName属性的值。
      * 
      * @param value
      *     allowed object is
@@ -88,7 +88,7 @@ public class User {
     }
 
     /**
-     * Gets the value of the lastName property.
+     * 获取lastName属性的值。
      * 
      * @return
      *     possible object is
@@ -100,7 +100,7 @@ public class User {
     }
 
     /**
-     * Sets the value of the lastName property.
+     * 设置lastName属性的值。
      * 
      * @param value
      *     allowed object is

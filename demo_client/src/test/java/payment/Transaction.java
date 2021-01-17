@@ -13,16 +13,15 @@ public class Transaction {
 
     }
 
-    public Transaction(String merchId, String customId, int amount) {
-        this.merchId = merchId;
-        this.customId = customId;
-        this.amount = amount;
-    }
+//    public Transaction(String merchId, String customId, int amount) {
+//        this.merchId = merchId;
+//        this.customId = customId;
+//        this.amount = amount;
+//    }
     
-    public Transaction(String token, String merchId, String customId, int amount) {
+    public Transaction(String token, String merchId, int amount) {
     	this.token = token;
         this.merchId = merchId;
-        this.customId = customId;
         this.amount = amount;
     }
 

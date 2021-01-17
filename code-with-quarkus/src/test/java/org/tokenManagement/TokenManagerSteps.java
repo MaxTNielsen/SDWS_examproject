@@ -34,16 +34,17 @@ public class TokenManagerSteps {
 
 	@Then("I have sent TOKEN_GENERATION_RESPONSE")
 	public void i_have_sent_token_generation_response() {
+
 		//convert to Event
 		Gson gson = new Gson();
 		Event event = gson.fromJson(response,Event.class);
 		assertTrue("TOKEN_GENERATION_RESPONSE".equals(event.getEventType()));
 	}
 
-	@When("I recieve TOKEN_VALIDATION_REQUEST")
+	@When("I receive TOKEN_VALIDATION_REQUEST")
 	public void i_recieve_token_validation_request() throws Exception {
-		TokenValidationRequest request = new TokenValidationRequest();
-		Event event = new Event("TOKEN_GENERATION_REQUEST", new Object[] { request });
+		TokenValidationRequest request = new TokenValidationRequest("123");
+		Event event = new Event("TOKEN_VALIDATION_REQUEST", new Object[] { request });
 		//convert to string
 		Gson gson = new Gson();
 		String request_string = gson.toJson(event);
@@ -56,7 +57,7 @@ public class TokenManagerSteps {
 		Gson gson = new Gson();
 		Event event = gson.fromJson(response,Event.class);
 
-		assertTrue("TOKEN_GENERATION_RESPONSE".equals(event.getEventType()));
+		assertTrue("TOKEN_VALIDATION_RESPONSE".equals(event.getEventType()));
 	}
 
 

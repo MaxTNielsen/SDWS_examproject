@@ -9,6 +9,8 @@ import com.rabbitmq.client.DeliverCallback;
 
 
 import io.quarkus.runtime.ShutdownEvent;
+import payment.PaymentBL;
+
 import org.Json.*;
 
 import org.accountmanager.model.AccountManager;
@@ -56,6 +58,8 @@ public class DTUPay {
     AccountManager m = AccountManager.getInstance();
 
     TokenManager tokenManager = TokenManager.getInstance();
+    
+    PaymentBL payment_service = new PaymentBL();
 
     private Map<String, Boolean> accountRegMap = new HashMap<>();
 
@@ -142,11 +146,11 @@ public class DTUPay {
         return transactionMap;
     }
 
-    public void sendPaymentRequest(Transaction t) throws IOException {
-        paymentChannel.queueDeclare(PAYMENT_REQ_QUEUE, false, false, false, null);
-        Gson gson = new Gson();
+    public String sendPaymentRequest(Transaction t) throws IOException {
+    	Gson gson = new Gson();
         String s = gson.toJson(t);
-        paymentChannel.basicPublish("", PAYMENT_REQ_QUEUE, null, s.getBytes());
+        String result = forwardMQtoMicroservices(s, "payment.*");
+        return result;
     }
 
     void listenPaymentResponse() {
