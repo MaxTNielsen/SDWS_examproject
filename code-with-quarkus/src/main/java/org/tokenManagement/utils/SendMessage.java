@@ -3,9 +3,8 @@ import com.google.gson.Gson;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
-import org.tokenManagement.messaging.*;
-
-import java.nio.charset.StandardCharsets;
+import org.tokenManagement.messaging.model.Event;
+import org.tokenManagement.messaging.model.TokenGenerationRequest;
 
 public class SendMessage {
 
@@ -20,7 +19,7 @@ public class SendMessage {
         Event event = new Event("TOKEN_GENERATION_REQUEST", new Object[] { request });
 //	    TokenValidationRequest request = new TokenValidationRequest("123");
 //	    Event event = new Event("TOKEN_VALIDATION_REQUEST", new Object[] { request });
-        
+//
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         try (Connection connection = factory.newConnection(); Channel channel = connection.createChannel()) {

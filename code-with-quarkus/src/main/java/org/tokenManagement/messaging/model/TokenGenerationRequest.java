@@ -1,4 +1,4 @@
-package org.tokenManagement.messaging;
+package org.tokenManagement.messaging.model;
 
 public class TokenGenerationRequest {
 

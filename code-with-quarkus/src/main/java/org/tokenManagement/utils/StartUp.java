@@ -1,9 +1,6 @@
 package org.tokenManagement.utils;
 
-import io.quarkus.runtime.annotations.QuarkusMain;
-
-import org.tokenManagement.messaging.*;
-import org.tokenManagement.service.TokenManager;
+import org.tokenManagement.messaging.RabbitMqListener;
 
 
 public class StartUp {
@@ -13,7 +10,7 @@ public class StartUp {
 
 	private void startUp() throws Exception {
 		//EventSender s = new RabbitMqSender();
-		TokenManager service = new TokenManager();
-		new RabbitMqListener(service).listenWithRPCPattern();
+		//TokenManager service = TokenManager.getInstance();
+		new RabbitMqListener().listenWithRPCPattern();
 	}
 }

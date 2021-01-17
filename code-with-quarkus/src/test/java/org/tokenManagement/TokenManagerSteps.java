@@ -3,10 +3,10 @@ package org.tokenManagement;
 import com.google.gson.Gson;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.tokenManagement.messaging.Event;
-import org.tokenManagement.messaging.EventSender;
-import org.tokenManagement.messaging.TokenGenerationRequest;
-import org.tokenManagement.messaging.TokenValidationRequest;
+import org.tokenManagement.messaging.model.Event;
+
+import org.tokenManagement.messaging.model.TokenGenerationRequest;
+import org.tokenManagement.messaging.model.TokenValidationRequest;
 import org.tokenManagement.service.TokenManager;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
