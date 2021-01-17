@@ -31,7 +31,7 @@ public class CustomerREST {
     @Consumes(MediaType.TEXT_PLAIN)
     public Response RegisterCostumer(String ID) {
 
-        String setRoutingKey = "accountmanager.customer";
+        String setRoutingKey = "accountmanager.customer.registration";
         String answerToRequest = dtuPay.forwardMQtoMicroservices(ID, setRoutingKey);
         boolean b = Boolean.parseBoolean(answerToRequest);
 

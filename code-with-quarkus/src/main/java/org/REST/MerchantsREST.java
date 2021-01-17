@@ -16,7 +16,7 @@ public class MerchantsREST {
     @Consumes(MediaType.TEXT_PLAIN)
     public Response RegisterMerchant(String ID) throws NotFoundException {
 
-        String setRoutingKey = "accountmanager.merchant";
+        String setRoutingKey = "accountmanager.merchant.registration";
         String answerToRequest = dtuPay.forwardMQtoMicroservices(ID, setRoutingKey);
         Boolean b = Boolean.parseBoolean(answerToRequest);
 
