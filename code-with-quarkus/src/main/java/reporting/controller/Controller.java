@@ -28,12 +28,12 @@ public class Controller {
         return instance;
     }
 
-    void onStart(@Observes StartupEvent ev) throws Exception {
+  /*  void onStart(@Observes StartupEvent ev) throws Exception {
         System.out.println("report startup");
         manager = TransactionManager.getInstance();
         EventController.getInstance();
         EventController.getInstance().listenEvent();
-    }
+    }*/
 
     void onStop(@Observes ShutdownEvent ev)
     {
