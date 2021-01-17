@@ -53,15 +53,11 @@ public class DTUPay {
     }
 
     AccountManager m = AccountManager.getInstance();
-<<<<<<< HEAD
+
     TokenManager tokenManager = TokenManager.getInstance();
 
     private Map<String, Boolean> accountRegMap = new HashMap<>();
-=======
-    //to start up token service
-    TokenManager token_service = new TokenManagerFactory().getService();
 
->>>>>>> 8a98b90e69c709f3a95e8d605f16ea6da9585e81
     private Map<String, ArrayList<String>> newTokenMap = new HashMap<>();
     static DTUPay instance;
 
