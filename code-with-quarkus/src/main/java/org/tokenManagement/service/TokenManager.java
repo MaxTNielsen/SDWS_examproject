@@ -13,15 +13,15 @@ import org.tokenManagement.messaging.*;
 
 public class TokenManager implements EventReceiver{
 
-    private EventSender eventSender;
+    //private EventSender eventSender;
     //private CompletableFuture<Boolean> result;
 
     public Map<String, Token> tokens = new HashMap<>();
 
 
-    public TokenManager(EventSender eventSender)
+    public TokenManager()
     {
-        this.eventSender = eventSender;
+        //this.eventSender = eventSender;
         addToken(new Token("123","000000-0001"));
         addToken(new Token("456","000000-0002"));
         addToken(new Token("789","000000-0002"));
@@ -30,16 +30,22 @@ public class TokenManager implements EventReceiver{
 
     //implement EventReceiver
     @Override
-    public void receiveEvent(Event event) throws Exception {
+    public String receiveEvent(String request) throws Exception {
+        //System.out.println("Request String:" + request);
+        //Convert string to Event
+        Gson gson = new Gson();
+        Event event = gson.fromJson(request,Event.class);
+        Event event_to_sendback = null;
+        String responseString = "";
+        System.out.println("Convert to Event:" + event);
         if (event.getEventType().equals("TOKEN_GENERATION_REQUEST")) {
             //Translate received event
-            Gson gson = new Gson();
-            String jsonString = gson.toJson(event.getArguments()[0]);
-            TokenGenerationRequest received_event = gson.fromJson(jsonString,TokenGenerationRequest.class);
+            String jsonString2 = gson.toJson(event.getArguments()[0]);
+            TokenGenerationRequest received_event = gson.fromJson(jsonString2,TokenGenerationRequest.class);
 
             //prepare response
             TokenGenerationResponse response_event = new TokenGenerationResponse();
-            Event event_to_sendback = new Event("TOKEN_GENERATION_RESPONSE", new Object[] { response_event });
+            event_to_sendback = new Event("TOKEN_GENERATION_RESPONSE", new Object[] { response_event });
 
             //call business logic of handling token generation
             ArrayList<String> tokens=getNewTokens(received_event.getCustomerId(), received_event.getNumberOfTokens());
@@ -50,19 +56,20 @@ public class TokenManager implements EventReceiver{
             response_event.setCustomerId(received_event.getCustomerId());
 
             //send response
-            eventSender.sendEvent(event_to_sendback);
-            System.out.println("I have sent response: "+event_to_sendback.toString());
-            System.out.println("----------------------------");
+            //eventSender.sendEvent(event_to_sendback);
+
+            System.out.println("[Token Manager] Created response: "+event_to_sendback.toString());
+
+            //return event_to_sendback;
 
         } else if (event.getEventType().equals("TOKEN_VALIDATION_REQUEST")) {
             //Translate received event
-            Gson gson = new Gson();
-            String jsonString = gson.toJson(event.getArguments()[0]);
-            TokenValidationRequest received_event = gson.fromJson(jsonString,TokenValidationRequest.class);
+            String jsonString3 = gson.toJson(event.getArguments()[0]);
+            TokenValidationRequest received_event = gson.fromJson(jsonString3,TokenValidationRequest.class);
 
             //prepare response
             TokenValidationResponse response_event = new TokenValidationResponse();
-            Event event_to_sendback = new Event("TOKEN_VALIDATION_RESPONSE", new Object[] { response_event });
+            event_to_sendback = new Event("TOKEN_VALIDATION_RESPONSE", new Object[] { response_event });
 
             //business logic
             Boolean isValid = false;
@@ -77,23 +84,26 @@ public class TokenManager implements EventReceiver{
                     //after validation, set the token as used
                     tokens.get(tokenId).setUsed(true);
                 }
-
             }
-
             System.out.println("event handled: "+"VALIDATE_TOKEN");
-
             //set response
             response_event.setCustomerId(customerId);
             response_event.setValid(isValid);
             //send response
-            eventSender.sendEvent(event_to_sendback);
-            System.out.println("I have sent response: "+event_to_sendback.toString());
-            System.out.println("----------------------------");
+            //eventSender.sendEvent(event_to_sendback);
+            System.out.println("[Token Manager] Created response: "+event_to_sendback.toString());
+            //return event_to_sendback;
 
         }
         else {
-            System.out.println("event ignored: "+event);
+            System.out.println("[Token Manager]  Event ignored: "+event.toString());
+
         }
+
+        //convert response Event to String
+        responseString = gson.toJson(event_to_sendback);
+        //System.out.println("Response String: "+ responseString);
+        return responseString;
 
     }
 

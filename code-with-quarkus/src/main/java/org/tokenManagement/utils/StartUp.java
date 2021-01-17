@@ -12,8 +12,8 @@ public class StartUp {
     }
 
 	private void startUp() throws Exception {
-		EventSender s = new RabbitMqSender();
-		TokenManager service = new TokenManager(s);
-		new RabbitMqListener(service).listen();
+		//EventSender s = new RabbitMqSender();
+		TokenManager service = new TokenManager();
+		new RabbitMqListener(service).listenWithRPCPattern();
 	}
 }

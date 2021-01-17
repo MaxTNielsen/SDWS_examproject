@@ -1,13 +1,21 @@
 package org.REST;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
+import org.Json.TokenGenerationRequest;
 import org.dtupay.DTUPay;
 import org.dtupay.Transaction;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.*;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -15,6 +23,7 @@ import javax.ws.rs.core.Response;
 @Path("/customers")
 public class CustomerREST {
     DTUPay dtuPay = DTUPay.getInstance();
+
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
@@ -51,6 +60,7 @@ public class CustomerREST {
             return Response.status(400, "Registration failed").build();
     }
 
+
     @Path("/report/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
@@ -63,4 +73,23 @@ public class CustomerREST {
         //TODO finish it
         //return Response.ok(Entity.entity(manager.getCustomers().get(ID), MediaType.APPLICATION_JSON)).build();
     }
+
+    @Path("/tokens")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response requestTokens(TokenGenerationRequest request) throws IOException {
+        System.out.println("post tokens");
+        //dtuPay.startUp();
+        String response = dtuPay.sendTokenGenerationRequest(request);
+
+//           if (dtuPay.getNewTokenMap().containsKey(request.getCustomerId())) {
+//            ArrayList<String> newTokens = dtuPay.getNewTokenMap().get(request.getCustomerId());
+            return Response.ok(Entity.entity(response,MediaType.APPLICATION_JSON)).build();
+//        }
+//        else
+//            return Response.status(400, "Failed").build();
+//
+    }
+
+
 }

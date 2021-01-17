@@ -20,11 +20,11 @@ public class TokenManagerFactory {
 		// is called dependency injection.
 		// At the end, we can use the PaymentService in tests
 		// without sending actual messages to RabbitMq.
-		EventSender b = new RabbitMqSender();
-		service = new TokenManager(b);
+		//EventSender b = new RabbitMqSender();
+		service = new TokenManager();
 		RabbitMqListener r = new RabbitMqListener(service);
 		try {
-			r.listen();
+			r.listenWithRPCPattern();
 		} catch (Exception e) {
 			throw new Error(e);
 		}

@@ -7,19 +7,28 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
-
 import io.quarkus.runtime.ShutdownEvent;
 import org.Json.AccountRegistrationReponse;
+import org.Json.*;
+
 import org.accountmanager.model.AccountManager;
+import org.tokenManagement.messaging.TokenGenerationResponse;
+import org.tokenManagement.service.TokenManager;
+import org.tokenManagement.service.TokenManagerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import java.io.IOException;
+
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+
+import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @ApplicationScoped
 public class DTUPay {
@@ -29,7 +38,11 @@ public class DTUPay {
     private static final String MERCHANT_REG_RESPONSE_QUEUE = "MERCHANT_REG_RESPONSE_QUEUE";
     private static final String PAYMENT_REQ_QUEUE = "payment_req_queue";
     private static final String PAYMENT_RESP_QUEUE = "payment_resp_queue";
+    private static final String TOKEN_REQ_QUEUE = "TOKEN_REQ_QUEUE";
+    private static final String TOKEN_RESP_QUEUE = "TOKEN_RESP_QUEUE";
     private static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
+    private static final String QUEUE_TYPE = "topic";
+
     Connection DTUPayConnection;
     Channel customerRegistrationResponseChannel;
     Channel merchantRegistrationResponseChannel;
@@ -51,8 +64,10 @@ public class DTUPay {
     }
 
     AccountManager m = AccountManager.getInstance();
+    TokenManager token_service = new TokenManagerFactory().getService();
 
     private Map<String, Boolean> accountRegMap = new HashMap<>();
+    private Map<String, ArrayList<String>> newTokenMap = new HashMap<>();
     static DTUPay instance;
 
     public DTUPay() {
@@ -242,5 +257,19 @@ public class DTUPay {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String sendTokenGenerationRequest(TokenGenerationRequest request) throws IOException {
+        String response = "";
+        Event event = new Event("TOKEN_GENERATION_REQUEST", new Object[] { request });
+
+        String message = new Gson().toJson(event);
+        response = forwardMQtoMicroservices(message,"token.request");
+        System.out.println("DTU pay get response:" + response);
+        return response;
+    }
+
+    public Map<String, ArrayList<String>> getNewTokenMap() {
+        return newTokenMap;
     }
 }

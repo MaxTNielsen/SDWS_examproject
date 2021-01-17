@@ -22,7 +22,7 @@ public class RabbitMqSender implements EventSender {
 			//declare exchange
 			channel.exchangeDeclare(EXCHANGE_NAME, QUEUE_TYPE);
 			String message = new Gson().toJson(event);
-			System.out.println("[RabbitMqSender] sending "+message);
+			//System.out.println("[RabbitMqSender] sending "+message);
 			channel.basicPublish(EXCHANGE_NAME, TOPIC, null, message.getBytes("UTF-8"));
 		}
 	}
