@@ -26,11 +26,9 @@ public class Token
         return cprNumber;
     }
 
-
     @Override
     public String toString() {
         return "Token [id=" + id + ", cprNumber=" + cprNumber + ", isUsed=" + isUsed + "]";
     }
-
 
 }

@@ -73,7 +73,7 @@ public class AccountEventController {
 
     static void listenCustomer() {
         try {
-        String queueName = customerRegChannel.queueDeclare("customer  reg queue", false, false, false, null).getQueue();
+            String queueName = customerRegChannel.queueDeclare("customer  reg queue", false, false, false, null).getQueue();
             customerRegChannel.queueBind(queueName, EXCHANGE_NAME, CUSTOMER_REG_ROUTING_KEY);
             Object monitor = new Object();
             customerRegChannel.queuePurge(queueName);
@@ -116,8 +116,8 @@ public class AccountEventController {
 
     static void listenMerchant() {
         try {
-        String queueName = merchantRegChannel.queueDeclare("merchant reg queue", false, false, false, null).getQueue();
-        // String queueName = merchantRegChannel.queueDeclare().getQueue();
+            String queueName = merchantRegChannel.queueDeclare("merchant reg queue", false, false, false, null).getQueue();
+            // String queueName = merchantRegChannel.queueDeclare().getQueue();
             merchantRegChannel.queueBind(queueName, EXCHANGE_NAME, MERCHANT_REG_ROUTING_KEY);
             customerRegChannel.queuePurge(queueName);
             customerRegChannel.basicQos(0);
@@ -156,8 +156,7 @@ public class AccountEventController {
         }
     }
 
-    static void listenCustomerIDValidation()
-    {
+    static void listenCustomerIDValidation() {
         try {
             String queueName = customerValidationChannel.queueDeclare().getQueue();
             customerValidationChannel.queueBind(queueName, EXCHANGE_NAME, CUSTOMER_VALIDATION_ROUTING_KEY);
@@ -175,7 +174,6 @@ public class AccountEventController {
                     String message = new String(delivery.getBody(), "UTF-8");
                     String ID = message;
                     System.out.println("[x] Customer validation receiving " + message);
-
                     boolean ans = AccountManager.getInstance().hasCustomer(ID);
                     response = Boolean.toString(ans);
                 } catch (RuntimeException e) {
@@ -189,16 +187,14 @@ public class AccountEventController {
                     }
                 }
             };
-
-            customerValidationChannel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
+            customerValidationChannel.basicConsume(queueName, false, deliverCallback, consumerTag -> {
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    static void listenMerchantIDValidation()
-    {
-        
+    static void listenMerchantIDValidation() {
+
     }
 }

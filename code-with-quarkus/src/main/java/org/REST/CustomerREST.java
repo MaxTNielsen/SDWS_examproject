@@ -40,12 +40,18 @@ public class CustomerREST {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response doTransaction(Transaction t) throws IOException {
-        dtuPay.sendPaymentRequest(t);
-        if (dtuPay.getTransactionMap().containsKey(t.getToken()) && dtuPay.getTransactionMap().get(t.getToken()))
+
+        if (dtuPay.DTUPayDoPayment(t)) {
+            return Response.ok().build();
+        }
+        return Response.status(400, "Transcation not completed").build();
+
+        /*if (dtuPay.getTransactionMap().containsKey(t.getToken()) && dtuPay.getTransactionMap().get(t.getToken()))
             return Response.ok().build();
         else
-            return Response.status(400, "Registration failed").build();
+            return Response.status(400, "Registration failed").build();*/
     }
+
 
     @Path("/report")
     @Produces(MediaType.APPLICATION_JSON)
@@ -67,10 +73,9 @@ public class CustomerREST {
         obj[2] = intervalEndPoint;
         Event request = new Event(requestType, obj);
         String requestString = gson.toJson(request);
-        System.out.println("Costumer report generation for " + requestString +" has started");
+        System.out.println("Costumer report generation for " + requestString + " has started");
         Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
-        if(!response.getEventType().equals("CUSTOMER_REPORT_RESPONSE"))
-        {
+        if (!response.getEventType().equals("CUSTOMER_REPORT_RESPONSE")) {
             return Response.status(404, "Report generation failure").build();
         }
         return Response.ok(response.getArguments()[0], MediaType.APPLICATION_JSON).build();

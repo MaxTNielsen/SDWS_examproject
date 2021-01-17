@@ -98,17 +98,16 @@ public class DTUPay {
         }
     }
 
-
     public String forwardMQtoMicroservices(String message, String routingKey) {
         String correlateID = UUID.randomUUID().toString();
         try {
-            String replyQueueName = replyChannel.queueDeclare("reply "+routingKey, false, true, false, null).getQueue();
+            String replyQueueName = replyChannel.queueDeclare("reply " + routingKey, false, true, false, null).getQueue();
             AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().correlationId(correlateID)
                     .replyTo(replyQueueName).build();
             microservicesChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
             // System.out.println("DTU publish: " + message);
             // System.out.println("replyQueueName: " + replyQueueName);
-            
+
             // System.out.println("routingKey: " + routingKey);
             microservicesChannel.basicPublish(EXCHANGE_NAME, routingKey, properties, message.getBytes("UTF-8"));
             final BlockingQueue<String> response = new ArrayBlockingQueue<>(1);
@@ -173,12 +172,30 @@ public class DTUPay {
 
     public String sendTokenGenerationRequest(TokenGenerationRequest request) throws IOException {
         String response = "";
-        Event event = new Event("TOKEN_GENERATION_REQUEST", new Object[] { request });
+        Event event = new Event("TOKEN_GENERATION_REQUEST", new Object[]{request});
         String message = new Gson().toJson(event);
         response = forwardMQtoMicroservices(message, TOKEN_ROUTING_KEY);
         System.out.println("DTU pay get response:" + response);
         return response;
     }
 
+    public boolean DTUPayDoPayment(Transaction t) {
+        //Check merchant ID first
+        //arguments: merchantID
+        //return boolean
+
+        //Check if token is valid
+        //arguments: tokenID
+        //return boolean
+
+        //Do payment
+        //arguments: string that can be received by the payment system merchantID, CustomerID, Balance - should transaction object
+        //return boolean
+        return true;
+    }
+
+    public boolean generateTokens(){
+        return true;
+    }
 
 }

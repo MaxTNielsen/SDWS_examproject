@@ -5,10 +5,13 @@ Feature: Payment
     
   Scenario: SOAP transaction
   	Given the customer "Ryan" "Anderson" with CPR "1212121213" has a bank account with balance 1000
+	  #Register account
   	And the customer is registered with DTUPay
   	And the merchant "Yo" "Cockles" with CPR "1312121213" has a bank account with balance 2000
   	And the merchant is registered with DTUPay
+	  #Register account
   	When the merchant initiates a payment for 10 kr by the customer
+	  #Payment - parameters are amount and token
   	Then the payment is successful
   	And the balance of the customer in the bank is 990
   	And the balance of the merchant in the bank is 2010
