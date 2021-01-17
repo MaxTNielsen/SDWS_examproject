@@ -41,7 +41,7 @@ public class TokenManagerSteps {
 		assertTrue("TOKEN_GENERATION_RESPONSE".equals(event.getEventType()));
 	}
 
-	@When("I recieve TOKEN_VALIDATION_REQUEST")
+	@When("I receive TOKEN_VALIDATION_REQUEST")
 	public void i_recieve_token_validation_request() throws Exception {
 		TokenValidationRequest request = new TokenValidationRequest("123");
 		Event event = new Event("TOKEN_VALIDATION_REQUEST", new Object[] { request });
