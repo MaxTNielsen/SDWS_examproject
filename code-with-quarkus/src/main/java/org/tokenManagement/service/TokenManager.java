@@ -1,5 +1,7 @@
 package org.tokenManagement.service;
 import com.google.gson.Gson;
+
+import org.tokenManagement.messaging.model.*;
 import org.tokenManagement.model.Token;
 import org.tokenManagement.utils.TokenGenerator;
 
@@ -11,22 +13,26 @@ import java.util.Map;
 import org.tokenManagement.messaging.*;
 
 
-public class TokenManager implements EventReceiver{
+public class TokenManager implements EventReceiver {
 
-    //private EventSender eventSender;
-    //private CompletableFuture<Boolean> result;
-
+    static TokenManager instance;
     public Map<String, Token> tokens = new HashMap<>();
-
-
     public TokenManager()
     {
-        //this.eventSender = eventSender;
+
         addToken(new Token("123","000000-0001"));
         addToken(new Token("456","000000-0002"));
         addToken(new Token("789","000000-0002"));
+        RabbitMqListener.listenWithRPCPattern();
 
     }
+    public static TokenManager getInstance() {
+        if (instance == null)
+            instance = new TokenManager();
+        return instance;
+    }
+
+
 
     //implement EventReceiver
     @Override
@@ -52,16 +58,15 @@ public class TokenManager implements EventReceiver{
             System.out.println("event handled: "+"GENERATE_TOKEN");
 
             //set response
-            response_event.setTokens(tokens);
-            response_event.setCustomerId(received_event.getCustomerId());
+            if (tokens.size() > 0) {
 
-            //send response
-            //eventSender.sendEvent(event_to_sendback);
+                response_event.setTokens(tokens);
+                response_event.setCustomerId(received_event.getCustomerId());
 
-            System.out.println("[Token Manager] Created response: "+event_to_sendback.toString());
+                System.out.println("[Token Manager] Created response: " + event_to_sendback.toString());
 
-            //return event_to_sendback;
-            responseString = gson.toJson(event_to_sendback);
+                responseString = gson.toJson(event_to_sendback);
+            }
 
         } else if (event.getEventType().equals("TOKEN_VALIDATION_REQUEST")) {
             //Translate received event
@@ -90,8 +95,6 @@ public class TokenManager implements EventReceiver{
             //set response
             response_event.setCustomerId(customerId);
             response_event.setValid(isValid);
-            //send response
-            //eventSender.sendEvent(event_to_sendback);
             System.out.println("[Token Manager] Created response: "+event_to_sendback.toString());
             //return event_to_sendback;
             responseString = gson.toJson(event_to_sendback);
@@ -102,8 +105,6 @@ public class TokenManager implements EventReceiver{
 
         }
 
-        //convert response Event to String
-        //System.out.println("Response String: "+ responseString);
         return responseString;
 
     }
@@ -113,30 +114,12 @@ public class TokenManager implements EventReceiver{
     public void addToken(Token token){
         tokens.put(token.getId(),token);
     }
-    public String getUserId(String tokenId) {
-        return tokens.get(tokenId).getUserId();
-    }
     public String generateToken(String userId)
     {
         Token token = new Token(TokenGenerator.createToken(),userId);
         tokens.put(token.getId(),token);
         return token.getId();
     }
-
-    public boolean validateToken(String tokenId){
-        boolean exist = tokens.containsKey(tokenId);
-        if(!exist)
-        {
-            return false;
-        }
-        if ( !tokens.get(tokenId).isUsed()) {
-            //set token as used
-            tokens.get(tokenId).setUsed(true);
-            return true;
-        }
-        else return false;
-    }
-
 
     public int getAvailableTokenAmount(String userId){
         int result = 0;
@@ -157,7 +140,7 @@ public class TokenManager implements EventReceiver{
     {
         ArrayList<String> tokens = null;
         int numberOfAvailableTokens = this.getAvailableTokenAmount(userId);
-        if(numberOfAvailableTokens > 1 || requestedTokenNumber > 5 || requestedTokenNumber < 1)
+        if (numberOfAvailableTokens > 1 || requestedTokenNumber > 5 || requestedTokenNumber < 1)
         {
             return null;
         }

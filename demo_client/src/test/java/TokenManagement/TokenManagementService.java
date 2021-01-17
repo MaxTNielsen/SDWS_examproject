@@ -19,10 +19,10 @@ public class TokenManagementService {
         baseUrl = client.target("http://localhost:8080/");
     }
 
-    public Response generateToken(String cprNumber)
+    public Response generateToken(String request)
     {
-        Response response = baseUrl.path("tokens").request()
-                .post(Entity.entity(cprNumber,MediaType.APPLICATION_JSON));
+        Response response = baseUrl.path("customers/tokens").request()
+                .post(Entity.entity(request,MediaType.APPLICATION_JSON));
 
         return response;
     }

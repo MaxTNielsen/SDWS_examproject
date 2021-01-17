@@ -13,7 +13,6 @@ import org.Json.*;
 
 import org.accountmanager.model.AccountManager;
 import org.tokenManagement.service.TokenManager;
-import org.tokenManagement.service.TokenManagerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -54,8 +53,10 @@ public class DTUPay {
     }
 
     AccountManager m = AccountManager.getInstance();
-    //to start up token service
-    TokenManager token_service = new TokenManagerFactory().getService();
+
+    TokenManager tokenManager = TokenManager.getInstance();
+
+    private Map<String, Boolean> accountRegMap = new HashMap<>();
 
     private Map<String, ArrayList<String>> newTokenMap = new HashMap<>();
     static DTUPay instance;

@@ -1,4 +1,4 @@
-package org.tokenManagement.messaging;
+package org.tokenManagement.messaging.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
