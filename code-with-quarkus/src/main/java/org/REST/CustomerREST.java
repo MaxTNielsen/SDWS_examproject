@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.quarkus.runtime.annotations.QuarkusMain;
+import org.Json.TokenGenerationRequest;
 import org.dtupay.DTUPay;
 import org.dtupay.Transaction;
 import reporting.model.Event;
@@ -81,5 +82,20 @@ public class CustomerREST {
             return Response.status(404, "Report generation failure").build();
         }
         return Response.ok(response.getArguments()[0], MediaType.APPLICATION_JSON).build();
+    }
+
+    @Path("/tokens")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response requestTokens(TokenGenerationRequest request) throws IOException {
+        System.out.println("[REST] POST: " + request.toString());
+        //dtuPay.startUp();
+        String response = dtuPay.sendTokenGenerationRequest(request);
+        System.out.println("[REST] Response: "+ response);
+        if (!response.equals(""))
+            return Response.ok(response,MediaType.APPLICATION_JSON).build();
+        else
+            return Response.status(400, "Token Generation Failed").build();
+
     }
 }

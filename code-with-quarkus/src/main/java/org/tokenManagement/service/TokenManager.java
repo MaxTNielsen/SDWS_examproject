@@ -18,7 +18,7 @@ import org.tokenManagement.messaging.model.TokenValidationRequest;
 import org.tokenManagement.messaging.model.TokenValidationResponse;
 
 
-public class TokenManager implements EventReceiver {
+public class TokenManager {
 
     static TokenManager instance;
     public Map<String, Token> tokens = new HashMap<>();
@@ -39,8 +39,6 @@ public class TokenManager implements EventReceiver {
 
 
 
-    //implement EventReceiver
-    @Override
     public String receiveEvent(String request) throws Exception {
         //System.out.println("Request String:" + request);
         //Convert string to Event

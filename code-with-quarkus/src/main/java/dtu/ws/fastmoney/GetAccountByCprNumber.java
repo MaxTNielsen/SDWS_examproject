@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for getAccountByCprNumber complex type.
+ * <p>getAccountByCprNumber complex type的 Java 类。
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>以下模式片段指定包含在此类中的预期内容。
  * 
  * <pre>
  * &lt;complexType name="getAccountByCprNumber"&gt;
@@ -34,7 +34,7 @@ public class GetAccountByCprNumber {
     protected String cpr;
 
     /**
-     * Gets the value of the cpr property.
+     * 获取cpr属性的值。
      * 
      * @return
      *     possible object is
@@ -46,7 +46,7 @@ public class GetAccountByCprNumber {
     }
 
     /**
-     * Sets the value of the cpr property.
+     * 设置cpr属性的值。
      * 
      * @param value
      *     allowed object is
