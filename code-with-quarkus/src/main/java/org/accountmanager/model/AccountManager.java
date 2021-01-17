@@ -31,6 +31,10 @@ public class AccountManager implements IAccountManager {
         return customers;
     }
 
+   /* public Map<String, Merchant> getMerchants() {
+        return merchants;
+    }*/
+
     public boolean registerCustomer(Customer c) {
         if (customers.containsKey(c.ID))
             return false;

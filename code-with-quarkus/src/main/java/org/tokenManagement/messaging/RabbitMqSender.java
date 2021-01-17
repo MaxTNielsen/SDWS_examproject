@@ -5,6 +5,8 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
+
+
 public class RabbitMqSender implements EventSender {
 
 	private static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
