@@ -1,17 +1,16 @@
 package org.REST;
 
 import java.io.IOException;
-<<<<<<< HEAD
+
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 import org.Json.TokenGenerationRequest;
-=======
->>>>>>> a83b3b54016509c5042ea64c22ad92bc968a266e
+
 import org.dtupay.DTUPay;
 import org.dtupay.Transaction;
 import javax.ws.rs.*;
-<<<<<<< HEAD
+
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.NotFoundException;
@@ -19,8 +18,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import javax.ws.rs.client.Entity;
-=======
->>>>>>> a83b3b54016509c5042ea64c22ad92bc968a266e
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 

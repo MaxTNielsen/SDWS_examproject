@@ -6,7 +6,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
-<<<<<<< HEAD
+
 
 import io.quarkus.runtime.ShutdownEvent;
 import org.Json.AccountRegistrationReponse;
@@ -17,9 +17,8 @@ import org.tokenManagement.messaging.TokenGenerationResponse;
 import org.tokenManagement.service.TokenManager;
 import org.tokenManagement.service.TokenManagerFactory;
 
-=======
 import io.quarkus.runtime.ShutdownEvent;
->>>>>>> a83b3b54016509c5042ea64c22ad92bc968a266e
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import java.io.IOException;
@@ -65,12 +64,11 @@ public class DTUPay {
         }
     }
 
-<<<<<<< HEAD
+
     AccountManager m = AccountManager.getInstance();
     TokenManager token_service = new TokenManagerFactory().getService();
 
-=======
->>>>>>> a83b3b54016509c5042ea64c22ad92bc968a266e
+
     private Map<String, Boolean> accountRegMap = new HashMap<>();
     private Map<String, ArrayList<String>> newTokenMap = new HashMap<>();
     static DTUPay instance;
