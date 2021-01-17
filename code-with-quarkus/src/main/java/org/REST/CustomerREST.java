@@ -19,15 +19,26 @@ public class CustomerREST {
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response RegisterCostumer(String ID) throws IOException, TimeoutException, NotFoundException {
+    public Response RegisterCostumer(String ID){
         String getRouting = "accountmanager.customer";
-        dtuPay.forwardMQtoMicroservices(ID, getRouting);
-        System.out.println("After registration ");
-        System.out.println("containsKey " + dtuPay.getAccountRegMap().containsKey(ID));
-        if (dtuPay.getAccountRegMap().containsKey(ID) && dtuPay.getAccountRegMap().get(ID))
+        // String replyQueueName = "customerReg";
+        
+        String s = dtuPay.forwardMQtoMicroservices(ID, getRouting);
+        boolean b = Boolean.parseBoolean(s);
+        // System.out.println("containsKey " + dtuPay.getAccountRegMap().containsKey(ID));
+        // if (dtuPay.getAccountRegMap().containsKey(ID) && dtuPay.getAccountRegMap().get(ID))
+        if (b)
+        {
+            System.out.println("Create account success");
             return Response.ok().build();
+        }
+
         else
+        {
+            System.out.println("Create account success");
             return Response.status(400, "Registration failed").build();
+
+        }
     }
 
     @Path("/payment")

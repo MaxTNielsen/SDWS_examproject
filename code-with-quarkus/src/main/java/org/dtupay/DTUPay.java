@@ -1,16 +1,19 @@
 package org.dtupay;
 
 import com.google.gson.Gson;
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
-
 import org.Json.AccountRegistrationReponse;
 import org.accountmanager.model.AccountManager;
 
 import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +33,7 @@ public class DTUPay {
     Channel paymentChannel;
     Channel paymentResponseChannel;
     Channel microservicesChannel;
+    Channel replyChannel;
 
     AccountManager m = AccountManager.getInstance();
 
@@ -50,17 +54,16 @@ public class DTUPay {
         return accountRegMap;
     }
 
-    /*@Override
-    public int run(String... args) throws Exception {
-        *//*System.out.println("Do startup logic here");
-        opCustomerRegistratonChannelAndConnection();
-        listenMsgCustomerRegResponse();
-        listenMsgMerchantRegResponse();
-        AccountManager m = AccountManager.getInstance();
-        AccountEventController.listen();*//*
-        Quarkus.waitForExit();
-        return 0;
-    }*/
+    /*
+     * @Override public int run(String... args) throws Exception {
+     *//*
+        * System.out.println("Do startup logic here");
+        * opCustomerRegistratonChannelAndConnection(); listenMsgCustomerRegResponse();
+        * listenMsgMerchantRegResponse(); AccountManager m =
+        * AccountManager.getInstance(); AccountEventController.listen();
+        *//*
+           * Quarkus.waitForExit(); return 0; }
+           */
 
     public void startUp() {
         dtuPayConnection();
@@ -94,6 +97,7 @@ public class DTUPay {
             paymentChannel = DTUPayConnection.createChannel();
             System.out.println("Payment channel created");
             microservicesChannel = DTUPayConnection.createChannel();
+            replyChannel = DTUPayConnection.createChannel();
             System.out.println("Topic channel initialized");
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -111,12 +115,37 @@ public class DTUPay {
         }
     }
 
-    public void forwardMQtoMicroservices(String message, String routingKey) {
+    public String forwardMQtoMicroservices(String message, String routingKey) {
+        String correlateID = UUID.randomUUID().toString();
         try {
+            String replyQueueName = replyChannel.queueDeclare().getQueue();
+            AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().correlationId(correlateID)
+            .replyTo(replyQueueName).build();
             microservicesChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
-            microservicesChannel.basicPublish(EXCHANGE_NAME, routingKey, null, message.getBytes("UTF-8"));
-        } catch (Exception e) {
-            System.out.println(e);
+            microservicesChannel.basicPublish(EXCHANGE_NAME, routingKey, properties, message.getBytes("UTF-8"));
+            final BlockingQueue<String> response = new ArrayBlockingQueue<>(1);
+
+            String ctag = microservicesChannel.basicConsume(replyQueueName, true, (consumerTag, delivery) -> {
+                if (delivery.getProperties().getCorrelationId().equals(correlateID)) {
+                    response.offer(new String(delivery.getBody(), "UTF-8"));
+                }
+            }, consumerTag -> {
+            });
+
+            String result;
+            try {
+                result = response.take();
+                microservicesChannel.basicCancel(ctag);
+                System.out.println("result: " + result);
+                return result;
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return "";
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
         }
     }
 

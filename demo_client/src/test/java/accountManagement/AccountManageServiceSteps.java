@@ -80,6 +80,7 @@ public class AccountManageServiceSteps {
 
     @When("the customer register in DTUPay with his CPR as ID")
     public void theCustomerRegisterInDTUPayWithHisCPRAsID() {
+        System.out.printf("Send %s to register DTUPay account", customerBankAccountID);
         success = service.registerCustomer(customerBankAccountID);
         // update customer info: cpr name
     }
@@ -107,6 +108,7 @@ public class AccountManageServiceSteps {
 
     @When("the mechant register in DTUPay with his CPR as ID")
     public void theMechantRegisterInDTUPayWithHisCPRAsID() {
+        System.out.printf("Send %s to register DTUPay account", merchantBankAccountID);
         success = service.registerMerchant(merchantBankAccountID);
     }
 

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import com.google.gson.Gson;
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DeliverCallback;
@@ -59,28 +60,36 @@ public class AccountEventController {
         try {
             String queueName = customerChannel.queueDeclare().getQueue();
             customerChannel.queueBind(queueName, EXCHANGE_NAME, CUSTOMER_ROUTING_KEY);
+            Object monitor = new Object();
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                String message = new String(delivery.getBody(), "UTF-8");
-                String ID = message;
-                System.out.println("CUSTOMER [x] receiving " + message);
-                boolean successful = AccountManager.getInstance().registerCustomer(ClientFactory.buildCustomer(ID));
-                sendCustomerRegResponse(ID, successful);
+                AMQP.BasicProperties replyProps = new AMQP.BasicProperties
+                        .Builder()
+                        .correlationId(delivery.getProperties().getCorrelationId())
+                        .build();
+
+                String response = "";
+
+                try {
+                    String message = new String(delivery.getBody(), "UTF-8");
+                    String ID = message;
+                    System.out.println("CUSTOMER [x] receiving " + message);
+                    // response += fib(n);
+                    boolean successful = AccountManager.getInstance().registerCustomer(ClientFactory.buildCustomer(ID));
+                    response = Boolean.toString(successful);
+                } catch (RuntimeException e) {
+                    System.out.println(" [.] " + e.toString());
+                } finally {
+                    customerChannel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
+                    customerChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                    // RabbitMq consumer worker thread notifies the RPC server owner thread
+                    synchronized (monitor) {
+                        monitor.notify();
+                    }
+                }
             };
             customerChannel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
             });
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    static void sendCustomerRegResponse(String ID, boolean status) {
-        try {
-            AccountRegistrationReponse r = new AccountRegistrationReponse(ID, status);
-            Gson gson = new Gson();
-            String s = gson.toJson(r);
-            customerRegResponseChannel.basicPublish("", CUSTOMER_REG_RESPONSE_QUEUE, null, s.getBytes("utf-8"));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -92,27 +101,36 @@ public class AccountEventController {
             String queueName = merchantChannel.queueDeclare().getQueue();
             merchantChannel.queueBind(queueName, EXCHANGE_NAME, MERCHANT_ROUTING_KEY);
 
+            Object monitor = new Object();
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                String message = new String(delivery.getBody(), "UTF-8");
-                String ID = message;
-                System.out.println("MERCHANT [x] receiving " + message);
+                AMQP.BasicProperties replyProps = new AMQP.BasicProperties
+                        .Builder()
+                        .correlationId(delivery.getProperties().getCorrelationId())
+                        .build();
 
-                boolean successful = AccountManager.getInstance().registerCustomer(ClientFactory.buildCustomer(ID));
-                sendMerchantRegResponse(ID, successful);
+                String response = "";
+
+                try {
+                    String message = new String(delivery.getBody(), "UTF-8");
+                    String ID = message;
+                    System.out.println("Merchant [x] receiving " + message);
+                    // response += fib(n);
+                    boolean successful = AccountManager.getInstance().registerMerchant(ClientFactory.buildMerchant(ID));
+                    response = Boolean.toString(successful);
+                } catch (RuntimeException e) {
+                    System.out.println(" [.] " + e.toString());
+                } finally {
+                    merchantChannel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
+                    merchantChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                    // RabbitMq consumer worker thread notifies the RPC server owner thread
+                    synchronized (monitor) {
+                        monitor.notify();
+                    }
+                }
             };
+            
             merchantChannel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
             });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    static void sendMerchantRegResponse(String ID, boolean status) {
-        try {
-            AccountRegistrationReponse r = new AccountRegistrationReponse(ID, status);
-            Gson gson = new Gson();
-            String s = gson.toJson(r);
-            merchantRegResponseChannel.basicPublish("", MERCHANT_REG_RESPONSE_QUEUE, null, s.getBytes("utf-8"));
         } catch (IOException e) {
             e.printStackTrace();
         }
