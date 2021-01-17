@@ -61,6 +61,7 @@ public class TokenManager implements EventReceiver{
             System.out.println("[Token Manager] Created response: "+event_to_sendback.toString());
 
             //return event_to_sendback;
+            responseString = gson.toJson(event_to_sendback);
 
         } else if (event.getEventType().equals("TOKEN_VALIDATION_REQUEST")) {
             //Translate received event
@@ -93,15 +94,15 @@ public class TokenManager implements EventReceiver{
             //eventSender.sendEvent(event_to_sendback);
             System.out.println("[Token Manager] Created response: "+event_to_sendback.toString());
             //return event_to_sendback;
+            responseString = gson.toJson(event_to_sendback);
 
         }
         else {
-            System.out.println("[Token Manager]  Event ignored: "+event.toString());
+            System.out.println("[Token Manager] Event ignored: "+event.toString());
 
         }
 
         //convert response Event to String
-        responseString = gson.toJson(event_to_sendback);
         //System.out.println("Response String: "+ responseString);
         return responseString;
 

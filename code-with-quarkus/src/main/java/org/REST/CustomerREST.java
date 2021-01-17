@@ -72,17 +72,15 @@ public class CustomerREST {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response requestTokens(TokenGenerationRequest request) throws IOException {
-        System.out.println("post tokens");
+        System.out.println("[REST] POST: " + request.toString());
         //dtuPay.startUp();
         String response = dtuPay.sendTokenGenerationRequest(request);
+        System.out.println("[REST] Response: "+ response);
+        if (!response.equals(""))
+            return Response.ok(response,MediaType.APPLICATION_JSON).build();
+        else
+            return Response.status(400, "Token Generation Failed").build();
 
-//           if (dtuPay.getNewTokenMap().containsKey(request.getCustomerId())) {
-//            ArrayList<String> newTokens = dtuPay.getNewTokenMap().get(request.getCustomerId());
-            return Response.ok(Entity.entity(response,MediaType.APPLICATION_JSON)).build();
-//        }
-//        else
-//            return Response.status(400, "Failed").build();
-//
     }
 
 

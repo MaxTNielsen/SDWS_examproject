@@ -9,15 +9,11 @@ import com.rabbitmq.client.DeliverCallback;
 
 
 import io.quarkus.runtime.ShutdownEvent;
-import org.Json.AccountRegistrationReponse;
 import org.Json.*;
 
 import org.accountmanager.model.AccountManager;
-import org.tokenManagement.messaging.TokenGenerationResponse;
 import org.tokenManagement.service.TokenManager;
 import org.tokenManagement.service.TokenManagerFactory;
-
-import io.quarkus.runtime.ShutdownEvent;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -31,7 +27,6 @@ import java.util.ArrayList;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @ApplicationScoped
 public class DTUPay {
@@ -39,10 +34,9 @@ public class DTUPay {
     String hostName = "localhost";
     private static final String PAYMENT_REQ_QUEUE = "payment_req_queue";
     private static final String PAYMENT_RESP_QUEUE = "payment_resp_queue";
-    private static final String TOKEN_REQ_QUEUE = "TOKEN_REQ_QUEUE";
-    private static final String TOKEN_RESP_QUEUE = "TOKEN_RESP_QUEUE";
+    private static final String TOKEN_ROUTING_KEY = "token.request";
     private static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
-    private static final String QUEUE_TYPE = "topic";
+
 
     Connection DTUPayConnection;
     Channel customerRegistrationResponseChannel;
@@ -66,6 +60,7 @@ public class DTUPay {
 
 
     AccountManager m = AccountManager.getInstance();
+    //to start up token service
     TokenManager token_service = new TokenManagerFactory().getService();
 
 
@@ -197,14 +192,11 @@ public class DTUPay {
     public String sendTokenGenerationRequest(TokenGenerationRequest request) throws IOException {
         String response = "";
         Event event = new Event("TOKEN_GENERATION_REQUEST", new Object[] { request });
-
         String message = new Gson().toJson(event);
-        response = forwardMQtoMicroservices(message,"token.request");
+        response = forwardMQtoMicroservices(message, TOKEN_ROUTING_KEY);
         System.out.println("DTU pay get response:" + response);
         return response;
     }
 
-    public Map<String, ArrayList<String>> getNewTokenMap() {
-        return newTokenMap;
-    }
+
 }
