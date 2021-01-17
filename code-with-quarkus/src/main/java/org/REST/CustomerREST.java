@@ -40,17 +40,19 @@ public class CustomerREST {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response doTransaction(Transaction t) throws IOException {
-
-        if (dtuPay.DTUPayDoPayment(t)) {
+    	String result = dtuPay.sendPaymentRequest(t);
+        boolean b = Boolean.parseBoolean(result);
+        
+        if (b) {	
+            System.out.println("Transaction successful");
             return Response.ok().build();
         }
-        return Response.status(400, "Transcation not completed").build();
-
-        /*if (dtuPay.getTransactionMap().containsKey(t.getToken()) && dtuPay.getTransactionMap().get(t.getToken()))
-            return Response.ok().build();
-        else
-            return Response.status(400, "Registration failed").build();*/
+        else {
+            System.out.println("Transaction failed");
+            return Response.status(400, "Transaction failed").build();
+        }
     }
+
 
 
     @Path("/report")

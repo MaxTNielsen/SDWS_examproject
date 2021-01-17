@@ -1,7 +1,7 @@
 package org.tokenManagement.service;
 import com.google.gson.Gson;
 
-import org.tokenManagement.messaging.model.*;
+
 import org.tokenManagement.model.Token;
 import org.tokenManagement.utils.TokenGenerator;
 
@@ -9,8 +9,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-
-import org.tokenManagement.messaging.*;
+import org.tokenManagement.messaging.RabbitMqListener;
+import org.tokenManagement.messaging.model.Event;
+import org.tokenManagement.messaging.model.EventReceiver;
+import org.tokenManagement.messaging.model.TokenGenerationRequest;
+import org.tokenManagement.messaging.model.TokenGenerationResponse;
+import org.tokenManagement.messaging.model.TokenValidationRequest;
+import org.tokenManagement.messaging.model.TokenValidationResponse;
 
 
 public class TokenManager implements EventReceiver {
