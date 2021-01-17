@@ -41,13 +41,13 @@ public class Controller {
     private void initialization()
     {
         // Initialize the connection
-        try {
+        /*try {
             ConnectionFactory connectionFactory = new ConnectionFactory();
             connectionFactory.setHost(hostName);
             reportCreatorEventControllerConnection = connectionFactory.newConnection();
         } catch (Exception e) {
             System.out.println(e.getMessage());
-        }
+        }*/
 
         // Initialize channels
         /*try {

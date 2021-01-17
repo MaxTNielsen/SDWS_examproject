@@ -6,7 +6,6 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DeliverCallback;
-import io.cucumber.java.an.E;
 import reporting.model.*;
 
 import java.io.IOException;
@@ -20,15 +19,11 @@ public class EventController {
     static String hostName = "localhost";
     static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
 
-    static final String CUSTOMER_ROUTING_KEY = "reporting.customer";
-    static final String MERCHANT_ROUTING_KEY = "reporting.merchant";
-    static final String MANAGER_ROUTING_KEY = "reporting.manager";
+    static final String REPORTING_ROUTING_KEY = "reporting";
 
     static Connection reportCreatorEventControllerConnection;
 
-    static Channel customerChannel;
-    static Channel merchantChannel;
-    static Channel managerChannel;
+    static Channel reportChannel;
 
 
     private EventController()
@@ -46,8 +41,8 @@ public class EventController {
 
     public void listenEvent() {
         try {
-            String queueName = customerChannel.queueDeclare().getQueue();
-            customerChannel.queueBind(queueName, EXCHANGE_NAME, CUSTOMER_ROUTING_KEY);
+            String queueName = reportChannel.queueDeclare().getQueue();
+            reportChannel.queueBind(queueName, EXCHANGE_NAME, REPORTING_ROUTING_KEY);
             Object monitor = new Object();
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 AMQP.BasicProperties replyProps = new AMQP.BasicProperties
@@ -69,15 +64,15 @@ public class EventController {
                 } catch (RuntimeException e) {
                     System.out.println(" [.] " + e.toString());
                 } finally {
-                    customerChannel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, responseString.getBytes("UTF-8"));
-                    customerChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                    reportChannel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, responseString.getBytes("UTF-8"));
+                    reportChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                     // RabbitMq consumer worker thread notifies the RPC server owner thread
                     synchronized (monitor) {
                         monitor.notify();
                     }
                 }
             };
-            customerChannel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
+            reportChannel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
             });
         } catch (IOException e) {
             e.printStackTrace();
