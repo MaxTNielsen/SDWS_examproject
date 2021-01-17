@@ -1,7 +1,5 @@
 package reporting.model;
 
-import org.dtupay.Transaction;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
