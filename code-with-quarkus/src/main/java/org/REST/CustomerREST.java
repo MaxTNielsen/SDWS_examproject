@@ -1,15 +1,17 @@
 package org.REST;
 
 import java.io.IOException;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 import org.Json.TokenGenerationRequest;
+=======
+>>>>>>> a83b3b54016509c5042ea64c22ad92bc968a266e
 import org.dtupay.DTUPay;
 import org.dtupay.Transaction;
-
-import javax.annotation.PostConstruct;
 import javax.ws.rs.*;
+<<<<<<< HEAD
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.NotFoundException;
@@ -17,6 +19,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import javax.ws.rs.client.Entity;
+=======
+>>>>>>> a83b3b54016509c5042ea64c22ad92bc968a266e
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -27,25 +31,18 @@ public class CustomerREST {
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response RegisterCostumer(String ID){
-        String getRouting = "accountmanager.customer";
-        // String replyQueueName = "customerReg";
-        
-        String s = dtuPay.forwardMQtoMicroservices(ID, getRouting);
-        boolean b = Boolean.parseBoolean(s);
-        // System.out.println("containsKey " + dtuPay.getAccountRegMap().containsKey(ID));
-        // if (dtuPay.getAccountRegMap().containsKey(ID) && dtuPay.getAccountRegMap().get(ID))
-        if (b)
-        {
+    public Response RegisterCostumer(String ID) {
+
+        String setRoutingKey = "accountmanager.customer";
+        String answerToRequest = dtuPay.forwardMQtoMicroservices(ID, setRoutingKey);
+        boolean b = Boolean.parseBoolean(answerToRequest);
+
+        if (b) {
             System.out.println("Create account success");
             return Response.ok().build();
-        }
-
-        else
-        {
+        } else {
             System.out.println("Create account success");
             return Response.status(400, "Registration failed").build();
-
         }
     }
 
@@ -64,11 +61,10 @@ public class CustomerREST {
     @Path("/report/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response createReport(@PathParam("id") String ID)
-    {
+    public Response createReport(@PathParam("id") String ID) {
         String getRouting = "reporting.customer";
         dtuPay.forwardMQtoMicroservices(ID, getRouting);
-        System.out.println("Customer report generation for " + ID +" has started");
+        System.out.println("Customer report generation for " + ID + " has started");
         return Response.status(404, "Report generation failure").build();
         //TODO finish it
         //return Response.ok(Entity.entity(manager.getCustomers().get(ID), MediaType.APPLICATION_JSON)).build();

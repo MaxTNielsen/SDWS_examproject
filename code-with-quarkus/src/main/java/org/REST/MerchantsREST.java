@@ -10,28 +10,20 @@ import java.util.concurrent.TimeoutException;
 
 @Path("/merchants")
 public class MerchantsREST {
-    String notFound = "merchant not found";
-    String existed = "merchant already exist";
-    String noBankAccount = "merchant has no bank account";
     DTUPay dtuPay = DTUPay.getInstance();
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response RegisterMerchant(String ID) throws IOException, TimeoutException, NotFoundException {
-        String getRouting = "accountmanager.merchant";
-        String s = dtuPay.forwardMQtoMicroservices(ID, getRouting);
-        Boolean b = Boolean.parseBoolean(s);
+    public Response RegisterMerchant(String ID) throws NotFoundException {
 
-        // System.out.println("After registration ");
-        // System.out.println("containsKey " + dtuPay.getAccountRegMap().containsKey(ID));
-        // if (dtuPay.getAccountRegMap().containsKey(ID) && dtuPay.getAccountRegMap().get(ID))
-        if (b)
-        {
+        String setRoutingKey = "accountmanager.merchant";
+        String answerToRequest = dtuPay.forwardMQtoMicroservices(ID, setRoutingKey);
+        Boolean b = Boolean.parseBoolean(answerToRequest);
+
+        if (b) {
             System.out.println("Merchant registration success");
             return Response.ok().build();
-        }
-        else
-        {
+        } else {
             System.out.println("Merchant registration failed");
             return Response.status(400, "Registration failed").build();
         }
@@ -40,8 +32,7 @@ public class MerchantsREST {
     @Path("/report")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response createReport()
-    {
+    public Response createReport() {
         /*String getRouting = "reporting.manager";
         dtuPay.forwardMQtoMicroservices(ID, getRouting);
         System.out.println("Customer report generation for " + ID +" has started");*/

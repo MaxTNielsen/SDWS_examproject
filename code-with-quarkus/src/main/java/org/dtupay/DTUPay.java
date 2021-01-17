@@ -6,6 +6,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
+<<<<<<< HEAD
 
 import io.quarkus.runtime.ShutdownEvent;
 import org.Json.AccountRegistrationReponse;
@@ -16,6 +17,9 @@ import org.tokenManagement.messaging.TokenGenerationResponse;
 import org.tokenManagement.service.TokenManager;
 import org.tokenManagement.service.TokenManagerFactory;
 
+=======
+import io.quarkus.runtime.ShutdownEvent;
+>>>>>>> a83b3b54016509c5042ea64c22ad92bc968a266e
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import java.io.IOException;
@@ -34,8 +38,6 @@ import java.util.concurrent.CompletableFuture;
 public class DTUPay {
 
     String hostName = "localhost";
-    private static final String CUSTOMER_REG_RESPONSE_QUEUE = "CUSTOMER_REG_RESPONSE_QUEUE";
-    private static final String MERCHANT_REG_RESPONSE_QUEUE = "MERCHANT_REG_RESPONSE_QUEUE";
     private static final String PAYMENT_REQ_QUEUE = "payment_req_queue";
     private static final String PAYMENT_RESP_QUEUE = "payment_resp_queue";
     private static final String TOKEN_REQ_QUEUE = "TOKEN_REQ_QUEUE";
@@ -63,9 +65,12 @@ public class DTUPay {
         }
     }
 
+<<<<<<< HEAD
     AccountManager m = AccountManager.getInstance();
     TokenManager token_service = new TokenManagerFactory().getService();
 
+=======
+>>>>>>> a83b3b54016509c5042ea64c22ad92bc968a266e
     private Map<String, Boolean> accountRegMap = new HashMap<>();
     private Map<String, ArrayList<String>> newTokenMap = new HashMap<>();
     static DTUPay instance;
@@ -80,36 +85,14 @@ public class DTUPay {
         return instance;
     }
 
-    public Map<String, Boolean> getAccountRegMap() {
-        return accountRegMap;
-    }
-
-    /*
-     * @Override public int run(String... args) throws Exception {
-     *//*
-        * System.out.println("Do startup logic here");
-        * opCustomerRegistratonChannelAndConnection(); listenMsgCustomerRegResponse();
-        * listenMsgMerchantRegResponse(); AccountManager m =
-        * AccountManager.getInstance(); AccountEventController.listen();
-        *//*
-           * Quarkus.waitForExit(); return 0; }
-           */
-
     public void startUp() {
         dtuPayConnection();
         createChannels();
-        listenChannels();
     }
 
     void createChannels() {
         initializeAllChannels();
         createChannelRegistrationResponse();
-
-    }
-
-    void listenChannels() {
-        listenMsgCustomerRegResponse();
-        listenMsgMerchantRegResponse();
     }
 
     void dtuPayConnection() {
@@ -150,7 +133,7 @@ public class DTUPay {
         try {
             String replyQueueName = replyChannel.queueDeclare().getQueue();
             AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().correlationId(correlateID)
-            .replyTo(replyQueueName).build();
+                    .replyTo(replyQueueName).build();
             microservicesChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
             microservicesChannel.basicPublish(EXCHANGE_NAME, routingKey, properties, message.getBytes("UTF-8"));
             final BlockingQueue<String> response = new ArrayBlockingQueue<>(1);
@@ -175,52 +158,6 @@ public class DTUPay {
         } catch (IOException e) {
             e.printStackTrace();
             return "";
-        }
-    }
-
-    void listenMsgCustomerRegResponse() {
-        try {
-            customerRegistrationResponseChannel.queueDeclare(CUSTOMER_REG_RESPONSE_QUEUE, false, false, false, null);
-            System.out.println("register customer reg response queue");
-
-            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                Gson gson = new Gson();
-                String json = new String(delivery.getBody());
-                System.out.println("delivery for the customer: " + json);
-                AccountRegistrationReponse r = gson.fromJson(json, AccountRegistrationReponse.class);
-                System.out.println("ID PRINT CUSTOMER" + r.ID);
-                System.out.println(r.status);
-                accountRegMap.put(r.ID, r.status);
-            };
-
-            customerRegistrationResponseChannel.basicConsume("", true, deliverCallback, consumerTag -> {
-            });
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    void listenMsgMerchantRegResponse() {
-        try {
-            merchantRegistrationResponseChannel.queueDeclare(MERCHANT_REG_RESPONSE_QUEUE, false, false, false, null);
-            System.out.println("register merchant reg response queue");
-
-            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                Gson gson = new Gson();
-                String json = new String(delivery.getBody());
-                System.out.println("delivery for the merhcant: " + json);
-                AccountRegistrationReponse r = gson.fromJson(json, AccountRegistrationReponse.class);
-                System.out.println("ID PRINT MERCHANT " + r.ID);
-                System.out.println(r.status);
-                accountRegMap.put(r.ID, r.status);
-            };
-
-            merchantRegistrationResponseChannel.basicConsume("", true, deliverCallback, consumerTag -> {
-            });
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
