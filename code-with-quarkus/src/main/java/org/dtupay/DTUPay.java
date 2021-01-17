@@ -38,16 +38,11 @@ public class DTUPay {
 
 
     Connection DTUPayConnection;
-    Channel customerRegistrationResponseChannel;
-    Channel merchantRegistrationResponseChannel;
     Channel paymentChannel;
     Channel paymentResponseChannel;
     Channel microservicesChannel;
     Channel replyChannel;
 
-    /*  void onStart(@Observes StartupEvent ev) {
-            LOGGER.info("The application is starting...");
-        }*/
 
     void onStop(@Observes ShutdownEvent ev) {
         try {
@@ -57,11 +52,16 @@ public class DTUPay {
         }
     }
 
-
     AccountManager m = AccountManager.getInstance();
+<<<<<<< HEAD
     TokenManager tokenManager = TokenManager.getInstance();
 
     private Map<String, Boolean> accountRegMap = new HashMap<>();
+=======
+    //to start up token service
+    TokenManager token_service = new TokenManagerFactory().getService();
+
+>>>>>>> 8a98b90e69c709f3a95e8d605f16ea6da9585e81
     private Map<String, ArrayList<String>> newTokenMap = new HashMap<>();
     static DTUPay instance;
 
@@ -77,12 +77,7 @@ public class DTUPay {
 
     public void startUp() {
         dtuPayConnection();
-        createChannels();
-    }
-
-    void createChannels() {
         initializeAllChannels();
-        createChannelRegistrationResponse();
     }
 
     void dtuPayConnection() {
@@ -107,24 +102,18 @@ public class DTUPay {
         }
     }
 
-    void createChannelRegistrationResponse() {
-        try {
-            customerRegistrationResponseChannel = DTUPayConnection.createChannel();
-            System.out.println("Connect customer channel created");
-            merchantRegistrationResponseChannel = DTUPayConnection.createChannel();
-            System.out.println("Connect merchant channel created");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
 
     public String forwardMQtoMicroservices(String message, String routingKey) {
         String correlateID = UUID.randomUUID().toString();
         try {
-            String replyQueueName = replyChannel.queueDeclare().getQueue();
+            String replyQueueName = replyChannel.queueDeclare("reply "+routingKey, false, true, false, null).getQueue();
             AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().correlationId(correlateID)
                     .replyTo(replyQueueName).build();
             microservicesChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
+            // System.out.println("DTU publish: " + message);
+            // System.out.println("replyQueueName: " + replyQueueName);
+            
+            // System.out.println("routingKey: " + routingKey);
             microservicesChannel.basicPublish(EXCHANGE_NAME, routingKey, properties, message.getBytes("UTF-8"));
             final BlockingQueue<String> response = new ArrayBlockingQueue<>(1);
 

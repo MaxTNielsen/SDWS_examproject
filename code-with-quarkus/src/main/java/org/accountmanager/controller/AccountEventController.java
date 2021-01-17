@@ -21,20 +21,16 @@ import java.io.IOException;
 public class AccountEventController {
 
     static String hostName = "localhost";
-    static final String CUSTOMER_REG_RESPONSE_QUEUE = "CUSTOMER_REG_RESPONSE_QUEUE";
-    static final String MERCHANT_REG_RESPONSE_QUEUE = "MERCHANT_REG_RESPONSE_QUEUE";
     static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
-    static final String CUSTOMER_ROUTING_KEY = "accountmanager.customer";
-    static final String MERCHANT_ROUTING_KEY = "accountmanager.merchant";
+    static final String CUSTOMER_REG_ROUTING_KEY = "accountmanager.customer.registration";
+    static final String MERCHANT_REG_ROUTING_KEY = "accountmanager.merchant.registration";
+    static final String CUSTOMER_VALIDATION_ROUTING_KEY = "accountmanager.customer.validation";
+    static final String MERCHANT_VALIDATION_ROUTING_KEY = "accountmanager.merchant.validation";
     static Connection accountEventControllerConnection;
-    static Channel customerChannel;
-    static Channel customerRegResponseChannel;
-    static Channel merchantChannel;
-    static Channel merchantRegResponseChannel;
-
-    void onStart(@Observes StartupEvent ev) {
-        AccountManager.getInstance();
-    }
+    static Channel customerRegChannel;
+    static Channel merchantRegChannel;
+    static Channel customerValidationChannel;
+    static Channel merchantValidationChannel;
 
     void onStop(@Observes ShutdownEvent ev) {
         try {
@@ -50,15 +46,17 @@ public class AccountEventController {
             connectionFactory.setHost(hostName);
             accountEventControllerConnection = connectionFactory.newConnection();
 
-            customerChannel = accountEventControllerConnection.createChannel();
-            customerChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
-            customerRegResponseChannel = accountEventControllerConnection.createChannel();
-            customerRegResponseChannel.queueDeclare(CUSTOMER_REG_RESPONSE_QUEUE, false, false, false, null);
+            customerRegChannel = accountEventControllerConnection.createChannel();
+            customerRegChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
 
-            merchantChannel = accountEventControllerConnection.createChannel();
-            merchantChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
-            merchantRegResponseChannel = accountEventControllerConnection.createChannel();
-            merchantRegResponseChannel.queueDeclare(MERCHANT_REG_RESPONSE_QUEUE, false, false, false, null);
+            merchantRegChannel = accountEventControllerConnection.createChannel();
+            merchantRegChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
+
+            customerValidationChannel = accountEventControllerConnection.createChannel();
+            customerValidationChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
+
+            merchantValidationChannel = accountEventControllerConnection.createChannel();
+            merchantValidationChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -69,13 +67,18 @@ public class AccountEventController {
         ACEConnection();
         listenCustomer();
         listenMerchant();
+        // listenCustomerIDValidation();
+        // listenMerchantIDValidation();
     }
 
-    public static void listenCustomer() {
+    static void listenCustomer() {
         try {
-            String queueName = customerChannel.queueDeclare().getQueue();
-            customerChannel.queueBind(queueName, EXCHANGE_NAME, CUSTOMER_ROUTING_KEY);
+        String queueName = customerRegChannel.queueDeclare("customer  reg queue", false, false, false, null).getQueue();
+            customerRegChannel.queueBind(queueName, EXCHANGE_NAME, CUSTOMER_REG_ROUTING_KEY);
             Object monitor = new Object();
+            customerRegChannel.queuePurge(queueName);
+            customerRegChannel.basicQos(0);
+
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 AMQP.BasicProperties replyProps = new AMQP.BasicProperties
                         .Builder()
@@ -94,15 +97,15 @@ public class AccountEventController {
                 } catch (RuntimeException e) {
                     System.out.println(" [.] " + e.toString());
                 } finally {
-                    customerChannel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
-                    customerChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                    customerRegChannel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
+                    customerRegChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 
                     synchronized (monitor) {
                         monitor.notify();
                     }
                 }
             };
-            customerChannel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
+            customerRegChannel.basicConsume(queueName, false, deliverCallback, consumerTag -> {
             });
         } catch (IOException e) {
             e.printStackTrace();
@@ -111,11 +114,13 @@ public class AccountEventController {
 
     /*!!!!!!!!!!!! MERCHANT !!!!!!!!!!!!*/
 
-    public static void listenMerchant() {
+    static void listenMerchant() {
         try {
-            String queueName = merchantChannel.queueDeclare().getQueue();
-            merchantChannel.queueBind(queueName, EXCHANGE_NAME, MERCHANT_ROUTING_KEY);
-
+        String queueName = merchantRegChannel.queueDeclare("merchant reg queue", false, false, false, null).getQueue();
+        // String queueName = merchantRegChannel.queueDeclare().getQueue();
+            merchantRegChannel.queueBind(queueName, EXCHANGE_NAME, MERCHANT_REG_ROUTING_KEY);
+            customerRegChannel.queuePurge(queueName);
+            customerRegChannel.basicQos(0);
             Object monitor = new Object();
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 AMQP.BasicProperties replyProps = new AMQP.BasicProperties
@@ -135,8 +140,8 @@ public class AccountEventController {
                 } catch (RuntimeException e) {
                     System.out.println(" [.] " + e.toString());
                 } finally {
-                    merchantChannel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
-                    merchantChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                    merchantRegChannel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
+                    merchantRegChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 
                     synchronized (monitor) {
                         monitor.notify();
@@ -144,10 +149,56 @@ public class AccountEventController {
                 }
             };
 
-            merchantChannel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
+            merchantRegChannel.basicConsume(queueName, false, deliverCallback, consumerTag -> {
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    static void listenCustomerIDValidation()
+    {
+        try {
+            String queueName = customerValidationChannel.queueDeclare().getQueue();
+            customerValidationChannel.queueBind(queueName, EXCHANGE_NAME, CUSTOMER_VALIDATION_ROUTING_KEY);
+
+            Object monitor = new Object();
+            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                AMQP.BasicProperties replyProps = new AMQP.BasicProperties
+                        .Builder()
+                        .correlationId(delivery.getProperties().getCorrelationId())
+                        .build();
+
+                String response = "";
+
+                try {
+                    String message = new String(delivery.getBody(), "UTF-8");
+                    String ID = message;
+                    System.out.println("[x] Customer validation receiving " + message);
+
+                    boolean ans = AccountManager.getInstance().hasCustomer(ID);
+                    response = Boolean.toString(ans);
+                } catch (RuntimeException e) {
+                    System.out.println(" [.] " + e.toString());
+                } finally {
+                    customerValidationChannel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
+                    customerValidationChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+
+                    synchronized (monitor) {
+                        monitor.notify();
+                    }
+                }
+            };
+
+            customerValidationChannel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void listenMerchantIDValidation()
+    {
+        
     }
 }

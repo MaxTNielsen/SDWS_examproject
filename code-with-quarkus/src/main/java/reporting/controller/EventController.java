@@ -2,15 +2,13 @@ package reporting.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.DeliverCallback;
+import com.rabbitmq.client.*;
 import reporting.model.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.concurrent.TimeoutException;
 
 public class EventController {
     private TransactionManager transactionManager;
@@ -97,7 +95,7 @@ public class EventController {
             responseObjects[0] = moneyFlow;
             response = new Event("MANAGER_MONEY_FLOW", responseObjects);
         }
-        else if(message.getEventType().equals("CONSUMER_REPORT"))
+        else if(message.getEventType().equals("COSTUMER_REPORT"))
         {
             if(obj == null || obj.length < 1)
             {
