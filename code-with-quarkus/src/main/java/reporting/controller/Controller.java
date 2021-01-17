@@ -19,7 +19,7 @@ public class Controller {
         manager = TransactionManager.getInstance();
     }
 
-    public Controller getInstance()
+    public static Controller getInstance()
     {
         if(instance == null)
         {
@@ -28,12 +28,14 @@ public class Controller {
         return instance;
     }
 
-    void onStop(@Observes ShutdownEvent ev)
-    {
-
+    void onStart(@Observes StartupEvent ev) throws Exception {
+        System.out.println("report startup");
+        manager = TransactionManager.getInstance();
+        EventController.getInstance();
+        EventController.getInstance().listenEvent();
     }
 
-    void onStart(@Observes StartupEvent ev)
+    void onStop(@Observes ShutdownEvent ev)
     {
 
     }
