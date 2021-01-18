@@ -1,5 +1,10 @@
 package reporting.model;
 
+import dtu.ws.fastmoney.Account;
+import dtu.ws.fastmoney.BankService;
+import dtu.ws.fastmoney.BankServiceException_Exception;
+import dtu.ws.fastmoney.BankServiceService;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -10,6 +15,7 @@ public class CustomerTransaction {
     private int amount;
     private LocalDateTime timeStamp;
     private boolean refunded;
+    static BankService bank = new BankServiceService().getBankServicePort();
 
     public CustomerTransaction()
     {
@@ -19,8 +25,13 @@ public class CustomerTransaction {
     public CustomerTransaction(Transaction _transaction)
     {
         this.token = _transaction.getToken();
-        // TODO this should change to get the Merchant name from ClientManager
-        this.merchantName = _transaction.getMerchId();
+        try {
+            Account bankAccount = bank.getAccount(_transaction.getMerchId());
+            this.merchantName = bankAccount.getUser().getFirstName() + bankAccount.getUser().getLastName();
+        } catch (BankServiceException_Exception e) {
+            this.merchantName = _transaction.getMerchId();
+            System.out.println("Merchant account does not found in bank");
+        }
         this.amount = _transaction.getAmount();
         this.timeStamp = _transaction.getTimeStamp();
         this.refunded = _transaction.isRefunded();
