@@ -30,7 +30,11 @@ public class TokenManagerSteps {
 	@When("I receive TOKEN_GENERATION_REQUEST")
 	public void i_receive_token_generation_request() throws Exception {
 		TokenGenerationRequest request = new TokenGenerationRequest("customerid",1);
-		Event event = new Event("TOKEN_GENERATION_REQUEST", new Object[] { request });
+		Object[] objects = new Object[3];
+		objects[0] = "c";
+		objects[1] = request.getCustomerId();
+		objects[2] = request;
+		Event event = new Event("TOKEN_GENERATION_REQUEST", objects);
 		response = tokenManager.receiveEvent(event);
 
 	}
