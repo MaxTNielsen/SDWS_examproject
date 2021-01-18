@@ -9,27 +9,26 @@ public class Transaction {
     private String customId;
     private int amount;
     private boolean approved = false;
-    private LocalDateTime timeStamp;
+    //private LocalDateTime timeStamp;
     private boolean refunded;
 
     public Transaction(){
 
     }
 
-    public Transaction(String merchId, String customId, int amount) {
-        this.merchId = merchId;
-        this.customId = customId;
-        this.amount = amount;
-        this.timeStamp= LocalDateTime.now();
-        this.refunded = false;
-    }
+//    public Transaction(String merchId, String customId, int amount) {
+//        this.merchId = merchId;
+//        this.customId = customId;
+//        this.amount = amount;
+//        this.timeStamp= LocalDateTime.now();
+//        this.refunded = false;
+//    }
 
-    public Transaction(String tokenID, String merchId, String customId, int amount) {
+    public Transaction(String tokenID, String merchId, int amount) {
         this.tokenID = tokenID;
         this.merchId = merchId;
-        this.customId = customId;
         this.amount = amount;
-        this.timeStamp= LocalDateTime.now();
+        //this.timeStamp= LocalDateTime.now();
         this.refunded = false;
     }
 
@@ -72,7 +71,7 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public LocalDateTime getTimeStamp(){return this.timeStamp;}
+   // public LocalDateTime getTimeStamp(){return this.timeStamp;}
 
     public boolean isRefunded(){return this.refunded;}
 

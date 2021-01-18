@@ -120,4 +120,11 @@ public class TransactionManager {
             transactions.get(_tokenID).setToRefunded();
         }
     }
+
+    public void cleanAll ()
+    {
+        transactions.clear();
+        customerTransactionHistory.clear();
+       merchantTransactionHistory.clear();
+    }
 }

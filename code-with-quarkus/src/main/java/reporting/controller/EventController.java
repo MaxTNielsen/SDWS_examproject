@@ -181,4 +181,9 @@ public class EventController {
         }
         return response;
     }
+
+    public void clearAll ()
+    {
+        transactionManager.cleanAll();
+    }
 }
