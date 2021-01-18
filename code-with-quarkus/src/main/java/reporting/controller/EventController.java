@@ -7,7 +7,9 @@ import reporting.model.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 public class EventController {
@@ -17,16 +19,30 @@ public class EventController {
     static String hostName = "localhost";
     static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
 
-    static final String REPORTING_ROUTING_KEY = "reporting";
+    static final String REPORTING_ROUTING_KEY = "reporting.#";
 
     static Connection reportCreatorEventControllerConnection;
 
     static Channel reportChannel;
 
+    GsonBuilder builder = new GsonBuilder();
+    Gson gson = builder.create();
 
-    private EventController()
-    {
+
+    private EventController() {
         transactionManager = TransactionManager.getInstance();
+
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost(hostName);
+        try
+        {
+            reportCreatorEventControllerConnection = connectionFactory.newConnection();
+            reportChannel = reportCreatorEventControllerConnection.createChannel();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static EventController getInstance() {
@@ -70,7 +86,7 @@ public class EventController {
                     }
                 }
             };
-            reportChannel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
+            reportChannel.basicConsume(queueName, false, deliverCallback, consumerTag -> {
             });
         } catch (IOException e) {
             e.printStackTrace();
@@ -97,31 +113,44 @@ public class EventController {
         }
         else if(message.getEventType().equals("COSTUMER_REPORT"))
         {
-            if(obj == null || obj.length < 1)
+            /*System.err.println("Invalid request message! String object does not found");
+            response = new Event("INVALID_REQUEST_ERROR");
+            return response;*/
+            if(obj == null || obj.length < 3)
             {
                 System.err.println("Invalid request message! String object does not found");
                 response = new Event("INVALID_REQUEST_ERROR");
                 return response;
             }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String customerID = (String) obj[0];
-            LocalDateTime intervalStart = (LocalDateTime) obj[1];
-            LocalDateTime intervalEnd = (LocalDateTime) obj[2];
+            LocalDateTime intervalStart = LocalDateTime.parse((String) obj[1], formatter);
+            LocalDateTime intervalEnd = LocalDateTime.parse((String) obj[2], formatter);
             ArrayList<CustomerTransaction> transactions = transactionManager.customerReport(customerID, intervalStart, intervalEnd);
+            System.out.println(gson.toJson(transactions));
             Object responseObjects[] = new Object[1];
             responseObjects[0] = transactions;
             response = new Event("CUSTOMER_REPORT_RESPONSE", responseObjects);
         }
         else if(message.getEventType().equals("MERCHANT_REPORT"))
         {
-            if(obj == null || obj.length < 1)
+            //TODO REMOVE THIS
+            System.out.println("merchant report reporting");
+            UUID uuid = UUID.randomUUID();
+            String s = UUID.randomUUID().toString();
+            Transaction transaction = new Transaction(s, "Merchant-1","Consumer-1", 155 );
+            transactionManager.addTransaction(transaction);
+            //
+            if(obj == null || obj.length < 3)
             {
                 System.err.println("Invalid request message! String object does not found");
                 response = new Event("INVALID_REQUEST_ERROR");
                 return response;
             }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String merchantID = (String) obj[0];
-            LocalDateTime intervalStart = (LocalDateTime) obj[1];
-            LocalDateTime intervalEnd = (LocalDateTime) obj[2];
+            LocalDateTime intervalStart = LocalDateTime.parse((String) obj[1], formatter);
+            LocalDateTime intervalEnd = LocalDateTime.parse((String) obj[2], formatter);
             ArrayList<MerchantTransaction> transactions = transactionManager.merchantReport(merchantID, intervalStart, intervalEnd);
             Object responseObjects[] = new Object[1];
             responseObjects[0] = transactions;

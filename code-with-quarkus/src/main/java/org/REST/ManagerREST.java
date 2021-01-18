@@ -23,7 +23,7 @@ public class ManagerREST {
     @GET
     public Response createReport()
     {
-        String getRouting = "reporting";
+        String getRouting = "reporting.manager.report";
         String requestType = "MANAGER_REPORT";
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
@@ -43,7 +43,7 @@ public class ManagerREST {
     @GET
     public Response getMoneyFlow()
     {
-        String getRouting = "reporting";
+        String getRouting = "reporting.manager.moneyflow";
         String requestType = "MANAGER_MONEY_FLOW";
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();

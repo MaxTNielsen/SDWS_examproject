@@ -2,7 +2,6 @@ package org.REST;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import org.dtupay.DTUPay;
 import reporting.model.Event;
 
@@ -41,18 +40,11 @@ public class MerchantsREST {
     public Response createReport(@QueryParam("id") String ID,
                                  @QueryParam("intervalStart") String intervalStart,
                                  @QueryParam("intervalEnd") String intervalEnd) {
-        System.out.println("received");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime intervalStartPoint = LocalDateTime.parse(intervalStart, formatter);
-        LocalDateTime intervalEndPoint = LocalDateTime.parse(intervalEnd, formatter);
-        String setRouting = "reporting";
+        String setRouting = "reporting.merchant";
         String requestType = "MERCHANT_REPORT";
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        Object obj[] = new Object[3];
-        obj[0] = ID;
-        obj[1] = intervalStartPoint;
-        obj[2] = intervalEndPoint;
+        Object obj[] = new Object[] {ID, intervalStart, intervalEnd};
         Event request = new Event(requestType, obj);
         String requestString = gson.toJson(request);
         System.out.println("Merchant report generation for " + requestString +" has started");
