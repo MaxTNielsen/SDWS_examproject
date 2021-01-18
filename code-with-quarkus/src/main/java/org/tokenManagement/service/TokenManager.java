@@ -25,8 +25,8 @@ public class TokenManager {
 
     public TokenManager() {
         addToken(new Token("123", "000000-0001"));
-        addToken(new Token("888", "0aa0383e-df5a-4afb-85f7-0dd5d33dfb77"));
-        addToken(new Token("999", "cfb38983-1e05-4200-a7dc-86948f405de6"));
+        addToken(new Token("888", "038b98b6-2711-461d-83ca-7e3d10acd158"));
+        addToken(new Token("999", "d7d42ca5-3923-4def-a7d0-4be6d9622764"));
         addToken(new Token("456", "000000-0002"));
         addToken(new Token("789", "000000-0002"));
         RabbitMqListener.listenWithRPCPattern();
@@ -66,7 +66,7 @@ public class TokenManager {
         } else if (event.getEventType().equals("TOKEN_VALIDATION_REQUEST")) {
 
             //Get request
-            String requestString = gson.toJson(event.getArguments()[3]);
+            String requestString = gson.toJson(event.getArguments()[2]);
             TokenValidationRequest received_event = gson.fromJson(requestString, TokenValidationRequest.class);
             //business logic
             String tokenId = received_event.getToken();

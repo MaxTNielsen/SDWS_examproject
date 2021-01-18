@@ -8,6 +8,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
 
+import io.cucumber.core.gherkin.messages.internal.gherkin.Token;
 import io.quarkus.runtime.ShutdownEvent;
 import org.tokenManagement.messaging.model.TokenValidationRequest;
 import payment.PaymentBL;
@@ -16,6 +17,7 @@ import org.Json.*;
 
 import org.accountmanager.model.AccountManager;
 import org.tokenManagement.service.TokenManager;
+import payment.TokenValidationResponse;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -174,18 +176,29 @@ public class DTUPay {
     public boolean DTUPayDoPayment(Transaction t) {
         Gson gson = new Gson();
         TokenValidationRequest tokenValidationRequest = new TokenValidationRequest(t.getToken());
-        Object[] objects = new Object[4];
+        Object[] objects = new Object[3];
         objects[0] = "m";
         objects[1] = t.getMerchId();
-        objects[2] = t;
-        objects[3] = tokenValidationRequest;
+        objects[2] = tokenValidationRequest;
         Event e = new Event("TOKEN_VALIDATION_REQUEST", objects);
+
         String serilizedmessage = gson.toJson(e);
 
-        if (!Boolean.parseBoolean(forwardMQtoMicroservices(e.toString(), ACCOUNT_VALIDATION_ROUTING_KEY)))
+        if (!Boolean.parseBoolean(forwardMQtoMicroservices(serilizedmessage, ACCOUNT_VALIDATION_ROUTING_KEY)))
             return false;
 
-        if (forwardMQtoMicroservices(serilizedmessage, TOKEN_ROUTING_KEY).equals(" "))
+        String response = forwardMQtoMicroservices(serilizedmessage, TOKEN_ROUTING_KEY);
+
+        Event event = gson.fromJson(response, Event.class);
+
+        String jsonString = gson.toJson(event.getArguments()[0]);
+        TokenValidationResponse tokenValidationResponse = gson.fromJson(jsonString, TokenValidationResponse.class);
+
+        t.setCustomId(tokenValidationResponse.getCustomerId());
+        t.setApproved(true);
+        tokenValidationResponse.isValid();
+
+        if (!tokenValidationResponse.isValid())
             return false;
 
         String s = gson.toJson(t);

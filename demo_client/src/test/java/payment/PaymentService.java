@@ -58,7 +58,7 @@ public class PaymentService {
     public boolean pay(String tokenID, String mid, int amount) throws WebApplicationException {
         Transaction t = new Transaction(tokenID ,mid, amount);
 
-        Response response = baseUrl.path("payment").request().post(Entity.entity(t, MediaType.APPLICATION_JSON_TYPE));
+        Response response = baseUrl.path("merchants").path("payment").request().post(Entity.entity(t, MediaType.APPLICATION_JSON_TYPE));
         if (response.getStatus() == 201) {
             response.close();
             t.setApproved(true);

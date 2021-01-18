@@ -49,7 +49,6 @@ public class MessageParsingPort {
 		
 		listenDTUPay = connection.createChannel();
 		listenDTUPay.exchangeDeclare(EXCHANGE_NAME, "topic");
-    	
     }
     
     public void listen() throws IOException, TimeoutException {
@@ -57,58 +56,11 @@ public class MessageParsingPort {
     	listenForPayment();
     }
 
-
-
-    
-//    public String requestTokenValidation(String message) throws TimeoutException {
-//        String correlateID = UUID.randomUUID().toString();
-//        try {
-////        	ConnectionFactory connectionFactory = new ConnectionFactory();
-////            connectionFactory.setHost("localhost");
-////    		Connection connection = connectionFactory.newConnection();
-//            Channel replyChannel = connection.createChannel();
-//            Channel channel = connection.createChannel();
-//            
-//            String replyQueueName = replyChannel.queueDeclare().getQueue();
-//            AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().correlationId(correlateID)
-//                    .replyTo(replyQueueName).build();
-//            channel.exchangeDeclare(EXCHANGE_NAME, "topic");
-//            channel.basicPublish(EXCHANGE_NAME, "token.request", properties, message.getBytes("UTF-8"));
-//            final BlockingQueue<String> response = new ArrayBlockingQueue<>(1);
-//
-//            String ctag = channel.basicConsume(replyQueueName, true, (consumerTag, delivery) -> {
-//                if (delivery.getProperties().getCorrelationId().equals(correlateID)) {
-//                    response.offer(new String(delivery.getBody(), "UTF-8"));
-//                }
-//            }, consumerTag -> {
-//            });
-//
-//            String result;
-//            try {
-//                result = response.take();
-//                channel.basicCancel(ctag);
-//                System.out.println("result: " + result);
-//                return result;
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//                return "";
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return "";
-//        }
-//    }
-
-	 
 	    public static void listenForPayment() throws TimeoutException {
 	        try {
-//	        	ConnectionFactory connectionFactory = new ConnectionFactory();
-//		        connectionFactory.setHost("localhost");
-//				Connection connection;
-//		        connection = connectionFactory.newConnection();
-//		        Channel channel = connection.createChannel();
 	            String queueName = listenDTUPay.queueDeclare().getQueue();
 	            listenDTUPay.queueBind(queueName, EXCHANGE_NAME, "payment.#");
+
 				System.out.println("Inside Payment listen method");
 
 	            Object monitor = new Object();
@@ -123,16 +75,14 @@ public class MessageParsingPort {
 	                try {
 	                	Gson gson = new Gson();
 	                	String message = new String(delivery.getBody(), "UTF-8");
-	                	Event responseEvent = gson.fromJson(message ,Event.class);
-	                	String requestString = gson.toJson(responseEvent.getArguments()[2]);
 
 	                	//This can handle the date inside Transaction instance
-	                	Transaction t = gson.fromJson(responseEvent.getArguments()[2].toString(), Transaction.class);
-	                	//Transaction t = gson.fromJson(requestString,Transaction.class);
-		               
-		                System.out.println("[x] receiving "+requestString);
+	                	Transaction t = gson.fromJson(message, Transaction.class);
+
+						System.out.println("Inside payment callback");
+		                System.out.println("[x] receiving "+ t.toString());
 		                
-		                Boolean successful = payment.makeTransaction(t);
+		                boolean successful = payment.makeTransaction(t);
 		                response = Boolean.toString(successful);
 	                } catch (RuntimeException e) {
 	                    System.out.println(" [.] " + e.toString());
@@ -145,7 +95,6 @@ public class MessageParsingPort {
 	                    }
 	                }
 	            };
-
 	            listenDTUPay.basicConsume(queueName, false, deliverCallback, consumerTag -> {
 	            });
 	        } catch (IOException e) {

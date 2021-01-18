@@ -98,7 +98,7 @@ public class PaymentBLStepDef {
     @When("the merchant initiates a payment for {int} kr by the customer")
     public void theMerchantInitiatesAPaymentForKrByTheCustomer(int amount) {
         this.amount = amount;
-        successful = payment.pay(token, "fe9a206c-a32c-42da-880b-8f051cec6d29", amount);
+        successful = payment.pay(token, "06ab138a-3c61-42d9-bbfe-1543d46aa58c", amount);
     }
 
     @Then("the payment is successful")
