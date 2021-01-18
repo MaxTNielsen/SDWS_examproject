@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TokenManagerSteps {
 	TokenManager tokenManager;
 	Event event;
-	String response;
+	Event response;
 	public TokenManagerSteps() {
 		tokenManager = new TokenManager();
 	}
@@ -25,39 +25,26 @@ public class TokenManagerSteps {
 		TokenGenerationRequest request = new TokenGenerationRequest("customerid",1);
 		Event event = new Event("TOKEN_GENERATION_REQUEST", new Object[] { request });
 
-		//convert to string
-		Gson gson = new Gson();
-		String request_string = gson.toJson(event);
-		response = tokenManager.receiveEvent(request_string);
+		response = tokenManager.receiveEvent(event);
 
 	}
 
 	@Then("I have sent TOKEN_GENERATION_RESPONSE")
 	public void i_have_sent_token_generation_response() {
 
-		//convert to Event
-		Gson gson = new Gson();
-		Event event = gson.fromJson(response,Event.class);
-		assertTrue("TOKEN_GENERATION_RESPONSE".equals(event.getEventType()));
+		assertTrue("TOKEN_GENERATION_RESPONSE".equals(response.getEventType()));
 	}
 
 	@When("I receive TOKEN_VALIDATION_REQUEST")
 	public void i_recieve_token_validation_request() throws Exception {
 		TokenValidationRequest request = new TokenValidationRequest("123");
 		Event event = new Event("TOKEN_VALIDATION_REQUEST", new Object[] { request });
-		//convert to string
-		Gson gson = new Gson();
-		String request_string = gson.toJson(event);
-		response = tokenManager.receiveEvent(request_string);
+		response = tokenManager.receiveEvent(event);
 	}
 
 	@Then("I have sent TOKEN_VALIDATION_RESPONSE")
 	public void i_have_sent_token_validation_response() {
-		//convert to Event
-		Gson gson = new Gson();
-		Event event = gson.fromJson(response,Event.class);
-
-		assertTrue("TOKEN_VALIDATION_RESPONSE".equals(event.getEventType()));
+		assertTrue("TOKEN_VALIDATION_RESPONSE".equals(response.getEventType()));
 	}
 
 

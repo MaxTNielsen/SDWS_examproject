@@ -77,8 +77,12 @@ public class TransactionManager {
 
     public ArrayList<CustomerTransaction> customerReport(String _customerId, LocalDateTime _periodStart, LocalDateTime _periodEnd)
     {
-        ArrayList<String> tokenIDs = customerTransactionHistory.get(_customerId);
         ArrayList<CustomerTransaction> transactionList = new ArrayList<>();
+        if(!customerTransactionHistory.containsKey(_customerId))
+        {
+            return transactionList;
+        }
+        ArrayList<String> tokenIDs = customerTransactionHistory.get(_customerId);
         for(String currentTokenID:tokenIDs)
         {
             if(transactions.get(currentTokenID).getTimeStamp().isAfter(_periodStart) &&
@@ -92,8 +96,12 @@ public class TransactionManager {
 
     public ArrayList<MerchantTransaction> merchantReport(String _merchantId, LocalDateTime _periodStart, LocalDateTime _periodEnd)
     {
-        ArrayList<String> tokenIDs = merchantTransactionHistory.get(_merchantId);
         ArrayList<MerchantTransaction> transactionList = new ArrayList<>();
+        if(!merchantTransactionHistory.containsKey(_merchantId))
+        {
+            return transactionList;
+        }
+        ArrayList<String> tokenIDs = merchantTransactionHistory.get(_merchantId);
         for(String currentTokenID:tokenIDs)
         {
             if(transactions.get(currentTokenID).getTimeStamp().isAfter(_periodStart) &&

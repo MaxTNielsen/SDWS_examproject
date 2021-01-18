@@ -1,8 +1,10 @@
 package org.tokenManagement.messaging;
 
+import com.google.gson.Gson;
 import com.rabbitmq.client.*;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
+import org.tokenManagement.messaging.model.Event;
 import org.tokenManagement.service.TokenManager;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -45,14 +47,21 @@ public class RabbitMqListener {
                         .build();
 
                 String response = "";
+				try {
+					String request = new String(delivery.getBody(), "UTF-8");
+					System.out.println("Token Service [x] receiving " + request);
+					//convert received string to event
+					Gson gson = new Gson();
+					Event event = gson.fromJson(request,Event.class);
 
-                try {
-                    String request = new String(delivery.getBody(), "UTF-8");
-                    System.out.println("Token Service [x] receiving " + request);
+					//call TokenManager to handle request, returns a string of response
+					TokenManager tokenManager = TokenManager.getInstance();
+					Event response_event = tokenManager.receiveEvent(event);
 
-                    //call TokenManager to handle request, returns a string of response
-                    TokenManager tokenManager = TokenManager.getInstance();
-                    response = tokenManager.receiveEvent(request);
+					//convert response event to string
+					if (response_event != null)
+						response = gson.toJson(response_event);
+
 
                 } catch (RuntimeException e) {
                     System.out.println(" [.] " + e.toString());
