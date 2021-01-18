@@ -177,16 +177,19 @@ public class AccountEventController {
                 try {
                     Gson gson = new Gson();
                     String json = new String(delivery.getBody());
-                    System.out.println("Transaction: " + json);
                     Event e = gson.fromJson(json, Event.class);
                     String ID = e.getArguments()[1].toString();
+                    System.out.println("Inside ID validation: " + ID);
                     boolean ans;
 
                     if (e.getArguments()[0].toString().equals("m")) {
                         ans = AccountManager.getInstance().hasMerchant(ID);
-                    } else
+                    } else {
                         ans = AccountManager.getInstance().hasCustomer(ID);
+                        System.out.println("Customer matched ");
+                    }
 
+                    System.out.println("Answer for validation " + ans);
                     response = Boolean.toString(ans);
 
                 } catch (RuntimeException e) {

@@ -175,11 +175,28 @@ public class DTUPay {
         }
     }*/
 
-    public String sendTokenGenerationRequest(TokenGenerationRequest request) throws IOException {
+    public String sendTokenGenerationRequest(TokenGenerationRequest request) {
+        System.out.println("Inside sendTokenGenerationRequest " + request.toString());
         String response = "";
-        Event event = new Event("TOKEN_GENERATION_REQUEST", new Object[]{request});
+        Object[] objects = new Object[3];
+        objects[0] = "c";
+        objects[1] = request.getCustomerId();
+        objects[2] = request;
+        Event e = new Event("TOKEN_GENERATION_REQUEST", objects);
+        Gson gson = new Gson();
+        String serilizedmessage = gson.toJson(e);
+        if (!Boolean.parseBoolean(forwardMQtoMicroservices(serilizedmessage, ACCOUNT_VALIDATION_ROUTING_KEY)))
+            return response;
+        System.out.println("Finished ID validation");
+        response = forwardMQtoMicroservices(serilizedmessage, TOKEN_ROUTING_KEY);
+
+        if (response.equals(""))
+            return response;
+
+        /*Event event = new Event("TOKEN_GENERATION_REQUEST", new Object[]{request});
         String message = new Gson().toJson(event);
-        response = forwardMQtoMicroservices(message, TOKEN_ROUTING_KEY);
+        response = forwardMQtoMicroservices(message, TOKEN_ROUTING_KEY);*/
+
         System.out.println("DTU pay get response:" + response);
         return response;
     }
@@ -203,23 +220,6 @@ public class DTUPay {
         //Do payment
         //arguments: string that can be received by the payment system merchantID, CustomerID, Balance - should transaction object
         //return boolean
-        return true;
-    }
-
-    public boolean generateTokens(TokenGenerationRequest t) {
-        //Check customer ID first
-        //arguments: customertID, c
-        //return boolean
-        Object[] objects = new Object[3];
-        objects[0] = "c"; //align with the tokenmanagement
-        objects[1] = t.getCustomerId();
-        objects[2] = t;
-        Event e = new Event("TOKEN_GENERATION_REQUEST", objects);
-        if (!Boolean.parseBoolean(forwardMQtoMicroservices(e.toString(), ACCOUNT_VALIDATION_ROUTING_KEY)))
-            return false;
-        String response = forwardMQtoMicroservices(e.toString(), TOKEN_ROUTING_KEY);
-        if (response.equals(""))
-            return false;
         return true;
     }
 }
