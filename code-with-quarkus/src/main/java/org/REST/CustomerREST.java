@@ -16,9 +16,12 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+
 @Path("/customers")
 public class CustomerREST {
     DTUPay dtuPay = DTUPay.getInstance();
+    GsonBuilder builder = new GsonBuilder();
+    Gson gson = builder.create();
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
@@ -41,18 +44,33 @@ public class CustomerREST {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response doTransaction(Transaction t) throws IOException {
-
         if (dtuPay.DTUPayDoPayment(t)) {
-            return Response.ok().build();
+
+            String result = dtuPay.sendPaymentRequest(t);
+            boolean b = Boolean.parseBoolean(result);
+            boolean reported = false;
+            if (b) {
+                String setRouting = "reporting.payment";
+                String requestType = "NEW_TRANSACTION";
+                Object obj[] = new Object[]{(Object) t};
+                Event request = new Event(requestType, obj);
+                String requestString = gson.toJson(request);
+                Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
+                /*if(response.getEventType().equals("CUSTOMER_REPORT_RESPONSE"))
+                {
+                    reported = true;
+                }*/
+
+                System.out.println("Transaction successful");
+
+                return Response.ok().build();
+            } else {
+                System.out.println("Transaction failed");
+                return Response.status(400, "Transaction failed").build();
+            }
         }
-        return Response.status(400, "Transcation not completed").build();
-
-        /*if (dtuPay.getTransactionMap().containsKey(t.getToken()) && dtuPay.getTransactionMap().get(t.getToken()))
-            return Response.ok().build();
-        else
-            return Response.status(400, "Registration failed").build();*/
+        return Response.ok().build();
     }
-
 
     @Path("/report")
     @Produces(MediaType.APPLICATION_JSON)
@@ -60,23 +78,14 @@ public class CustomerREST {
     public Response createReport(@QueryParam("id") String ID,
                                  @QueryParam("intervalStart") String intervalStart,
                                  @QueryParam("intervalEnd") String intervalEnd) {
-        System.out.println("received");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime intervalStartPoint = LocalDateTime.parse(intervalStart, formatter);
-        LocalDateTime intervalEndPoint = LocalDateTime.parse(intervalEnd, formatter);
-        String setRouting = "reporting";
+        String setRouting = "reporting.customer";
         String requestType = "COSTUMER_REPORT";
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        Object obj[] = new Object[3];
-        obj[0] = ID;
-        obj[1] = intervalStartPoint;
-        obj[2] = intervalEndPoint;
+        Object obj[] = new Object[]{ID, intervalStart, intervalEnd};
         Event request = new Event(requestType, obj);
         String requestString = gson.toJson(request);
-        System.out.println("Costumer report generation for " + requestString + " has started");
         Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
-        if (!response.getEventType().equals("CUSTOMER_REPORT_RESPONSE")) {
+        if(!response.getEventType().equals("CUSTOMER_REPORT_RESPONSE"))
+        {
             return Response.status(404, "Report generation failure").build();
         }
         return Response.ok(response.getArguments()[0], MediaType.APPLICATION_JSON).build();
@@ -89,9 +98,9 @@ public class CustomerREST {
         System.out.println("[REST] POST: " + request.toString());
         //dtuPay.startUp();
         String response = dtuPay.sendTokenGenerationRequest(request);
-        System.out.println("[REST] Response: "+ response);
+        System.out.println("[REST] Response: " + response);
         if (!response.equals(""))
-            return Response.ok(response,MediaType.APPLICATION_JSON).build();
+            return Response.ok(response, MediaType.APPLICATION_JSON).build();
         else
             return Response.status(400, "Token Generation Failed").build();
 

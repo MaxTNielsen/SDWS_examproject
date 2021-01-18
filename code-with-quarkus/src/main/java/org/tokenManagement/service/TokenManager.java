@@ -1,7 +1,8 @@
 package org.tokenManagement.service;
+
 import com.google.gson.Gson;
 
-import org.tokenManagement.messaging.model.*;
+
 import org.tokenManagement.model.Token;
 import org.tokenManagement.utils.TokenGenerator;
 
@@ -9,42 +10,71 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.tokenManagement.messaging.RabbitMqListener;
+import org.tokenManagement.messaging.model.Event;
 
-import org.tokenManagement.messaging.*;
+import org.tokenManagement.messaging.model.TokenGenerationRequest;
+import org.tokenManagement.messaging.model.TokenGenerationResponse;
+import org.tokenManagement.messaging.model.TokenValidationRequest;
+import org.tokenManagement.messaging.model.TokenValidationResponse;
 
 
 public class TokenManager {
 
     static TokenManager instance;
     public Map<String, Token> tokens = new HashMap<>();
-    public TokenManager()
-    {
 
-        addToken(new Token("123","000000-0001"));
-        addToken(new Token("456","000000-0002"));
-        addToken(new Token("789","000000-0002"));
+    public TokenManager() {
+
+        addToken(new Token("123", "000000-0001"));
+        addToken(new Token("456", "000000-0002"));
+        addToken(new Token("789", "000000-0002"));
         RabbitMqListener.listenWithRPCPattern();
 
     }
+
     public static TokenManager getInstance() {
         if (instance == null)
             instance = new TokenManager();
         return instance;
     }
 
+<<<<<<< HEAD
 
 
     public Event receiveEvent(Event event) throws Exception {
 
+=======
+    //implement EventReceiver
+    public String receiveEvent(String request) throws Exception {
+        //System.out.println("Request String:" + request);
+        //Convert string to Event
+        Gson gson = new Gson();
+        Event event = gson.fromJson(request, Event.class);
+>>>>>>> 97e97d5d0b0157934712e8e2d38e5de17aaf111e
         Event event_to_sendback = null;
        Gson gson = new Gson();
         if (event.getEventType().equals("TOKEN_GENERATION_REQUEST")) {
+<<<<<<< HEAD
             //Get request
             String requestString = gson.toJson(event.getArguments()[0]);
             TokenGenerationRequest received_event = gson.fromJson(requestString,TokenGenerationRequest.class);
             //business logic
             ArrayList<String> tokens=getNewTokens(received_event.getCustomerId(), received_event.getNumberOfTokens());
             System.out.println("[Token Manager] handled: "+"GENERATE_TOKEN");
+=======
+            //Translate received event
+            String jsonString2 = gson.toJson(event.getArguments()[0]);
+            TokenGenerationRequest received_event = gson.fromJson(jsonString2, TokenGenerationRequest.class);
+
+            //prepare response
+            TokenGenerationResponse response_event = new TokenGenerationResponse();
+            event_to_sendback = new Event("TOKEN_GENERATION_RESPONSE", new Object[]{response_event});
+
+            //call business logic of handling token generation
+            ArrayList<String> tokens = getNewTokens(received_event.getCustomerId(), received_event.getNumberOfTokens());
+            System.out.println("event handled: " + "GENERATE_TOKEN");
+>>>>>>> 97e97d5d0b0157934712e8e2d38e5de17aaf111e
 
             if (tokens.size() > 0) {
                 //set response
@@ -58,12 +88,23 @@ public class TokenManager {
             }
 
         } else if (event.getEventType().equals("TOKEN_VALIDATION_REQUEST")) {
+<<<<<<< HEAD
             //Get request
             String requestString = gson.toJson(event.getArguments()[0]);
             TokenValidationRequest received_event = gson.fromJson(requestString,TokenValidationRequest.class);
+=======
+            //Translate received event
+            String jsonString3 = gson.toJson(event.getArguments()[0]);
+            TokenValidationRequest received_event = gson.fromJson(jsonString3, TokenValidationRequest.class);
+
+            //prepare response
+            TokenValidationResponse response_event = new TokenValidationResponse();
+            event_to_sendback = new Event("TOKEN_VALIDATION_RESPONSE", new Object[]{response_event});
+>>>>>>> 97e97d5d0b0157934712e8e2d38e5de17aaf111e
 
             //business logic
             String tokenId = received_event.getToken();
+<<<<<<< HEAD
             TokenValidationResponse response_event = validateToken(tokenId);
             //create response event
             event_to_sendback = new Event("TOKEN_VALIDATION_RESPONSE", new Object[] { response_event });
@@ -72,10 +113,28 @@ public class TokenManager {
 
             //System.out.println("[Token Manager] Created response: "+event_to_sendback.toString());
 
+=======
+            //check if the token exists
+            if (tokens.containsKey(tokenId)) {
+                //get customer if token exists
+                customerId = tokens.get(tokenId).getUserId();
+                if (!tokens.get(tokenId).isUsed()) {
+                    isValid = true;
+                    //after validation, set the token as used
+                    tokens.get(tokenId).setUsed(true);
+                }
+            }
+            System.out.println("event handled: " + "VALIDATE_TOKEN");
+            //set response
+            response_event.setCustomerId(customerId);
+            response_event.setValid(isValid);
+            System.out.println("[Token Manager] Created response: " + event_to_sendback.toString());
+            //return event_to_sendback;
+            responseString = gson.toJson(event_to_sendback);
+>>>>>>> 97e97d5d0b0157934712e8e2d38e5de17aaf111e
 
-        }
-        else {
-            System.out.println("[Token Manager] Event ignored: "+event.toString());
+        } else {
+            System.out.println("[Token Manager] Event ignored: " + event.toString());
 
         }
 
@@ -83,6 +142,7 @@ public class TokenManager {
 
     }
 
+<<<<<<< HEAD
     private TokenValidationResponse validateToken(String tokenId) {
         TokenValidationResponse response_event = new TokenValidationResponse();
         Boolean isValid = false;
@@ -106,43 +166,39 @@ public class TokenManager {
 
     public void addToken(Token token){
         tokens.put(token.getId(),token);
+=======
+    public void addToken(Token token) {
+        tokens.put(token.getId(), token);
+>>>>>>> 97e97d5d0b0157934712e8e2d38e5de17aaf111e
     }
-    public String generateToken(String userId)
-    {
-        Token token = new Token(TokenGenerator.createToken(),userId);
-        tokens.put(token.getId(),token);
+
+    public String generateToken(String userId) {
+        Token token = new Token(TokenGenerator.createToken(), userId);
+        tokens.put(token.getId(), token);
         return token.getId();
     }
 
-    public int getAvailableTokenAmount(String userId){
+    public int getAvailableTokenAmount(String userId) {
         int result = 0;
-        for (Map.Entry<String,Token> entry : tokens.entrySet())
-        {
+        for (Map.Entry<String, Token> entry : tokens.entrySet()) {
             //System.out.println(entry.getKey() + ":::::::" + entry.getValue());
-            if (entry.getValue().getUserId().equals(userId) && !entry.getValue().isUsed())
-            {
-                result+=1;
+            if (entry.getValue().getUserId().equals(userId) && !entry.getValue().isUsed()) {
+                result += 1;
             }
         }
         return result;
     }
 
 
-
-    public ArrayList<String> getNewTokens(String userId, int requestedTokenNumber)
-    {
+    public ArrayList<String> getNewTokens(String userId, int requestedTokenNumber) {
         ArrayList<String> tokens = null;
         int numberOfAvailableTokens = this.getAvailableTokenAmount(userId);
-        if (numberOfAvailableTokens > 1 || requestedTokenNumber > 5 || requestedTokenNumber < 1)
-        {
+        if (numberOfAvailableTokens > 1 || requestedTokenNumber > 5 || requestedTokenNumber < 1) {
             return null;
-        }
-        else
-        {
+        } else {
             //If the number of available tokens are 0 or 1 the system will generate the requested number of tokens if it's less or equal to 5
             tokens = new ArrayList<>();
-            for(int i = 0; i < requestedTokenNumber; i++)
-            {
+            for (int i = 0; i < requestedTokenNumber; i++) {
                 tokens.add(generateToken(userId));
             }
         }

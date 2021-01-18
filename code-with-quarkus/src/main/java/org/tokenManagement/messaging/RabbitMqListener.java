@@ -14,39 +14,39 @@ import java.util.concurrent.TimeoutException;
 
 @ApplicationScoped
 public class RabbitMqListener {
-	static String hostName = "localhost";
-	private static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
-	private static final String TOPIC = "token.request";
-	static Connection tokenConnection;
+    static String hostName = "localhost";
+    private static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
+    private static final String TOPIC = "token.request";
+    static Connection tokenConnection;
 
-	void onStart(@Observes StartupEvent ev) {
-		TokenManager.getInstance();
-	}
+    void onStart(@Observes StartupEvent ev) {
+        TokenManager.getInstance();
+    }
 
-	void onStop(@Observes ShutdownEvent ev) {
-		try {
-			tokenConnection.close();
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
-		}
-	}
-	public static void listenWithRPCPattern() {
-		try {
-			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost(hostName);
-			tokenConnection = factory.newConnection();
-			Channel channel = tokenConnection.createChannel();
-			String queueName = channel.queueDeclare().getQueue();
-			channel.queueBind(queueName, EXCHANGE_NAME, TOPIC);
-			Object monitor = new Object();
-			DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-				AMQP.BasicProperties replyProps = new AMQP.BasicProperties
-						.Builder()
-						.correlationId(delivery.getProperties().getCorrelationId())
-						.build();
+    void onStop(@Observes ShutdownEvent ev) {
+        try {
+            tokenConnection.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
-				String response = "";
+    public static void listenWithRPCPattern() {
+        try {
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.setHost(hostName);
+            tokenConnection = factory.newConnection();
+            Channel channel = tokenConnection.createChannel();
+            String queueName = channel.queueDeclare().getQueue();
+            channel.queueBind(queueName, EXCHANGE_NAME, TOPIC);
+            Object monitor = new Object();
+            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                AMQP.BasicProperties replyProps = new AMQP.BasicProperties
+                        .Builder()
+                        .correlationId(delivery.getProperties().getCorrelationId())
+                        .build();
 
+<<<<<<< HEAD
 				try {
 					String request = new String(delivery.getBody(), "UTF-8");
 					System.out.println("Token Service [x] receiving " + request);
@@ -61,24 +61,35 @@ public class RabbitMqListener {
 					//convert response event to string
 					if (response_event != null)
 						response = gson.toJson(response_event);
+=======
+                String response = "";
 
-				} catch (RuntimeException e) {
-					System.out.println(" [.] " + e.toString());
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					channel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
-					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-					// RabbitMq consumer worker thread notifies the RPC server owner thread
-					synchronized (monitor) {
-						monitor.notify();
-					}
-				}
-			};
-			channel.basicConsume(queueName, false, deliverCallback, consumerTag -> {
-			});
-		} catch (IOException | TimeoutException e) {
-			e.printStackTrace();
-		}
-	}
+                try {
+                    String request = new String(delivery.getBody(), "UTF-8");
+                    System.out.println("Token Service [x] receiving " + request);
+>>>>>>> 97e97d5d0b0157934712e8e2d38e5de17aaf111e
+
+                    //call TokenManager to handle request, returns a string of response
+                    TokenManager tokenManager = TokenManager.getInstance();
+                    response = tokenManager.receiveEvent(request);
+
+                } catch (RuntimeException e) {
+                    System.out.println(" [.] " + e.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    channel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
+                    channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                    // RabbitMq consumer worker thread notifies the RPC server owner thread
+                    synchronized (monitor) {
+                        monitor.notify();
+                    }
+                }
+            };
+            channel.basicConsume(queueName, false, deliverCallback, consumerTag -> {
+            });
+        } catch (IOException | TimeoutException e) {
+            e.printStackTrace();
+        }
+    }
 }

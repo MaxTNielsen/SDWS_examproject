@@ -3,30 +3,44 @@ package reporting.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rabbitmq.client.*;
+import io.quarkus.runtime.ShutdownEvent;
+import io.quarkus.runtime.StartupEvent;
 import reporting.model.*;
 
+import javax.enterprise.event.Observes;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 public class EventController {
     private TransactionManager transactionManager;
     private static EventController instance = null;
-
     static String hostName = "localhost";
     static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
-
-    static final String REPORTING_ROUTING_KEY = "reporting";
-
+    static final String REPORTING_ROUTING_KEY = "reporting.#";
     static Connection reportCreatorEventControllerConnection;
-
     static Channel reportChannel;
 
+    GsonBuilder builder = new GsonBuilder();
+    Gson gson = builder.create();
 
-    private EventController()
-    {
+
+    private EventController() {
         transactionManager = TransactionManager.getInstance();
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost(hostName);
+        try
+        {
+            reportCreatorEventControllerConnection = connectionFactory.newConnection();
+            reportChannel = reportCreatorEventControllerConnection.createChannel();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static EventController getInstance() {
@@ -35,6 +49,16 @@ public class EventController {
             instance = new EventController();
         }
         return instance;
+    }
+
+    void onStart(@Observes StartupEvent ev) throws Exception {
+        TransactionManager.getInstance();
+        EventController.getInstance();
+        EventController.getInstance().listenEvent();
+    }
+
+    void onStop(@Observes ShutdownEvent ev) throws IOException {
+        reportCreatorEventControllerConnection.close();
     }
 
     public void listenEvent() {
@@ -50,12 +74,10 @@ public class EventController {
 
                 Event response = new Event();
                 String responseString = "";
-
                 try {
                     GsonBuilder builder = new GsonBuilder();
                     Gson gson = builder.create();
                     Event message = gson.fromJson(new String(delivery.getBody(), "UTF-8"), Event.class);
-                    System.out.println("CUSTOMER [x] receiving " + new String(delivery.getBody(), "UTF-8"));
                     response = eventHandler(message);
                     responseString = gson.toJson(response);
 
@@ -64,13 +86,12 @@ public class EventController {
                 } finally {
                     reportChannel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, responseString.getBytes("UTF-8"));
                     reportChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-                    // RabbitMq consumer worker thread notifies the RPC server owner thread
                     synchronized (monitor) {
                         monitor.notify();
                     }
                 }
             };
-            reportChannel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
+            reportChannel.basicConsume(queueName, false, deliverCallback, consumerTag -> {
             });
         } catch (IOException e) {
             e.printStackTrace();
@@ -97,15 +118,16 @@ public class EventController {
         }
         else if(message.getEventType().equals("COSTUMER_REPORT"))
         {
-            if(obj == null || obj.length < 1)
+            if(obj == null || obj.length < 3)
             {
                 System.err.println("Invalid request message! String object does not found");
                 response = new Event("INVALID_REQUEST_ERROR");
                 return response;
             }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String customerID = (String) obj[0];
-            LocalDateTime intervalStart = (LocalDateTime) obj[1];
-            LocalDateTime intervalEnd = (LocalDateTime) obj[2];
+            LocalDateTime intervalStart = LocalDateTime.parse((String) obj[1], formatter);
+            LocalDateTime intervalEnd = LocalDateTime.parse((String) obj[2], formatter);
             ArrayList<CustomerTransaction> transactions = transactionManager.customerReport(customerID, intervalStart, intervalEnd);
             Object responseObjects[] = new Object[1];
             responseObjects[0] = transactions;
@@ -113,15 +135,16 @@ public class EventController {
         }
         else if(message.getEventType().equals("MERCHANT_REPORT"))
         {
-            if(obj == null || obj.length < 1)
+            if(obj == null || obj.length < 3)
             {
                 System.err.println("Invalid request message! String object does not found");
                 response = new Event("INVALID_REQUEST_ERROR");
                 return response;
             }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String merchantID = (String) obj[0];
-            LocalDateTime intervalStart = (LocalDateTime) obj[1];
-            LocalDateTime intervalEnd = (LocalDateTime) obj[2];
+            LocalDateTime intervalStart = LocalDateTime.parse((String) obj[1], formatter);
+            LocalDateTime intervalEnd = LocalDateTime.parse((String) obj[2], formatter);
             ArrayList<MerchantTransaction> transactions = transactionManager.merchantReport(merchantID, intervalStart, intervalEnd);
             Object responseObjects[] = new Object[1];
             responseObjects[0] = transactions;
