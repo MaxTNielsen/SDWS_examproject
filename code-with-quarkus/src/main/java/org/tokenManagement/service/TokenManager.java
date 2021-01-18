@@ -89,8 +89,8 @@ public class TokenManager {
 
     }
 
-    private TokenValidationResponse validateToken(String tokenId) {
-        TokenValidationResponse response_event = new TokenValidationResponse();
+    public TokenValidationResponse validateToken(String tokenId) {
+        TokenValidationResponse response = new TokenValidationResponse();
         Boolean isValid = false;
         String customerId = "";
         //check if the token exists
@@ -104,9 +104,9 @@ public class TokenManager {
             }
         }
         //set response
-        response_event.setCustomerId(customerId);
-        response_event.setValid(isValid);
-        return response_event;
+        response.setCustomerId(customerId);
+        response.setValid(isValid);
+        return response;
     }
 
 
@@ -123,8 +123,8 @@ public class TokenManager {
 
     public int getAvailableTokenAmount(String userId) {
         int result = 0;
+
         for (Map.Entry<String, Token> entry : tokens.entrySet()) {
-            //System.out.println(entry.getKey() + ":::::::" + entry.getValue());
             if (entry.getValue().getUserId().equals(userId) && !entry.getValue().isUsed()) {
                 result += 1;
             }
