@@ -3,6 +3,7 @@ package org.REST;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.dtupay.DTUPay;
+import org.dtupay.Transaction;
 import reporting.model.Event;
 
 import javax.ws.rs.*;
@@ -58,20 +59,40 @@ public class MerchantsREST {
     @Path("/refund")
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Response createReport(@QueryParam("originaltoken") String transactionID)
+    public Response createReport(@QueryParam("originaltoken") String transactionID) throws IOException
     {
-        // TODO: For now it is just register the refund to the reporter, the payment also should be called to initiate the money movement
         String setRouting = "reporting.refund";
-        String requestType = "NEW_REFUND";
-        Object obj[] = new Object[] {transactionID};
-        Event request = new Event(requestType, obj);
-        String requestString = gson.toJson(request);
-        Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
-        if(!response.getEventType().equals("REFUND_REGISTERED"))
+        Object obj1[] = new Object[] {transactionID};
+        Event OriginalTransactionRequest = new Event("GET_TRANSACTION", obj1);
+        String OriginalTransactionRequestString = gson.toJson(OriginalTransactionRequest);
+        Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(OriginalTransactionRequestString, setRouting), Event.class);
+        System.out.println(response.getEventType());
+        if(response.getEventType() == "TRANSACTION_FOUND")
         {
-            return Response.status(404, "Report generation failure").build();
+            Transaction originalTransaction = gson.fromJson(response.getArguments()[0].toString(), Transaction.class);
+            Transaction refundTransaction = originalTransaction.createRefund();
+            String bankResult = dtuPay.sendPaymentRequest(refundTransaction);
+            boolean bankResultBool = Boolean.parseBoolean(bankResult);
+            boolean reported = false;
+            if (bankResultBool)
+            {
+                String requestType = "NEW_REFUND";
+                Object obj[] = new Object[] {transactionID};
+                Event request = new Event(requestType, obj);
+                String requestString = gson.toJson(request);
+                Event reportRefundResponse = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
+                if(reportRefundResponse.getEventType() == "REFUND_REGISTERED")
+                {
+                    reported = true;
+                }
+            }
+            System.out.println(bankResultBool + ":::" + reported);
+            if(bankResultBool && reported)
+            {
+                return Response.ok().build();
+            }
         }
-        return Response.ok().build();
+        return Response.status(404, "Report generation failure").build();
     }
 
 

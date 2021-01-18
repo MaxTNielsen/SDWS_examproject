@@ -4,40 +4,52 @@ import java.time.LocalDateTime;
 
 public class Transaction {
 
-    private String tokenID;
+    private String token;
     private String merchId;
     private String customId;
     private int amount;
     private boolean approved = false;
-    //private LocalDateTime timeStamp;
+    private LocalDateTime timeStamp;
     private boolean refunded;
 
-    public Transaction(){
+    public Transaction (){
 
     }
 
-//    public Transaction(String merchId, String customId, int amount) {
-//        this.merchId = merchId;
-//        this.customId = customId;
-//        this.amount = amount;
-//        this.timeStamp= LocalDateTime.now();
-//        this.refunded = false;
-//    }
-
-    public Transaction(String tokenID, String merchId, int amount) {
-        this.tokenID = tokenID;
+    public Transaction (String merchId, String customId, int amount) {
         this.merchId = merchId;
+        this.customId = customId;
         this.amount = amount;
-        //this.timeStamp= LocalDateTime.now();
+        this.timeStamp= LocalDateTime.now();
         this.refunded = false;
     }
 
-    public String getTokenID() {
-        return tokenID;
+    public Transaction (String token, String merchId, String customId, int amount) {
+        this.token = token;
+        this.merchId = merchId;
+        this.customId = customId;
+        this.amount = amount;
+        this.timeStamp= LocalDateTime.now();
+        this.refunded = false;
     }
 
-    public void setTokenID(String tokenID) {
-        this.tokenID = tokenID;
+    public Transaction createRefund()
+    {
+        Transaction refund = new Transaction();
+        refund.setCustomId(null);
+        refund.setApproved(true);
+        refund.setCustomId(this.merchId);
+        refund.setMerchId(this.customId);
+        refund.setAmount(this.getAmount());
+        return refund;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getMerchId() {
@@ -51,6 +63,7 @@ public class Transaction {
     public void setApproved(boolean approved) {
         this.approved = approved;
     }
+
     public void setMerchId(String merchId) {
         this.merchId = merchId;
     }
@@ -71,7 +84,7 @@ public class Transaction {
         this.amount = amount;
     }
 
-   // public LocalDateTime getTimeStamp(){return this.timeStamp;}
+    public LocalDateTime getTimeStamp(){return this.timeStamp;}
 
     public boolean isRefunded(){return this.refunded;}
 

@@ -33,6 +33,17 @@ public class Transaction {
         this.refunded = false;
     }
 
+    public Transaction createRefund()
+    {
+        Transaction refund = new Transaction();
+        refund.setCustomId(null);
+        refund.setApproved(true);
+        refund.setCustomId(this.merchId);
+        refund.setMerchId(this.customId);
+        refund.setAmount(this.getAmount());
+        return refund;
+    }
+
     public String getToken() {
         return token;
     }
@@ -52,6 +63,7 @@ public class Transaction {
     public void setApproved(boolean approved) {
         this.approved = approved;
     }
+
     public void setMerchId(String merchId) {
         this.merchId = merchId;
     }

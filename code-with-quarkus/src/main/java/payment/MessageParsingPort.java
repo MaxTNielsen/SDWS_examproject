@@ -124,7 +124,10 @@ public class MessageParsingPort {
 	                	String message = new String(delivery.getBody(), "UTF-8");
 	                	Event responseEvent = gson.fromJson(message ,Event.class);
 	                	String requestString = gson.toJson(responseEvent.getArguments()[2]);
-	                    Transaction t = gson.fromJson(requestString,Transaction.class);
+
+	                	//This can handle the date inside Transaction instance
+	                	Transaction t = gson.fromJson(responseEvent.getArguments()[2].toString(), Transaction.class);
+	                	//Transaction t = gson.fromJson(requestString,Transaction.class);
 		               
 		                System.out.println("[x] receiving "+requestString);
 		                
