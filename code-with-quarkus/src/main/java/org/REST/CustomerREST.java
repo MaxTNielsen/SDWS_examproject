@@ -11,6 +11,7 @@ import io.quarkus.runtime.annotations.QuarkusMain;
 import org.Json.TokenGenerationRequest;
 import org.dtupay.DTUPay;
 import org.dtupay.Transaction;
+import org.tokenManagement.messaging.model.TokenValidationRequest;
 import reporting.model.Event;
 
 import javax.ws.rs.*;
@@ -33,14 +34,15 @@ public class CustomerREST {
         boolean b = Boolean.parseBoolean(answerToRequest);
 
         if (b) {
-            System.out.println("Create account success");
+            //System.out.println("Create account success");
             return Response.ok().build();
         } else {
-            System.out.println("Create account success");
+            //System.out.println("Create account success");
             return Response.status(400, "Registration failed").build();
         }
     }
 
+<<<<<<< Updated upstream
     @Path("/payment")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -94,6 +96,8 @@ public class CustomerREST {
 
     }
 
+=======
+>>>>>>> Stashed changes
     @Path("/report")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
@@ -119,9 +123,26 @@ public class CustomerREST {
         System.out.println("[REST] POST: " + request.toString());
         String response = dtuPay.sendTokenGenerationRequest(request);
         System.out.println("[REST] Response: " + response);
-        if (!response.equals(""))
-            return Response.ok(response, MediaType.APPLICATION_JSON).build();
-        else
+        if (!response.equals("")) {
+            System.out.println("TOKEN GENERATION SUCCEED!");
+            return Response.ok().build();
+        } else {
             return Response.status(400, "Token Generation Failed").build();
+        }
     }
+
+   /* @Path("/tokens")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTokens(TokenGenerationRequest request) {
+        System.out.println("[REST] POST: " + request.toString());
+        String response = dtuPay.sendTokenGenerationRequest(request);
+        System.out.println("[REST] Response: " + response);
+        if (!response.equals("")) {
+            System.out.println("TOKEN GENERATION SUCCEED!");
+            return Response.status(Response.Status.OK).entity(response).build();
+        } else {
+            return Response.status(400, "Token Generation Failed").build();
+        }
+    }*/
 }

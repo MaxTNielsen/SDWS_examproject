@@ -88,7 +88,7 @@ public class AccountEventController {
                 try {
                     String message = new String(delivery.getBody(), "UTF-8");
                     String ID = message;
-                    System.out.println("CUSTOMER [x] receiving " + message);
+                    //System.out.println("CUSTOMER [x] receiving " + message);
 
                     boolean successful = AccountManager.getInstance().registerCustomer(ClientFactory.buildCustomer(ID));
                     response = Boolean.toString(successful);
@@ -131,7 +131,7 @@ public class AccountEventController {
                 try {
                     String message = new String(delivery.getBody(), "UTF-8");
                     String ID = message;
-                    System.out.println("Merchant [x] receiving " + message);
+                    //System.out.println("Merchant [x] receiving " + message);
 
                     boolean successful = AccountManager.getInstance().registerMerchant(ClientFactory.buildMerchant(ID));
                     response = Boolean.toString(successful);
@@ -180,7 +180,7 @@ public class AccountEventController {
                         ans = AccountManager.getInstance().hasMerchant(ID);
                     } else {
                         ans = AccountManager.getInstance().hasCustomer(ID);
-                        System.out.println("Customer matched ");
+                        //System.out.println("Customer matched ");
                     }
 
                     System.out.println("Answer for validation " + ans);

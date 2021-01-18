@@ -6,9 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import Client.Customer;
+import Client.Event;
 import Client.Merchant;
+import TokenManagement.TokenGenerationRequest;
 import TokenManagement.TokenManagementService;
 import dtu.ws.fastmoney.BankService;
 import dtu.ws.fastmoney.BankServiceException_Exception;
@@ -18,6 +21,9 @@ import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.cucumber.messages.internal.com.google.gson.Gson;
+
+import javax.ws.rs.core.Response;
 
 public class PaymentBLStepDef {
     String cid, mid, token;
@@ -25,7 +31,6 @@ public class PaymentBLStepDef {
     Merchant merchant;
     int amount;
     BigDecimal balance;
-    Exception exception;
     TokenManagementService tokens = new TokenManagementService();
     PaymentService payment = new PaymentService();
     BankService bank = new BankServiceService().getBankServicePort();
@@ -50,6 +55,7 @@ public class PaymentBLStepDef {
 
     @Given("the customer is registered with DTUPay")
     public void theCustomerIsRegisteredWithDTUPay() {
+        payment.registerCustomer(cid);
         customer = new Customer(cid);
     }
 
@@ -71,17 +77,28 @@ public class PaymentBLStepDef {
 
     @Given("the merchant is registered with DTUPay")
     public void theMerchantIsRegisteredWithDTUPay() {
+        payment.registerMerchant(mid);
         merchant = new Merchant(mid);
     }
 
     @Given("the customer has {int} tokens")
     public void theCustomerHasTokens(Integer int1) {
+        /*TokenGenerationRequest request = new TokenGenerationRequest(cid, int1);
+        Gson gson = new Gson();
+        String request_string = gson.toJson(request);
+        response = payment.generateToken(request_string);
+        *//*System.out.println("This is the response " + response.getEntity());
+        output = payment.getToken(request_string);
+        System.out.println("The output is " + output);*/
+        token = "888";
+        /*addToken(new Token("543", "12345"));
+        addToken(new Token("999", "00000"));*/
     }
 
     @When("the merchant initiates a payment for {int} kr by the customer")
     public void theMerchantInitiatesAPaymentForKrByTheCustomer(int amount) {
         this.amount = amount;
-        successful = payment.pay(merchant.ID, customer.ID, amount);
+        successful = payment.pay(token, "fe9a206c-a32c-42da-880b-8f051cec6d29", amount);
     }
 
     @Then("the payment is successful")

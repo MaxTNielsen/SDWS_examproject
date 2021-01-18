@@ -25,7 +25,7 @@ import io.quarkus.runtime.ShutdownEvent;
 @ApplicationScoped
 public class MessageParsingPort {
 	static Transaction t;
-	private static PaymentBL payment = new PaymentBL();
+	private static PaymentBL payment = PaymentBL.getInstance();
 	
     static final String TOKEN_MANAGEMENT_QUEUE = "token_management_queue";
     static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
@@ -34,13 +34,13 @@ public class MessageParsingPort {
     static Connection connection;
     private static Channel listenDTUPay;
     
-    void onStop(@Observes ShutdownEvent ev) {
+    /*void onStop(@Observes ShutdownEvent ev) {
         try {
             connection.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-    }
+    }*/
 	
     public void startConnection() throws IOException, TimeoutException {
     	ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -109,6 +109,7 @@ public class MessageParsingPort {
 //		        Channel channel = connection.createChannel();
 	            String queueName = listenDTUPay.queueDeclare().getQueue();
 	            listenDTUPay.queueBind(queueName, EXCHANGE_NAME, "payment.#");
+				System.out.println("Inside Payment listen method");
 
 	            Object monitor = new Object();
 	            DeliverCallback deliverCallback = (consumerTag, delivery) -> {

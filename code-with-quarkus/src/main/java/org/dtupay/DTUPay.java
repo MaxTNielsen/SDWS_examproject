@@ -60,7 +60,7 @@ public class DTUPay {
 
     TokenManager tokenManager = TokenManager.getInstance();
 
-    PaymentBL payment_service = new PaymentBL();
+    PaymentBL payment_service = PaymentBL.getInstance();
 
     private Map<String, Boolean> accountRegMap = new HashMap<>();
 
@@ -95,10 +95,10 @@ public class DTUPay {
     void initializeAllChannels() {
         try {
             paymentChannel = DTUPayConnection.createChannel();
-            System.out.println("Payment channel created");
+            //System.out.println("Payment channel created");
             microservicesChannel = DTUPayConnection.createChannel();
             replyChannel = DTUPayConnection.createChannel();
-            System.out.println("Topic channel initialized");
+            //System.out.println("Topic channel initialized");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -147,13 +147,6 @@ public class DTUPay {
         return transactionMap;
     }
 
-    public String sendPaymentRequest(Transaction t) throws IOException {
-        Gson gson = new Gson();
-        String s = gson.toJson(t);
-        String result = forwardMQtoMicroservices(s, "payment.*");
-        return result;
-    }
-
     public String sendTokenGenerationRequest(TokenGenerationRequest request) {
         System.out.println("Inside sendTokenGenerationRequest " + request.toString());
         Gson gson = new Gson();
@@ -167,14 +160,14 @@ public class DTUPay {
 
         if (!Boolean.parseBoolean(forwardMQtoMicroservices(serilizedmessage, ACCOUNT_VALIDATION_ROUTING_KEY)))
             return response;
-        System.out.println("Finished ID validation");
+        //System.out.println("Finished ID validation");
 
         response = forwardMQtoMicroservices(serilizedmessage, TOKEN_ROUTING_KEY);
 
         if (response.equals(""))
             return response;
 
-        System.out.println("DTU pay get response:" + response);
+        //System.out.println("DTU pay get response:" + response);
         return response;
     }
 
@@ -196,6 +189,8 @@ public class DTUPay {
             return false;
 
         String s = gson.toJson(t);
+        System.out.println("From DTUPay messaging Payment with " + t.toString());
+
         if (!Boolean.parseBoolean(forwardMQtoMicroservices(s, "payment.*")))
             return false;
 

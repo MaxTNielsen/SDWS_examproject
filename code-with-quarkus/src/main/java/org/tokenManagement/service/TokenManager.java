@@ -24,8 +24,9 @@ public class TokenManager {
     public Map<String, Token> tokens = new HashMap<>();
 
     public TokenManager() {
-
         addToken(new Token("123", "000000-0001"));
+        addToken(new Token("888", "0aa0383e-df5a-4afb-85f7-0dd5d33dfb77"));
+        addToken(new Token("999", "cfb38983-1e05-4200-a7dc-86948f405de6"));
         addToken(new Token("456", "000000-0002"));
         addToken(new Token("789", "000000-0002"));
         RabbitMqListener.listenWithRPCPattern();
@@ -51,7 +52,7 @@ public class TokenManager {
             TokenGenerationRequest received_event = gson.fromJson(requestString, TokenGenerationRequest.class);
             //business logic
             ArrayList<String> tokens = getNewTokens(received_event.getCustomerId(), received_event.getNumberOfTokens());
-            System.out.println("[Token Manager] handled: " + "GENERATE_TOKEN");
+            //System.out.println("[Token Manager] handled: " + "GENERATE_TOKEN");
 
             if (tokens.size() > 0) {
                 //set response

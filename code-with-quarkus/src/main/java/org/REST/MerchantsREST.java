@@ -29,12 +29,39 @@ public class MerchantsREST {
         Boolean b = Boolean.parseBoolean(answerToRequest);
 
         if (b) {
-            System.out.println("Merchant registration success");
+            //System.out.println("Merchant registration success");
             return Response.ok().build();
         } else {
-            System.out.println("Merchant registration failed");
+            //System.out.println("Merchant registration failed");
             return Response.status(400, "Registration failed").build();
         }
+    }
+
+    @Path("/payment")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response doTransaction(Transaction t) throws IOException {
+        boolean result = dtuPay.DTUPayDoPayment(t);
+
+        System.out.println("Payment is " + result);
+
+        if (result) {
+            String setRouting = "reporting.payment";
+            String requestType = "NEW_TRANSACTION";
+            Object obj[] = new Object[]{(Object) t};
+            Event request = new Event(requestType, obj);
+            String requestString = gson.toJson(request);
+            Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
+                /*if(response.getEventType().equals("CUSTOMER_REPORT_RESPONSE"))
+                {
+                    reported = true;
+                }*/
+            System.out.println("Transaction successful");
+
+            return Response.ok().build();
+        } else
+            System.out.println("Transaction failed");
+        return Response.status(400, "Transaction failed").build();
     }
 
     @Path("/report")
