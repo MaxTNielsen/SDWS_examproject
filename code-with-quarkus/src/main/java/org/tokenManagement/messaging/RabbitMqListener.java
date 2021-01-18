@@ -46,7 +46,7 @@ public class RabbitMqListener {
                         .correlationId(delivery.getProperties().getCorrelationId())
                         .build();
 
-<<<<<<< HEAD
+                String response = "";
 				try {
 					String request = new String(delivery.getBody(), "UTF-8");
 					System.out.println("Token Service [x] receiving " + request);
@@ -61,17 +61,7 @@ public class RabbitMqListener {
 					//convert response event to string
 					if (response_event != null)
 						response = gson.toJson(response_event);
-=======
-                String response = "";
 
-                try {
-                    String request = new String(delivery.getBody(), "UTF-8");
-                    System.out.println("Token Service [x] receiving " + request);
->>>>>>> 97e97d5d0b0157934712e8e2d38e5de17aaf111e
-
-                    //call TokenManager to handle request, returns a string of response
-                    TokenManager tokenManager = TokenManager.getInstance();
-                    response = tokenManager.receiveEvent(request);
 
                 } catch (RuntimeException e) {
                     System.out.println(" [.] " + e.toString());
