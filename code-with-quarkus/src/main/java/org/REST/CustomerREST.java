@@ -3,6 +3,7 @@ package org.REST;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -45,26 +46,26 @@ public class CustomerREST {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response doTransaction(Transaction t) throws IOException {
         if (dtuPay.DTUPayDoPayment(t)) {
-
             String result = dtuPay.sendPaymentRequest(t);
             boolean b = Boolean.parseBoolean(result);
-            boolean reported = false;
             if (b) {
                 String setRouting = "reporting.payment";
                 String requestType = "NEW_TRANSACTION";
-                Object obj[] = new Object[]{(Object) t};
+                Object obj[] = new Object[]{t};
                 Event request = new Event(requestType, obj);
                 String requestString = gson.toJson(request);
                 Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
-                /*if(response.getEventType().equals("CUSTOMER_REPORT_RESPONSE"))
+                if(response.getEventType().equals("CUSTOMER_REPORT_RESPONSE"))
                 {
-                    reported = true;
-                }*/
-
-                System.out.println("Transaction successful");
-
-                return Response.ok().build();
-            } else {
+                    return Response.ok().build();
+                }
+                else
+                {
+                    System.out.println("Reporting backend error");
+                    return Response.status(400, "Transaction saving failed").build();
+                }
+            }
+            else {
                 System.out.println("Transaction failed");
                 return Response.status(400, "Transaction failed").build();
             }
@@ -96,7 +97,6 @@ public class CustomerREST {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response requestTokens(TokenGenerationRequest request) throws IOException {
         System.out.println("[REST] POST: " + request.toString());
-        //dtuPay.startUp();
         String response = dtuPay.sendTokenGenerationRequest(request);
         System.out.println("[REST] Response: " + response);
         if (!response.equals(""))

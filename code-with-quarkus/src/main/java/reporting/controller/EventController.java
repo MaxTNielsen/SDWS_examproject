@@ -158,9 +158,31 @@ public class EventController {
                 response = new Event("INVALID_REQUEST_ERROR");
                 return response;
             }
-            Transaction newTransaction = (Transaction) obj[0];
+            // NOTE:
+            // If you put a Transaction instance to the obj[], this is the right way to get it back:
+            Transaction newTransaction = gson.fromJson(obj[0].toString(), Transaction.class);
             transactionManager.addTransaction(newTransaction);
             response = new Event("TRANSACTION_REGISTERED");
+        }
+        else if(message.getEventType().equals("GET_TRANSACTION"))
+        {
+            if(obj == null || obj.length < 1)
+            {
+                System.err.println("Invalid request message! String object does not found");
+                response = new Event("INVALID_REQUEST_ERROR");
+                return response;
+            }
+            String token = (String) obj[0];
+            Transaction result = transactionManager.getTransactionByToken(token);
+            Object responseObject[] = new Object[]{(Object) result};
+            if(result != null)
+            {
+                response = new Event("TRANSACTION_FOUND",responseObject);
+            }
+            else
+            {
+                response = new Event("TRANSACTION_NOT_FOUND");
+            }
         }
         else if(message.getEventType().equals("NEW_REFUND"))
         {
