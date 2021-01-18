@@ -128,7 +128,7 @@ public class DTUPay {
             try {
                 result = response.take();
                 microservicesChannel.basicCancel(ctag);
-                System.out.println("result: " + result);
+                //System.out.println("result: " + result);
                 return result;
             } catch (InterruptedException e) {
                 e.printStackTrace();

@@ -20,6 +20,8 @@ import javax.ws.rs.core.Response;
 @Path("/customers")
 public class CustomerREST {
     DTUPay dtuPay = DTUPay.getInstance();
+    GsonBuilder builder = new GsonBuilder();
+    Gson gson = builder.create();
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
@@ -46,8 +48,19 @@ public class CustomerREST {
 
             String result = dtuPay.sendPaymentRequest(t);
             boolean b = Boolean.parseBoolean(result);
-
+            boolean reported = false;
             if (b) {
+                String setRouting = "reporting.payment";
+                String requestType = "NEW_TRANSACTION";
+                Object obj[] = new Object[]{(Object) t};
+                Event request = new Event(requestType, obj);
+                String requestString = gson.toJson(request);
+                Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
+                /*if(response.getEventType().equals("CUSTOMER_REPORT_RESPONSE"))
+                {
+                    reported = true;
+                }*/
+
                 System.out.println("Transaction successful");
 
                 return Response.ok().build();
@@ -67,12 +80,9 @@ public class CustomerREST {
                                  @QueryParam("intervalEnd") String intervalEnd) {
         String setRouting = "reporting.customer";
         String requestType = "COSTUMER_REPORT";
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
         Object obj[] = new Object[]{ID, intervalStart, intervalEnd};
         Event request = new Event(requestType, obj);
         String requestString = gson.toJson(request);
-        System.out.println("Costumer report generation for " + requestString +" has started");
         Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
         if(!response.getEventType().equals("CUSTOMER_REPORT_RESPONSE"))
         {

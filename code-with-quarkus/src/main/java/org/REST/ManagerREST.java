@@ -17,6 +17,8 @@ import java.util.concurrent.TimeoutException;
 @Path("/manager")
 public class ManagerREST {
     DTUPay dtuPay = DTUPay.getInstance();
+    GsonBuilder builder = new GsonBuilder();
+    Gson gson = builder.create();
 
     @Path("/report")
     @Produces(MediaType.APPLICATION_JSON)
@@ -25,11 +27,8 @@ public class ManagerREST {
     {
         String getRouting = "reporting.manager.report";
         String requestType = "MANAGER_REPORT";
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
         Event request = new Event(requestType);
         String requestString = gson.toJson(request);
-        System.out.println("Manager report generation for " + requestString +" has started");
         Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, getRouting), Event.class);
         if(!response.getEventType().equals("MANAGER_REPORT_RESPONSE"))
         {
@@ -45,11 +44,8 @@ public class ManagerREST {
     {
         String getRouting = "reporting.manager.moneyflow";
         String requestType = "MANAGER_MONEY_FLOW";
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
         Event request = new Event(requestType);
         String requestString = gson.toJson(request);
-        System.out.println("Money flow report generation for " + requestString +" has started");
         Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, getRouting), Event.class);
         if(!response.getEventType().equals("MANAGER_MONEY_FLOW"))
         {

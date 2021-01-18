@@ -16,6 +16,8 @@ import java.util.concurrent.TimeoutException;
 @Path("/merchants")
 public class MerchantsREST {
     DTUPay dtuPay = DTUPay.getInstance();
+    GsonBuilder builder = new GsonBuilder();
+    Gson gson = builder.create();
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
@@ -42,12 +44,9 @@ public class MerchantsREST {
                                  @QueryParam("intervalEnd") String intervalEnd) {
         String setRouting = "reporting.merchant";
         String requestType = "MERCHANT_REPORT";
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
         Object obj[] = new Object[] {ID, intervalStart, intervalEnd};
         Event request = new Event(requestType, obj);
         String requestString = gson.toJson(request);
-        System.out.println("Merchant report generation for " + requestString +" has started");
         Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
         if(!response.getEventType().equals("MERCHANT_REPORT_RESPONSE"))
         {
@@ -55,6 +54,27 @@ public class MerchantsREST {
         }
         return Response.ok(response.getArguments()[0], MediaType.APPLICATION_JSON).build();
     }
+
+    @Path("/refund")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public Response createReport(@QueryParam("originaltoken") String transactionID)
+    {
+        // TODO: For now it is just register the refund to the reporter, the payment also should be called to initiate the money movement
+        String setRouting = "reporting.refund";
+        String requestType = "NEW_REFUND";
+        Object obj[] = new Object[] {transactionID};
+        Event request = new Event(requestType, obj);
+        String requestString = gson.toJson(request);
+        Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
+        if(!response.getEventType().equals("REFUND_REGISTERED"))
+        {
+            return Response.status(404, "Report generation failure").build();
+        }
+        return Response.ok().build();
+    }
+
+
 
    /* @GET
     public Response getAllMerchants()
