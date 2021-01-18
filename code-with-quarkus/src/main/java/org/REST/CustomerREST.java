@@ -11,6 +11,7 @@ import io.quarkus.runtime.annotations.QuarkusMain;
 import org.Json.TokenGenerationRequest;
 import org.dtupay.DTUPay;
 import org.dtupay.Transaction;
+import org.tokenManagement.messaging.model.TokenValidationRequest;
 import reporting.model.Event;
 
 import javax.ws.rs.*;
@@ -33,21 +34,42 @@ public class CustomerREST {
         boolean b = Boolean.parseBoolean(answerToRequest);
 
         if (b) {
-            System.out.println("Create account success");
+            //System.out.println("Create account success");
             return Response.ok().build();
         } else {
-            System.out.println("Create account success");
+            //System.out.println("Create account success");
             return Response.status(400, "Registration failed").build();
         }
     }
 
-    @Path("/payment")
+   /* @Path("/payment")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response doTransaction(Transaction t) throws IOException {
+
+        boolean result = dtuPay.DTUPayDoPayment(t);
+        if (result) {
+            String setRouting = "reporting.payment";
+            String requestType = "NEW_TRANSACTION";
+            Object obj[] = new Object[]{(Object) t};
+            Event request = new Event(requestType, obj);
+            String requestString = gson.toJson(request);
+            Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
+                *//*
+                if(response.getEventType().equals("CUSTOMER_REPORT_RESPONSE"))
+                {
+                    reported = true;
+                }*//*
+            System.out.println("Transaction successful");
+
+            return Response.ok().build();
+        } else {
+            System.out.println("Transaction failed");
+            return Response.status(400, "Transaction failed").build();
+        }
+
         if (dtuPay.DTUPayDoPayment(t)) {
-            String result = dtuPay.sendPaymentRequest(t);
-            boolean b = Boolean.parseBoolean(result);
+            boolean b = dtuPay.DTUPayDoPayment(t);
             if (b) {
                 String setRouting = "reporting.payment";
                 String requestType = "NEW_TRANSACTION";
@@ -55,23 +77,19 @@ public class CustomerREST {
                 Event request = new Event(requestType, obj);
                 String requestString = gson.toJson(request);
                 Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
-                if(response.getEventType().equals("CUSTOMER_REPORT_RESPONSE"))
-                {
+                if (response.getEventType().equals("CUSTOMER_REPORT_RESPONSE")) {
                     return Response.ok().build();
-                }
-                else
-                {
+                } else {
                     System.out.println("Reporting backend error");
                     return Response.status(400, "Transaction saving failed").build();
                 }
-            }
-            else {
+            } else {
                 System.out.println("Transaction failed");
                 return Response.status(400, "Transaction failed").build();
             }
         }
         return Response.ok().build();
-    }
+    }*/
 
     @Path("/report")
     @Produces(MediaType.APPLICATION_JSON)
@@ -85,8 +103,7 @@ public class CustomerREST {
         Event request = new Event(requestType, obj);
         String requestString = gson.toJson(request);
         Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
-        if(!response.getEventType().equals("CUSTOMER_REPORT_RESPONSE"))
-        {
+        if (!response.getEventType().equals("CUSTOMER_REPORT_RESPONSE")) {
             return Response.status(404, "Report generation failure").build();
         }
         return Response.ok(response.getArguments()[0], MediaType.APPLICATION_JSON).build();
@@ -99,10 +116,26 @@ public class CustomerREST {
         System.out.println("[REST] POST: " + request.toString());
         String response = dtuPay.sendTokenGenerationRequest(request);
         System.out.println("[REST] Response: " + response);
-        if (!response.equals(""))
-            return Response.ok(response, MediaType.APPLICATION_JSON).build();
-        else
+        if (!response.equals("")) {
+            System.out.println("TOKEN GENERATION SUCCEED!");
+            return Response.ok().build();
+        } else {
             return Response.status(400, "Token Generation Failed").build();
-
+        }
     }
+
+   /* @Path("/tokens")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTokens(TokenGenerationRequest request) {
+        System.out.println("[REST] POST: " + request.toString());
+        String response = dtuPay.sendTokenGenerationRequest(request);
+        System.out.println("[REST] Response: " + response);
+        if (!response.equals("")) {
+            System.out.println("TOKEN GENERATION SUCCEED!");
+            return Response.status(Response.Status.OK).entity(response).build();
+        } else {
+            return Response.status(400, "Token Generation Failed").build();
+        }
+    }*/
 }

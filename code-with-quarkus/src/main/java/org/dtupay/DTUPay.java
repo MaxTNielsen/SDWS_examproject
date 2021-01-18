@@ -8,13 +8,16 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
 
+import io.cucumber.core.gherkin.messages.internal.gherkin.Token;
 import io.quarkus.runtime.ShutdownEvent;
+import org.tokenManagement.messaging.model.TokenValidationRequest;
 import payment.PaymentBL;
 
 import org.Json.*;
 
 import org.accountmanager.model.AccountManager;
 import org.tokenManagement.service.TokenManager;
+import payment.TokenValidationResponse;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -38,11 +41,10 @@ public class DTUPay {
     private static final String TOKEN_ROUTING_KEY = "token.request";
     private static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
     static final String ACCOUNT_VALIDATION_ROUTING_KEY = "accountmanager.validation.*";
+    static final String PAYMENT_ROUTING_KEY = "payment.transaction";
 
 
     Connection DTUPayConnection;
-    Channel paymentChannel;
-    Channel paymentResponseChannel;
     Channel microservicesChannel;
     Channel replyChannel;
 
@@ -59,7 +61,7 @@ public class DTUPay {
 
     TokenManager tokenManager = TokenManager.getInstance();
 
-    PaymentBL payment_service = new PaymentBL();
+    PaymentBL payment_service = PaymentBL.getInstance();
 
     private Map<String, Boolean> accountRegMap = new HashMap<>();
 
@@ -93,11 +95,8 @@ public class DTUPay {
 
     void initializeAllChannels() {
         try {
-            paymentChannel = DTUPayConnection.createChannel();
-            System.out.println("Payment channel created");
             microservicesChannel = DTUPayConnection.createChannel();
             replyChannel = DTUPayConnection.createChannel();
-            System.out.println("Topic channel initialized");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -106,7 +105,7 @@ public class DTUPay {
     public String forwardMQtoMicroservices(String serializedMessage, String routingKey) {
         String correlateID = UUID.randomUUID().toString();
         try {
-            String replyQueueName = replyChannel.queueDeclare("reply " + routingKey, false, true, false, null).getQueue();
+            String replyQueueName = replyChannel.queueDeclare("reply " + routingKey, false, false, false, null).getQueue();
             AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().correlationId(correlateID)
                     .replyTo(replyQueueName).build();
             microservicesChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
@@ -146,80 +145,64 @@ public class DTUPay {
         return transactionMap;
     }
 
-    public String sendPaymentRequest(Transaction t) throws IOException {
-        Gson gson = new Gson();
-        String s = gson.toJson(t);
-        String result = forwardMQtoMicroservices(s, "payment.*");
-        return result;
-    }
-
-    /*void listenPaymentResponse() {
-        try {
-            paymentResponseChannel.queueDeclare(PAYMENT_RESP_QUEUE, false, false, false, null);
-            System.out.println("payment response queue");
-
-            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                Gson gson = new Gson();
-                String json = new String(delivery.getBody());
-                System.out.println("Transaction: " + json);
-                Transaction t = gson.fromJson(json, Transaction.class);
-                System.out.println("Token" + t.getTokenID());
-                System.out.println("Transaction was " + t.isApproved());
-                transactionMap.put(t.getTokenID(), t.isApproved());
-            };
-
-            paymentResponseChannel.basicConsume("", true, deliverCallback, consumerTag -> {
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
-
     public String sendTokenGenerationRequest(TokenGenerationRequest request) {
         System.out.println("Inside sendTokenGenerationRequest " + request.toString());
+        Gson gson = new Gson();
         String response = "";
         Object[] objects = new Object[3];
         objects[0] = "c";
         objects[1] = request.getCustomerId();
         objects[2] = request;
         Event e = new Event("TOKEN_GENERATION_REQUEST", objects);
-        Gson gson = new Gson();
         String serilizedmessage = gson.toJson(e);
+
         if (!Boolean.parseBoolean(forwardMQtoMicroservices(serilizedmessage, ACCOUNT_VALIDATION_ROUTING_KEY)))
             return response;
-        System.out.println("Finished ID validation");
+        //System.out.println("Finished ID validation");
+
         response = forwardMQtoMicroservices(serilizedmessage, TOKEN_ROUTING_KEY);
 
         if (response.equals(""))
             return response;
 
-        /*Event event = new Event("TOKEN_GENERATION_REQUEST", new Object[]{request});
-        String message = new Gson().toJson(event);
-        response = forwardMQtoMicroservices(message, TOKEN_ROUTING_KEY);*/
-
-        System.out.println("DTU pay get response:" + response);
+        //System.out.println("DTU pay get response:" + response);
         return response;
     }
 
     public boolean DTUPayDoPayment(Transaction t) {
-        //Check merchant ID first
-        //arguments: m, merchantID
-        //return boolean
+        Gson gson = new Gson();
+        TokenValidationRequest tokenValidationRequest = new TokenValidationRequest(t.getToken());
         Object[] objects = new Object[3];
         objects[0] = "m";
         objects[1] = t.getMerchId();
-        objects[2] = t;
+        objects[2] = tokenValidationRequest;
         Event e = new Event("TOKEN_VALIDATION_REQUEST", objects);
-        if (!Boolean.parseBoolean(forwardMQtoMicroservices(e.toString(), ACCOUNT_VALIDATION_ROUTING_KEY)))
-            return false;
-        //if(
-        //Check if token is valid
-        //arguments: tokenID
-        //return boolean
 
-        //Do payment
-        //arguments: string that can be received by the payment system merchantID, CustomerID, Balance - should transaction object
-        //return boolean
+        String serilizedmessage = gson.toJson(e);
+
+        if (!Boolean.parseBoolean(forwardMQtoMicroservices(serilizedmessage, ACCOUNT_VALIDATION_ROUTING_KEY)))
+            return false;
+
+        String response = forwardMQtoMicroservices(serilizedmessage, TOKEN_ROUTING_KEY);
+
+        Event event = gson.fromJson(response, Event.class);
+
+        String jsonString = gson.toJson(event.getArguments()[0]);
+        TokenValidationResponse tokenValidationResponse = gson.fromJson(jsonString, TokenValidationResponse.class);
+
+        t.setCustomId(tokenValidationResponse.getCustomerId());
+        //t.setApproved(true);
+        tokenValidationResponse.isValid();
+
+        if (!tokenValidationResponse.isValid())
+            return false;
+
+        String s = gson.toJson(t);
+        System.out.println("From DTUPay messaging Payment with " + t.toString());
+
+        if (!Boolean.parseBoolean(forwardMQtoMicroservices(s, PAYMENT_ROUTING_KEY)))
+            return false;
+
         return true;
     }
 }

@@ -24,12 +24,12 @@ public class TokenManager {
     public Map<String, Token> tokens = new HashMap<>();
 
     public TokenManager() {
-
         addToken(new Token("123", "000000-0001"));
+        addToken(new Token("888", "038b98b6-2711-461d-83ca-7e3d10acd158"));
+        addToken(new Token("999", "d7d42ca5-3923-4def-a7d0-4be6d9622764"));
         addToken(new Token("456", "000000-0002"));
         addToken(new Token("789", "000000-0002"));
         RabbitMqListener.listenWithRPCPattern();
-
     }
 
     public static TokenManager getInstance() {
@@ -51,7 +51,7 @@ public class TokenManager {
             TokenGenerationRequest received_event = gson.fromJson(requestString, TokenGenerationRequest.class);
             //business logic
             ArrayList<String> tokens = getNewTokens(received_event.getCustomerId(), received_event.getNumberOfTokens());
-            System.out.println("[Token Manager] handled: " + "GENERATE_TOKEN");
+            //System.out.println("[Token Manager] handled: " + "GENERATE_TOKEN");
 
             if (tokens.size() > 0) {
                 //set response
@@ -65,7 +65,7 @@ public class TokenManager {
         } else if (event.getEventType().equals("TOKEN_VALIDATION_REQUEST")) {
 
             //Get request
-            String requestString = gson.toJson(event.getArguments()[0]);
+            String requestString = gson.toJson(event.getArguments()[2]);
             TokenValidationRequest received_event = gson.fromJson(requestString, TokenValidationRequest.class);
             //business logic
             String tokenId = received_event.getToken();
@@ -95,7 +95,7 @@ public class TokenManager {
             if (!tokens.get(tokenId).isUsed()) {
                 isValid = true;
                 //after validation, set the token as used
-                tokens.get(tokenId).setUsed(true);
+                //tokens.get(tokenId).setUsed(true); //commented out for testing purpose
             }
         }
         //set response

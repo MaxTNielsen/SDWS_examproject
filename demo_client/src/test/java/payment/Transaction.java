@@ -2,8 +2,6 @@ package payment;
 
 public class Transaction {
 	private String token;
-	
-
 	private String merchId;
     private String customId;
     private int amount;

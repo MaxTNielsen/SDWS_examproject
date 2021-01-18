@@ -57,9 +57,6 @@ public class AccountEventController {
             accountValidationChannel = accountEventControllerConnection.createChannel();
             accountValidationChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
 
-            merchantValidationChannel = accountEventControllerConnection.createChannel();
-            merchantValidationChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -70,8 +67,6 @@ public class AccountEventController {
         listenCustomer();
         listenMerchant();
         listenAccountIDValidation();
-        // listenCustomerIDValidation();
-        // listenMerchantIDValidation();
     }
 
     static void listenCustomer() {
@@ -93,7 +88,7 @@ public class AccountEventController {
                 try {
                     String message = new String(delivery.getBody(), "UTF-8");
                     String ID = message;
-                    System.out.println("CUSTOMER [x] receiving " + message);
+                    //System.out.println("CUSTOMER [x] receiving " + message);
 
                     boolean successful = AccountManager.getInstance().registerCustomer(ClientFactory.buildCustomer(ID));
                     response = Boolean.toString(successful);
@@ -136,7 +131,7 @@ public class AccountEventController {
                 try {
                     String message = new String(delivery.getBody(), "UTF-8");
                     String ID = message;
-                    System.out.println("Merchant [x] receiving " + message);
+                    //System.out.println("Merchant [x] receiving " + message);
 
                     boolean successful = AccountManager.getInstance().registerMerchant(ClientFactory.buildMerchant(ID));
                     response = Boolean.toString(successful);
@@ -158,7 +153,6 @@ public class AccountEventController {
             e.printStackTrace();
         }
     }
-
 
     static void listenAccountIDValidation() {
         try {
@@ -186,7 +180,7 @@ public class AccountEventController {
                         ans = AccountManager.getInstance().hasMerchant(ID);
                     } else {
                         ans = AccountManager.getInstance().hasCustomer(ID);
-                        System.out.println("Customer matched ");
+                        //System.out.println("Customer matched ");
                     }
 
                     System.out.println("Answer for validation " + ans);

@@ -28,7 +28,7 @@ import payment.Transaction;
 
 public class PaymentStepDef {
 	DTUPay dtuPay = new DTUPay();
-	PaymentBL payment = new PaymentBL();
+	PaymentBL payment = PaymentBL.getInstance();
 	Gson gson = new Gson();
 	
 	String cid, mid, token;

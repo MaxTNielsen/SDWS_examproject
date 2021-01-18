@@ -45,5 +45,4 @@ public class TokenManagementServiceSteps {
         String request_string = gson.toJson(request);
         response = service.generateToken(request_string);
     }
-
 }

@@ -18,8 +18,4 @@ public class SOAPPort {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
-
 }

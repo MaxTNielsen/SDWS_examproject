@@ -76,11 +76,12 @@ public class AccountManageServiceSteps {
     public void theCustomerRegisterInTheBank() {
         customerBankAccountID = service.registerClientAtBank(customerCPR, customerfname, customerlname, balance);
         bankAccounts.add(customerBankAccountID);
+        System.out.println("Customer is registered in the bank " + customerBankAccountID);
     }
 
     @When("the customer register in DTUPay with his CPR as ID")
     public void theCustomerRegisterInDTUPayWithHisCPRAsID() {
-        System.out.printf("Send %s to register DTUPay account", customerBankAccountID);
+        //System.out.printf("Send %s to register DTUPay account", customerBankAccountID);
         success = service.registerCustomer(customerBankAccountID);
         // update customer info: cpr name
     }
@@ -109,7 +110,7 @@ public class AccountManageServiceSteps {
 
     @When("the mechant register in DTUPay with his CPR as ID")
     public void theMechantRegisterInDTUPayWithHisCPRAsID() {
-        System.out.printf("Send %s to register DTUPay account", merchantBankAccountID);
+        //System.out.printf("Send %s to register DTUPay account", merchantBankAccountID);
         success = service.registerMerchant(merchantBankAccountID);
     }
 

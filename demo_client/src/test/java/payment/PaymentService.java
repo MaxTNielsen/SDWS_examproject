@@ -2,13 +2,7 @@ package payment;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -17,6 +11,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import Client.*;
 import org.apache.http.util.EntityUtils;
 
 import dtu.ws.fastmoney.BankService;
@@ -48,17 +43,28 @@ public class PaymentService {
         }
     }
 
-    public boolean pay(String mid, String cid, int amount) throws WebApplicationException {
-        Transaction t = new Transaction(mid, cid, amount);
+    public boolean registerCustomer(String ID) {
+        Response response = baseUrl.path("customers").request()
+                .post(Entity.entity(ID, MediaType.TEXT_PLAIN));
+        return response.getStatus() == 200;
+    }
 
-        Response response = baseUrl.path("payment").request().post(Entity.entity(t, MediaType.APPLICATION_JSON_TYPE));
-        if (response.getStatus() == 201) {
+    public boolean registerMerchant(String ID) {
+        Response response = baseUrl.path("merchants").request()
+                .post(Entity.entity(ID, MediaType.TEXT_PLAIN));
+        return response.getStatus() == 200;
+    }
+
+    public boolean pay(String tokenID, String mid, int amount) throws WebApplicationException {
+        Transaction t = new Transaction(tokenID ,mid, amount);
+
+        Response response = baseUrl.path("merchants").path("payment").request().post(Entity.entity(t, MediaType.APPLICATION_JSON_TYPE));
+        if (response.getStatus() == 200) {
             response.close();
             t.setApproved(true);
             return t.isApproved();
         } else return t.isApproved();
     }
-
 
     public BigDecimal getBalance(String id) {
         try {
@@ -70,5 +76,17 @@ public class PaymentService {
         }
     }
 
+    public Response generateToken(String request)
+    {
+        Response response = baseUrl.path("customers/tokens").request()
+                .post(Entity.entity(request,MediaType.APPLICATION_JSON));
 
+        return response;
+    }
+
+ /*   public Event getToken(String request)
+    {
+        return baseUrl.path("customers").path("tokens").request().accept(MediaType.APPLICATION_JSON).get(Event.class);
+    }
+*/
 }

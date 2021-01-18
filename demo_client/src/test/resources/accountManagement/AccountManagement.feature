@@ -12,19 +12,19 @@ Feature: AccountManagement
     #     Then the merchant is registered in DTUPay
 
     Scenario: Register a Customer in the Bank and in DTUPay
-        Given the customer with CPR "431200-7172" and with the name "Pharles" "Sontana" and the balance 1000 kr
+        Given the customer with CPR "234670-3452" and with the name "Pharles" "Sontana" and the balance 1000 kr
         When the customer register in the bank
         When the customer register in DTUPay with his CPR as ID
         Then the customer has gotten an account in DTUPay
 
     Scenario: Register a Customer in the Bank and in DTUPay
-        Given the customer with CPR "123420-7172" and with the name "Pharles" "Sontana" and the balance 1000 kr
+        Given the customer with CPR "245730-2342" and with the name "Pharles" "Sontana" and the balance 1000 kr
         When the customer register in the bank
         When the customer register in DTUPay with his CPR as ID
         Then the customer has gotten an account in DTUPay
 
     Scenario:  Register a Merchant in the Bank and in DTUPay
-        Given the merchant with CPR "265400-8080" and with the name "Hubert" "Claus" and the balance 1000 kr
+        Given the merchant with CPR "234500-2350" and with the name "Hubert" "Claus" and the balance 2000 kr
         When the merchant register in the bank
         When the mechant register in DTUPay with his CPR as ID
         Then the merchant has gotten an account in DTUPay

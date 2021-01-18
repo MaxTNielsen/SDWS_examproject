@@ -4,6 +4,7 @@ import dtu.ws.fastmoney.BankService;
 import dtu.ws.fastmoney.BankServiceException_Exception;
 import dtu.ws.fastmoney.BankServiceService;
 
+import org.accountmanager.client.ClientFactory;
 import org.accountmanager.client.Customer;
 import org.accountmanager.client.Merchant;
 import org.accountmanager.controller.AccountEventController;
@@ -24,6 +25,10 @@ public class AccountManager implements IAccountManager {
     }
 
     public AccountManager() {
+        customers.put("038b98b6-2711-461d-83ca-7e3d10acd158", ClientFactory.buildCustomer("038b98b6-2711-461d-83ca-7e3d10acd158"));
+        customers.put("d7d42ca5-3923-4def-a7d0-4be6d9622764", ClientFactory.buildCustomer("d7d42ca5-3923-4def-a7d0-4be6d9622764"));
+
+        merchants.put("06ab138a-3c61-42d9-bbfe-1543d46aa58c", ClientFactory.buildMerchant("06ab138a-3c61-42d9-bbfe-1543d46aa58c"));
         AccountEventController.listenToEverything();
     }
 
