@@ -1,4 +1,4 @@
-package org.accountmanagement;
+package reporting;
 
 import io.cucumber.junit.platform.engine.Cucumber;
 
