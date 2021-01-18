@@ -2,7 +2,6 @@ package org.tokenManagement.service;
 
 import com.google.gson.Gson;
 
-
 import org.tokenManagement.model.Token;
 import org.tokenManagement.utils.TokenGenerator;
 

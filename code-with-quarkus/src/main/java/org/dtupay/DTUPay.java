@@ -58,7 +58,7 @@ public class DTUPay {
     AccountManager m = AccountManager.getInstance();
 
     TokenManager tokenManager = TokenManager.getInstance();
-    
+
     PaymentBL payment_service = new PaymentBL();
 
     private Map<String, Boolean> accountRegMap = new HashMap<>();
@@ -147,13 +147,13 @@ public class DTUPay {
     }
 
     public String sendPaymentRequest(Transaction t) throws IOException {
-    	Gson gson = new Gson();
+        Gson gson = new Gson();
         String s = gson.toJson(t);
         String result = forwardMQtoMicroservices(s, "payment.*");
         return result;
     }
 
-    void listenPaymentResponse() {
+    /*void listenPaymentResponse() {
         try {
             paymentResponseChannel.queueDeclare(PAYMENT_RESP_QUEUE, false, false, false, null);
             System.out.println("payment response queue");
@@ -173,7 +173,7 @@ public class DTUPay {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     public String sendTokenGenerationRequest(TokenGenerationRequest request) throws IOException {
         String response = "";
@@ -188,14 +188,13 @@ public class DTUPay {
         //Check merchant ID first
         //arguments: m, merchantID
         //return boolean
-        Object[] objects = new Object[4];
+        Object[] objects = new Object[3];
         objects[0] = "m";
         objects[1] = t.getMerchId();
-        objects[2] = t.getTokenID();
-        Event e = new Event("", objects);
-        if(!Boolean.parseBoolean(forwardMQtoMicroservices(e.toString(), ACCOUNT_VALIDATION_ROUTING_KEY)))
+        objects[2] = t;
+        Event e = new Event("TOKEN_VALIDATION_REQUEST", objects);
+        if (!Boolean.parseBoolean(forwardMQtoMicroservices(e.toString(), ACCOUNT_VALIDATION_ROUTING_KEY)))
             return false;
-
         //if(
         //Check if token is valid
         //arguments: tokenID
@@ -207,11 +206,20 @@ public class DTUPay {
         return true;
     }
 
-    public boolean generateTokens(){
+    public boolean generateTokens(TokenGenerationRequest t) {
         //Check customer ID first
         //arguments: customertID, c
         //return boolean
+        Object[] objects = new Object[3];
+        objects[0] = "c"; //align with the tokenmanagement
+        objects[1] = t.getCustomerId();
+        objects[2] = t;
+        Event e = new Event("TOKEN_GENERATION_REQUEST", objects);
+        if (!Boolean.parseBoolean(forwardMQtoMicroservices(e.toString(), ACCOUNT_VALIDATION_ROUTING_KEY)))
+            return false;
+        String response = forwardMQtoMicroservices(e.toString(), TOKEN_ROUTING_KEY);
+        if (response.equals(""))
+            return false;
         return true;
     }
-
 }
