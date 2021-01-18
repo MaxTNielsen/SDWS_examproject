@@ -59,13 +59,12 @@ public class PaymentService {
         Transaction t = new Transaction(tokenID ,mid, amount);
 
         Response response = baseUrl.path("merchants").path("payment").request().post(Entity.entity(t, MediaType.APPLICATION_JSON_TYPE));
-        if (response.getStatus() == 201) {
+        if (response.getStatus() == 200) {
             response.close();
             t.setApproved(true);
             return t.isApproved();
         } else return t.isApproved();
     }
-
 
     public BigDecimal getBalance(String id) {
         try {

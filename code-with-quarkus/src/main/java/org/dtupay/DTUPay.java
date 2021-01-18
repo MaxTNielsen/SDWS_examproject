@@ -41,11 +41,10 @@ public class DTUPay {
     private static final String TOKEN_ROUTING_KEY = "token.request";
     private static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
     static final String ACCOUNT_VALIDATION_ROUTING_KEY = "accountmanager.validation.*";
+    static final String PAYMENT_ROUTING_KEY = "payment.transaction";
 
 
     Connection DTUPayConnection;
-    Channel paymentChannel;
-    Channel paymentResponseChannel;
     Channel microservicesChannel;
     Channel replyChannel;
 
@@ -96,11 +95,8 @@ public class DTUPay {
 
     void initializeAllChannels() {
         try {
-            paymentChannel = DTUPayConnection.createChannel();
-            //System.out.println("Payment channel created");
             microservicesChannel = DTUPayConnection.createChannel();
             replyChannel = DTUPayConnection.createChannel();
-            //System.out.println("Topic channel initialized");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -109,7 +105,7 @@ public class DTUPay {
     public String forwardMQtoMicroservices(String serializedMessage, String routingKey) {
         String correlateID = UUID.randomUUID().toString();
         try {
-            String replyQueueName = replyChannel.queueDeclare("reply " + routingKey, false, true, false, null).getQueue();
+            String replyQueueName = replyChannel.queueDeclare("reply " + routingKey, false, false, false, null).getQueue();
             AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().correlationId(correlateID)
                     .replyTo(replyQueueName).build();
             microservicesChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
@@ -195,7 +191,7 @@ public class DTUPay {
         TokenValidationResponse tokenValidationResponse = gson.fromJson(jsonString, TokenValidationResponse.class);
 
         t.setCustomId(tokenValidationResponse.getCustomerId());
-        t.setApproved(true);
+        //t.setApproved(true);
         tokenValidationResponse.isValid();
 
         if (!tokenValidationResponse.isValid())
@@ -204,7 +200,7 @@ public class DTUPay {
         String s = gson.toJson(t);
         System.out.println("From DTUPay messaging Payment with " + t.toString());
 
-        if (!Boolean.parseBoolean(forwardMQtoMicroservices(s, "payment.*")))
+        if (!Boolean.parseBoolean(forwardMQtoMicroservices(s, PAYMENT_ROUTING_KEY)))
             return false;
 
         return true;

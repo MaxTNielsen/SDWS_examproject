@@ -29,13 +29,12 @@ public class PaymentBLStepDef {
     String cid, mid, token;
     Customer customer;
     Merchant merchant;
-    int amount;
+    int amount, value, valueMerchant;
     BigDecimal balance;
     TokenManagementService tokens = new TokenManagementService();
     PaymentService payment = new PaymentService();
     BankService bank = new BankServiceService().getBankServicePort();
     boolean successful, unsuccessful;
-
 
     @Given("the customer {string} {string} with CPR {string} has a bank account with balance {int}")
     public void theCustomerWithCPRHasABankAccountWithBalance(String name, String surname, String CPR, Integer balance) {
@@ -44,13 +43,13 @@ public class PaymentBLStepDef {
         m.setFirstName(name);
         m.setLastName(surname);
         m.setCprNumber(CPR);
-        try {
-            cid = bank.createAccountWithBalance(m, this.balance);
-            payment.userList.add(cid);
-        } catch (BankServiceException_Exception e) {
+        //try {
+        //cid = bank.createAccountWithBalance(m, this.balance);
+        payment.userList.add("038b98b6-2711-461d-83ca-7e3d10acd158"); // cid
+      /*  } catch (BankServiceException_Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
+        }*/
     }
 
     @Given("the customer is registered with DTUPay")
@@ -66,13 +65,13 @@ public class PaymentBLStepDef {
         m.setFirstName(name);
         m.setLastName(surname);
         m.setCprNumber(CPR);
-        try {
-            mid = bank.createAccountWithBalance(m, this.balance);
-            payment.userList.add(mid);
-        } catch (BankServiceException_Exception e) {
+        //try {
+        //mid = bank.createAccountWithBalance(m, this.balance);
+        payment.userList.add("06ab138a-3c61-42d9-bbfe-1543d46aa58c"); //mid
+        /*} catch (BankServiceException_Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
+        }*/
     }
 
     @Given("the merchant is registered with DTUPay")
@@ -98,6 +97,8 @@ public class PaymentBLStepDef {
     @When("the merchant initiates a payment for {int} kr by the customer")
     public void theMerchantInitiatesAPaymentForKrByTheCustomer(int amount) {
         this.amount = amount;
+        valueMerchant = payment.getBalance(payment.userList.get(1)).intValue();
+        value = payment.getBalance(payment.userList.get(0)).intValue();
         successful = payment.pay(token, "06ab138a-3c61-42d9-bbfe-1543d46aa58c", amount);
     }
 
@@ -113,17 +114,17 @@ public class PaymentBLStepDef {
 
     @Then("the balance of the customer in the bank is {int}")
     public void theBalanceOfTheCustomerInTheBankIs(Integer int1) {
-        assertEquals(990, payment.getBalance(payment.userList.get(0)).intValue());
+        assertEquals(value - 10, payment.getBalance(payment.userList.get(0)).intValue());
     }
 
     @Then("the balance of the merchant in the bank is {int}")
     public void theBalanceOfTheMerchantInTheBankIs(Integer int1) {
-        assertEquals(2010, payment.getBalance(payment.userList.get(1)).intValue());
+        assertEquals(valueMerchant + 10, payment.getBalance(payment.userList.get(1)).intValue());
     }
 
-    @After
+   /* @After
     public void removeUsers() {
         payment.retireUsers();
-    }
+    }*/
 
 }

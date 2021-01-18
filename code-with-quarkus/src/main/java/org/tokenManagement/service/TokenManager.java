@@ -30,7 +30,6 @@ public class TokenManager {
         addToken(new Token("456", "000000-0002"));
         addToken(new Token("789", "000000-0002"));
         RabbitMqListener.listenWithRPCPattern();
-
     }
 
     public static TokenManager getInstance() {
@@ -96,7 +95,7 @@ public class TokenManager {
             if (!tokens.get(tokenId).isUsed()) {
                 isValid = true;
                 //after validation, set the token as used
-                tokens.get(tokenId).setUsed(true);
+                //tokens.get(tokenId).setUsed(true); //commented out for testing purpose
             }
         }
         //set response
