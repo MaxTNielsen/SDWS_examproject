@@ -57,9 +57,6 @@ public class AccountEventController {
             accountValidationChannel = accountEventControllerConnection.createChannel();
             accountValidationChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
 
-            merchantValidationChannel = accountEventControllerConnection.createChannel();
-            merchantValidationChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -70,8 +67,6 @@ public class AccountEventController {
         listenCustomer();
         listenMerchant();
         listenAccountIDValidation();
-        // listenCustomerIDValidation();
-        // listenMerchantIDValidation();
     }
 
     static void listenCustomer() {
@@ -158,7 +153,6 @@ public class AccountEventController {
             e.printStackTrace();
         }
     }
-
 
     static void listenAccountIDValidation() {
         try {

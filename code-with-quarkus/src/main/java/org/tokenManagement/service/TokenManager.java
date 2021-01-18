@@ -65,7 +65,7 @@ public class TokenManager {
         } else if (event.getEventType().equals("TOKEN_VALIDATION_REQUEST")) {
 
             //Get request
-            String requestString = gson.toJson(event.getArguments()[0]);
+            String requestString = gson.toJson(event.getArguments()[3]);
             TokenValidationRequest received_event = gson.fromJson(requestString, TokenValidationRequest.class);
             //business logic
             String tokenId = received_event.getToken();

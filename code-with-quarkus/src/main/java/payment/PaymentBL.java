@@ -3,9 +3,6 @@ package payment;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import com.google.gson.Gson;
-
-
 public class PaymentBL {
 	
 	SOAPPort soap = new SOAPPort();
@@ -22,11 +19,8 @@ public class PaymentBL {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
-	
-	
-	
+
 	public boolean makeTransaction(Transaction t) {
 		if (t.getAmount() > 0) {
 			soap.TransferMoney(t);
@@ -35,9 +29,4 @@ public class PaymentBL {
 		}
 		return false;
 	}
-	
-	
-
-	
-
 }

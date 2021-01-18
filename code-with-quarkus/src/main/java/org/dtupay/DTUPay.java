@@ -9,6 +9,7 @@ import com.rabbitmq.client.DeliverCallback;
 
 
 import io.quarkus.runtime.ShutdownEvent;
+import org.tokenManagement.messaging.model.TokenValidationRequest;
 import payment.PaymentBL;
 
 import org.Json.*;
@@ -155,17 +156,19 @@ public class DTUPay {
 
     public String sendTokenGenerationRequest(TokenGenerationRequest request) {
         System.out.println("Inside sendTokenGenerationRequest " + request.toString());
+        Gson gson = new Gson();
         String response = "";
         Object[] objects = new Object[3];
         objects[0] = "c";
         objects[1] = request.getCustomerId();
         objects[2] = request;
         Event e = new Event("TOKEN_GENERATION_REQUEST", objects);
-        Gson gson = new Gson();
         String serilizedmessage = gson.toJson(e);
+
         if (!Boolean.parseBoolean(forwardMQtoMicroservices(serilizedmessage, ACCOUNT_VALIDATION_ROUTING_KEY)))
             return response;
         System.out.println("Finished ID validation");
+
         response = forwardMQtoMicroservices(serilizedmessage, TOKEN_ROUTING_KEY);
 
         if (response.equals(""))
@@ -176,24 +179,26 @@ public class DTUPay {
     }
 
     public boolean DTUPayDoPayment(Transaction t) {
-        //Check merchant ID first
-        //arguments: m, merchantID
-        //return boolean
-        Object[] objects = new Object[3];
+        Gson gson = new Gson();
+        TokenValidationRequest tokenValidationRequest = new TokenValidationRequest(t.getTokenID());
+        Object[] objects = new Object[4];
         objects[0] = "m";
         objects[1] = t.getMerchId();
         objects[2] = t;
+        objects[3] = tokenValidationRequest;
         Event e = new Event("TOKEN_VALIDATION_REQUEST", objects);
+        String serilizedmessage = gson.toJson(e);
+
         if (!Boolean.parseBoolean(forwardMQtoMicroservices(e.toString(), ACCOUNT_VALIDATION_ROUTING_KEY)))
             return false;
-        //if(
-        //Check if token is valid
-        //arguments: tokenID
-        //return boolean
 
-        //Do payment
-        //arguments: string that can be received by the payment system merchantID, CustomerID, Balance - should transaction object
-        //return boolean
+        if (forwardMQtoMicroservices(serilizedmessage, TOKEN_ROUTING_KEY).equals(" "))
+            return false;
+
+        String s = gson.toJson(t);
+        if (!Boolean.parseBoolean(forwardMQtoMicroservices(s, "payment.*")))
+            return false;
+
         return true;
     }
 }
