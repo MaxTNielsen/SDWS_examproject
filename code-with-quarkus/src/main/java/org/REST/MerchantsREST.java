@@ -37,10 +37,10 @@ public class MerchantsREST {
         }
     }
 
-    @Path("/payment")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response doTransaction(Transaction t) throws IOException {
+        @Path("/payment")
+        @POST
+        @Consumes(MediaType.APPLICATION_JSON)
+         public Response doTransaction(Transaction t) throws IOException {
         boolean result = dtuPay.DTUPayDoPayment(t);
 
         System.out.println("Payment is " + result);
@@ -52,10 +52,6 @@ public class MerchantsREST {
             Event request = new Event(requestType, obj);
             String requestString = gson.toJson(request);
             Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
-                /*if(response.getEventType().equals("CUSTOMER_REPORT_RESPONSE"))
-                {
-                    reported = true;
-                }*/
             System.out.println("Transaction successful");
 
             return Response.ok().build();
@@ -98,10 +94,9 @@ public class MerchantsREST {
         {
             Transaction originalTransaction = gson.fromJson(response.getArguments()[0].toString(), Transaction.class);
             Transaction refundTransaction = originalTransaction.createRefund();
-            String bankResult = dtuPay.sendPaymentRequest(refundTransaction);
-            boolean bankResultBool = Boolean.parseBoolean(bankResult);
+            boolean bankResult = dtuPay.DTUPayDoPayment(refundTransaction);
             boolean reported = false;
-            if (bankResultBool)
+            if (bankResult)
             {
                 String requestType = "NEW_REFUND";
                 Object obj[] = new Object[] {transactionID};
@@ -113,8 +108,8 @@ public class MerchantsREST {
                     reported = true;
                 }
             }
-            System.out.println(bankResultBool + ":::" + reported);
-            if(bankResultBool && reported)
+            System.out.println(bankResult + ":::" + reported);
+            if(bankResult && reported)
             {
                 return Response.ok().build();
             }

@@ -173,7 +173,7 @@ public class DTUPay {
 
     public boolean DTUPayDoPayment(Transaction t) {
         Gson gson = new Gson();
-        TokenValidationRequest tokenValidationRequest = new TokenValidationRequest(t.getTokenID());
+        TokenValidationRequest tokenValidationRequest = new TokenValidationRequest(t.getToken());
         Object[] objects = new Object[4];
         objects[0] = "m";
         objects[1] = t.getMerchId();
