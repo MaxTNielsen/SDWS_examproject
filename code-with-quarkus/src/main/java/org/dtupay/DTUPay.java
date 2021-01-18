@@ -153,28 +153,6 @@ public class DTUPay {
         return result;
     }
 
-    /*void listenPaymentResponse() {
-        try {
-            paymentResponseChannel.queueDeclare(PAYMENT_RESP_QUEUE, false, false, false, null);
-            System.out.println("payment response queue");
-
-            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                Gson gson = new Gson();
-                String json = new String(delivery.getBody());
-                System.out.println("Transaction: " + json);
-                Transaction t = gson.fromJson(json, Transaction.class);
-                System.out.println("Token" + t.getTokenID());
-                System.out.println("Transaction was " + t.isApproved());
-                transactionMap.put(t.getTokenID(), t.isApproved());
-            };
-
-            paymentResponseChannel.basicConsume("", true, deliverCallback, consumerTag -> {
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
-
     public String sendTokenGenerationRequest(TokenGenerationRequest request) {
         System.out.println("Inside sendTokenGenerationRequest " + request.toString());
         String response = "";
@@ -192,10 +170,6 @@ public class DTUPay {
 
         if (response.equals(""))
             return response;
-
-        /*Event event = new Event("TOKEN_GENERATION_REQUEST", new Object[]{request});
-        String message = new Gson().toJson(event);
-        response = forwardMQtoMicroservices(message, TOKEN_ROUTING_KEY);*/
 
         System.out.println("DTU pay get response:" + response);
         return response;

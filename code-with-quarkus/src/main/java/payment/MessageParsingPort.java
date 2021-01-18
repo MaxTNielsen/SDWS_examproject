@@ -41,8 +41,6 @@ public class MessageParsingPort {
             System.out.println(e.getMessage());
         }
     }
-    
-    
 	
     public void startConnection() throws IOException, TimeoutException {
     	ConnectionFactory connectionFactory = new ConnectionFactory();
