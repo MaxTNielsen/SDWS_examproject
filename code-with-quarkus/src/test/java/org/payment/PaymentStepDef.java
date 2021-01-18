@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
@@ -20,11 +21,14 @@ import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import payment.PaymentBL;
 import payment.Transaction;
+
 
 
 public class PaymentStepDef {
 	DTUPay dtuPay = new DTUPay();
+	PaymentBL payment = new PaymentBL();
 	Gson gson = new Gson();
 	
 	String cid, mid, token;
@@ -76,24 +80,27 @@ public class PaymentStepDef {
 			e.printStackTrace();
 		}
     }
-
+    
     @Given("the token {string} is valid")
     public void theTokenIsValid(String token) {
-        this.token = token; 
+    	this.token = token;
     }
 
+
+
 	@When("the merchant initiates a transaction for {int}")
-	public void theMerchantInitiatesATransactionFor(Integer amount) {
+	public void theMerchantInitiatesATransactionFor(Integer amount) throws IOException {
 	    Transaction t = new Transaction(token, mid, amount);
-//	    new Thread(()->{
-//	    	result.complete(value)
-//	    }
-	    String message = gson.toJson(t);
-	    String result = dtuPay.forwardMQtoMicroservices(message, "payment");
-	    successful = Boolean.parseBoolean(result);
-	    
-	    
+	    t.setCustomId(cid);
+	    successful = payment.makeTransaction(t);   
 	}
+	
+//	@When("the merchant initiates a transaction from the queue for {int}")
+//	public void theMerchantInitiatesATransactionFromTheQueueFor(Integer int1) {
+//	    Transaction t = new Transaction(token,mid,amount);
+//	    t.setCustomId(cid);
+//	    dtuPay.sendPaymentRequest(t);
+//	}
 
 	@Then("the transaction is successful")
 	public void theTransactionIsSuccessful() {
@@ -103,7 +110,7 @@ public class PaymentStepDef {
 	@Then("the balance of the customer is {int}")
 	public void theBalanceOfTheCustomerIs(Integer int1) {
 		try {
-			assertEquals(int1,bank.getAccount(cid).getBalance());
+			assertEquals(int1.intValue(), bank.getAccount(cid).getBalance().intValue());
 		} catch (BankServiceException_Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -113,7 +120,7 @@ public class PaymentStepDef {
 	@Then("the balance of the merchant is {int}")
 	public void theBalanceOfTheMerchantIs(Integer int1) {
 		try {
-			assertEquals(int1,bank.getAccount(mid).getBalance());
+			assertEquals(int1.intValue(),bank.getAccount(mid).getBalance().intValue());
 		} catch (BankServiceException_Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
