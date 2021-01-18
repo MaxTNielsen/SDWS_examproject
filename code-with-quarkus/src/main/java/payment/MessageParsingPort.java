@@ -59,26 +59,6 @@ public class MessageParsingPort {
             channel.basicPublish(EXCHANGE_NAME, "token.request", properties, message.getBytes("UTF-8"));
             final BlockingQueue<String> response = new ArrayBlockingQueue<>(1);
 
-            channel.queueDeclare("token_management_queue", false, false, false, null);
-            // channel.exchangeDeclare(EXCHANGE_NAME, QUEUE_TYPE);
-            // String queueName = channel.queueDeclare().getQueue();
-            // channel.queueBind(queueName, EXCHANGE_NAME, TOPIC);
-
-            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                TokenServiceResponseMessage response = new TokenServiceResponseMessage(new String(delivery.getBody(), "UTF-8"));
-                ;
-                String CID = response.getUserId();
-                t.setTokenID(CID);
-                System.out.println("[x] receiving " + CID);
-
-                payment.makeTransaction(response, t);
-
-                try {
-                    paymentResponse(t);
-                } catch (TimeoutException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-
             String ctag = channel.basicConsume(replyQueueName, true, (consumerTag, delivery) -> {
                 if (delivery.getProperties().getCorrelationId().equals(correlateID)) {
                     response.offer(new String(delivery.getBody(), "UTF-8"));

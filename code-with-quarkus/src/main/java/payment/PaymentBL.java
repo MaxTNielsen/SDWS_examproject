@@ -40,18 +40,6 @@ public class PaymentBL {
         else return false;
 	}
 
+	
 
-    public void validateToken(Transaction t) {
-        TokenServiceRequestMessage requestMessage = new TokenServiceRequestMessage(TokenServiceRequestMessage.tokenServiceRequestMessageType.REQUEST_PAYMENT_VALIDATION);
-        requestMessage.setToken("TOKENID-" + t.getTokenID());
-        try {
-            msg.validateToken(requestMessage, t);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
 }

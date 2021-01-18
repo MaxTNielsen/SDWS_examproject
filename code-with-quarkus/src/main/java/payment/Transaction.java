@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class Transaction {
 
-    private String tokenID;
+    private String token;
     private String merchId;
     private String customId;
     private int amount;
@@ -24,10 +24,6 @@ public class Transaction {
 //        this.refunded = false;
 //    }
 
-
-    public Transaction(String tokenID, String merchId, String customId, int amount) {
-        this.tokenID = tokenID;
-
     public Transaction(String token, String merchId, int amount) {
         this.token = token;
         this.merchId = merchId;
@@ -36,12 +32,12 @@ public class Transaction {
         this.refunded = false;
     }
 
-    public String getTokenID() {
-        return tokenID;
+    public String getToken() {
+        return token;
     }
 
-    public void setTokenID(String tokenID) {
-        this.tokenID = tokenID;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getMerchId() {

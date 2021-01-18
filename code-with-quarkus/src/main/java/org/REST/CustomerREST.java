@@ -16,6 +16,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+
 @Path("/customers")
 public class CustomerREST {
     DTUPay dtuPay = DTUPay.getInstance();
@@ -43,21 +44,20 @@ public class CustomerREST {
     public Response doTransaction(Transaction t) throws IOException {
         if (dtuPay.DTUPayDoPayment(t)) {
 
-    	String result = dtuPay.sendPaymentRequest(t);
-        boolean b = Boolean.parseBoolean(result);
-        
-        if (b) {	
-            System.out.println("Transaction successful");
+            String result = dtuPay.sendPaymentRequest(t);
+            boolean b = Boolean.parseBoolean(result);
 
-            return Response.ok().build();
+            if (b) {
+                System.out.println("Transaction successful");
+
+                return Response.ok().build();
+            } else {
+                System.out.println("Transaction failed");
+                return Response.status(400, "Transaction failed").build();
+            }
         }
-        else {
-            System.out.println("Transaction failed");
-            return Response.status(400, "Transaction failed").build();
-        }
+        return Response.ok().build();
     }
-
-
 
     @Path("/report")
     @Produces(MediaType.APPLICATION_JSON)
@@ -94,9 +94,9 @@ public class CustomerREST {
         System.out.println("[REST] POST: " + request.toString());
         //dtuPay.startUp();
         String response = dtuPay.sendTokenGenerationRequest(request);
-        System.out.println("[REST] Response: "+ response);
+        System.out.println("[REST] Response: " + response);
         if (!response.equals(""))
-            return Response.ok(response,MediaType.APPLICATION_JSON).build();
+            return Response.ok(response, MediaType.APPLICATION_JSON).build();
         else
             return Response.status(400, "Token Generation Failed").build();
 
