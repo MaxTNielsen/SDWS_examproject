@@ -127,4 +127,13 @@ public class TransactionManager {
         customerTransactionHistory.clear();
        merchantTransactionHistory.clear();
     }
+
+    public Transaction getTransactionByToken(String _tokenID)
+    {
+        if(transactions.containsKey(_tokenID))
+        {
+            return transactions.get(_tokenID);
+        }
+        return null;
+    }
 }
