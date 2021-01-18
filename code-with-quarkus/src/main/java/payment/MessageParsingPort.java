@@ -19,7 +19,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
-
 import io.quarkus.runtime.ShutdownEvent;
 
 @ApplicationScoped
@@ -79,7 +78,6 @@ public class MessageParsingPort {
                     Gson gson = new Gson();
                     String message = new String(delivery.getBody(), "UTF-8");
 
-                    //This can handle the date inside Transaction instance
                     Transaction t = gson.fromJson(message, Transaction.class);
 
                     System.out.println("Inside payment callback");
@@ -90,6 +88,7 @@ public class MessageParsingPort {
                 } catch (RuntimeException e) {
                     System.out.println(" [.] " + e.toString());
                 } finally {
+
                     listenDTUPay.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
                     listenDTUPay.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 
