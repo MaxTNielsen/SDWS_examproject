@@ -62,9 +62,6 @@ public class MessageParsingPort {
 
                     Transaction t = gson.fromJson(message, Transaction.class);
 
-                    System.out.println("Inside payment callback");
-                    System.out.println("[x] receiving " + t.toString());
-
                     boolean successful = PaymentBL.getInstance().makeTransaction(t);
                     response = Boolean.toString(successful);
                 } catch (RuntimeException e) {

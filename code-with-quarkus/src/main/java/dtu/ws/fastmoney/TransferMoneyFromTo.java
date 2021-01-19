@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>transferMoneyFromTo complex type的 Java 类。
+ * <p>Java class for transferMoneyFromTo complex type.
  * 
- * <p>以下模式片段指定包含在此类中的预期内容。
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="transferMoneyFromTo"&gt;
@@ -44,7 +44,7 @@ public class TransferMoneyFromTo {
     protected String description;
 
     /**
-     * 获取debtor属性的值。
+     * Gets the value of the debtor property.
      * 
      * @return
      *     possible object is
@@ -56,7 +56,7 @@ public class TransferMoneyFromTo {
     }
 
     /**
-     * 设置debtor属性的值。
+     * Sets the value of the debtor property.
      * 
      * @param value
      *     allowed object is
@@ -68,7 +68,7 @@ public class TransferMoneyFromTo {
     }
 
     /**
-     * 获取creditor属性的值。
+     * Gets the value of the creditor property.
      * 
      * @return
      *     possible object is
@@ -80,7 +80,7 @@ public class TransferMoneyFromTo {
     }
 
     /**
-     * 设置creditor属性的值。
+     * Sets the value of the creditor property.
      * 
      * @param value
      *     allowed object is
@@ -92,7 +92,7 @@ public class TransferMoneyFromTo {
     }
 
     /**
-     * 获取amount属性的值。
+     * Gets the value of the amount property.
      * 
      * @return
      *     possible object is
@@ -104,7 +104,7 @@ public class TransferMoneyFromTo {
     }
 
     /**
-     * 设置amount属性的值。
+     * Sets the value of the amount property.
      * 
      * @param value
      *     allowed object is
@@ -116,7 +116,7 @@ public class TransferMoneyFromTo {
     }
 
     /**
-     * 获取description属性的值。
+     * Gets the value of the description property.
      * 
      * @return
      *     possible object is
@@ -128,7 +128,7 @@ public class TransferMoneyFromTo {
     }
 
     /**
-     * 设置description属性的值。
+     * Sets the value of the description property.
      * 
      * @param value
      *     allowed object is

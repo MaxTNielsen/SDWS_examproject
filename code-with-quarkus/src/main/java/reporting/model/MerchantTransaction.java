@@ -11,22 +11,18 @@ public class MerchantTransaction {
     private LocalDateTime timeStamp;
     private boolean refunded;
 
-    public MerchantTransaction()
-    {
-
+    public MerchantTransaction() {
     }
 
-    public MerchantTransaction(Transaction _transaction)
-    {
+    public MerchantTransaction(Transaction _transaction) {
         this.token = _transaction.getToken();
         this.amount = _transaction.getAmount();
         this.timeStamp = _transaction.getTimeStamp();
         this.refunded = _transaction.isRefunded();
     }
 
-    public String toString()
-    {
+    public String toString() {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        return new String("Time: " + timeStamp.format(dateFormatter) +" Token: " + token + " Amount: " + amount + " Refunded: " + refunded);
+        return new String("Time: " + timeStamp.format(dateFormatter) + " Token: " + token + " Amount: " + amount + " Refunded: " + refunded);
     }
 }

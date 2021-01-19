@@ -17,29 +17,25 @@ public class CustomerTransaction {
     private boolean refunded;
     static BankService bank = new BankServiceService().getBankServicePort();
 
-    public CustomerTransaction()
-    {
+    public CustomerTransaction() {
 
     }
 
-    public CustomerTransaction(Transaction _transaction)
-    {
+    public CustomerTransaction(Transaction _transaction) {
         this.token = _transaction.getToken();
         try {
             Account bankAccount = bank.getAccount(_transaction.getMerchId());
             this.merchantName = bankAccount.getUser().getFirstName() + bankAccount.getUser().getLastName();
         } catch (BankServiceException_Exception e) {
             this.merchantName = _transaction.getMerchId();
-            System.out.println("Merchant account does not found in bank");
         }
         this.amount = _transaction.getAmount();
         this.timeStamp = _transaction.getTimeStamp();
         this.refunded = _transaction.isRefunded();
     }
 
-    public String toString()
-    {
+    public String toString() {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        return new String("Time: " + timeStamp.format(dateFormatter) +" Token: " + token + " Merchant: " + merchantName + " Amount: " + amount + " Refunded: " + refunded);
+        return new String("Time: " + timeStamp.format(dateFormatter) + " Token: " + token + " Merchant: " + merchantName + " Amount: " + amount + " Refunded: " + refunded);
     }
 }

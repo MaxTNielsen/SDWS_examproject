@@ -12,29 +12,28 @@ public class Transaction {
     private LocalDateTime timeStamp;
     private boolean refunded;
 
-    public Transaction (){
+    public Transaction() {
 
     }
 
-    public Transaction (String merchId, String customId, int amount) {
+    public Transaction(String merchId, String customId, int amount) {
         this.merchId = merchId;
         this.customId = customId;
         this.amount = amount;
-        this.timeStamp= LocalDateTime.now();
+        this.timeStamp = LocalDateTime.now();
         this.refunded = false;
     }
 
-    public Transaction (String token, String merchId, String customId, int amount) {
+    public Transaction(String token, String merchId, String customId, int amount) {
         this.token = token;
         this.merchId = merchId;
         this.customId = customId;
         this.amount = amount;
-        this.timeStamp= LocalDateTime.now();
+        this.timeStamp = LocalDateTime.now();
         this.refunded = false;
     }
 
-    public reporting.model.Transaction createRefund()
-    {
+    public reporting.model.Transaction createRefund() {
         reporting.model.Transaction refund = new reporting.model.Transaction();
         refund.setCustomId(null);
         refund.setApproved(true);
@@ -84,11 +83,17 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public LocalDateTime getTimeStamp(){return this.timeStamp;}
+    public LocalDateTime getTimeStamp() {
+        return this.timeStamp;
+    }
 
-    public boolean isRefunded(){return this.refunded;}
+    public boolean isRefunded() {
+        return this.refunded;
+    }
 
-    public void setToRefunded(){this.refunded = true;}
+    public void setToRefunded() {
+        this.refunded = true;
+    }
 
     @Override
     public String toString() {

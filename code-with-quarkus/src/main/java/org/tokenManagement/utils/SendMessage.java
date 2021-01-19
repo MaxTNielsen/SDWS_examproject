@@ -26,7 +26,6 @@ public class SendMessage {
             //declare exchange
             channel.exchangeDeclare(EXCHANGE_NAME, QUEUE_TYPE);
             String message = new Gson().toJson(event);
-            System.out.println("[x] sending "+message);
             channel.basicPublish(EXCHANGE_NAME, TOPIC, null, message.getBytes("UTF-8"));
         }
     }
