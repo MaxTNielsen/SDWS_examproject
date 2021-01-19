@@ -20,11 +20,11 @@ Feature: Payment
   	#Then the payment is unsuccessful
   	
  	Scenario: The payment scenario
-		Given the customer "Ryan" "Anderson" with CPR "2356145613" has a bank account with balance 1000
+		Given the customer "Ryan" "Anderson" with CPR "111145613" has a bank account with balance 1000
  		And the customer is registered with DTUPay
-		And the merchant "Yo" "Cockles" with CPR "24543456213" has a bank account with balance 2000
+		And the merchant "Yo" "Cockles" with CPR "0111456213" has a bank account with balance 2000
 		And the merchant is registered with DTUPay
-		And the customer has 5 tokens
+		And the customer has a valid tokens
 		When the merchant initiates a payment for 10 kr by the customer
 		Then the payment is successful
 		And the balance of the customer in the bank is 580
