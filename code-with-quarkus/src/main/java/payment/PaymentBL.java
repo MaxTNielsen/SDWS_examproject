@@ -26,6 +26,7 @@ public class PaymentBL {
     }
 
     public boolean makeTransaction(Transaction t) {
+        System.out.println("[Transaction]: " + t.toString());
         if (t.getAmount() > 0) {
 
             soap.TransferMoney(t);

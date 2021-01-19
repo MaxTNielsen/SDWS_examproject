@@ -100,6 +100,10 @@ public class PaymentBLStepDef {
         System.out.println("Customer balance before the transaction " + value);
         System.out.println("Actual customer balance before " + payment.getBalance(cid));
         successful = payment.pay(token, mid, amount);
+
+        valueMerchant = payment.getBalance(payment.userList.get(1)).intValue();
+        value = payment.getBalance(payment.userList.get(0)).intValue();
+
         System.out.println("Merchant balance after the transaction " + valueMerchant);
         System.out.println("Customer balance after the transaction " + value);
         System.out.println("Actual customer balance after " + payment.getBalance(cid));
@@ -117,13 +121,13 @@ public class PaymentBLStepDef {
     }
 
     @Then("the balance of the customer in the bank is {int}")
-    public void theBalanceOfTheCustomerInTheBankIs(Integer int1) {
-        assertEquals(value - 10, payment.getBalance(payment.userList.get(0)).intValue());
+    public void theBalanceOfTheCustomerInTheBankIs(int int1) {
+        assertEquals(value, int1);
     }
 
     @Then("the balance of the merchant in the bank is {int}")
-    public void theBalanceOfTheMerchantInTheBankIs(Integer int1) {
-        assertEquals(valueMerchant + 10, payment.getBalance(payment.userList.get(1)).intValue());
+    public void theBalanceOfTheMerchantInTheBankIs(int int1) {
+        assertEquals(valueMerchant, int1);
     }
 
     @After
