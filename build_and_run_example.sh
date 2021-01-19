@@ -33,3 +33,5 @@ popd
 # Cleanup the build images
 docker image prune -f
 
+
+$SHELL
