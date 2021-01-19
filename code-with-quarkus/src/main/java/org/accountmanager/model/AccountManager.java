@@ -74,4 +74,18 @@ public class AccountManager implements IAccountManager {
     public boolean hasMerchant(String ID) {
         return merchants.containsKey(ID);
     }
+
+    public Merchant getMerchant(String ID)
+    {
+        if (hasMerchant(ID))
+            return merchants.get(ID);
+        return null;
+    }
+
+    public Customer getCustomer(String ID)
+    {
+        if (hasCustomer(ID))
+            return customers.get(ID);
+        return null;
+    }
 }
