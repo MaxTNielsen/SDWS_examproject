@@ -6,13 +6,19 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="demo-client" />
-        <module name="code-with-quarkus" />
+        <module name="payment-service" />
+        <module name="end-to-end-test" />
+        <module name="account-service" />
+        <module name="dtupay-service" />
+        <module name="token-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="code-with-quarkus" target="11" />
-      <module name="demo-client" target="11" />
+      <module name="account-service" target="11" />
+      <module name="dtupay-service" target="11" />
+      <module name="end-to-end-test" target="14" />
+      <module name="payment-service" target="11" />
+      <module name="token-service" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
