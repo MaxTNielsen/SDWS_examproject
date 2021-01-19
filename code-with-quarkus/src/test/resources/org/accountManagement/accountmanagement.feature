@@ -1,4 +1,4 @@
-Feature:
+Feature: Account Management
   Scenario: Register customer
     Given A random bank account with CPR "4567812311" and name "H" "P"
     Given the customer has a bank account
