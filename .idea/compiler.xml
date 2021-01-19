@@ -8,11 +8,13 @@
         <outputRelativeToContentRoot value="true" />
         <module name="demo-client" />
         <module name="code-with-quarkus" />
+        <module name="token-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="code-with-quarkus" target="11" />
       <module name="demo-client" target="11" />
+      <module name="token-service" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

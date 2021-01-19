@@ -159,7 +159,7 @@ public class EventController {
                 return response;
             }
 
-            Transaction newTransaction = (Transaction) obj[0];//gson.fromJson(obj[0].toString(), Transaction.class);
+            Transaction newTransaction = gson.fromJson(gson.toJson(obj[0]), Transaction.class);//(Transaction) obj[0];//gson.fromJson(obj[0].toString(), Transaction.class);
             transactionManager.addTransaction(newTransaction);
             response = new Event("TRANSACTION_REGISTERED");
         }

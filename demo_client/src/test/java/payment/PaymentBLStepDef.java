@@ -2,16 +2,13 @@ package payment;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import Client.Customer;
-import Client.Event;
 import Client.Merchant;
-import TokenManagement.TokenGenerationRequest;
+
 import TokenManagement.TokenManagementService;
 import dtu.ws.fastmoney.BankService;
 import dtu.ws.fastmoney.BankServiceException_Exception;
@@ -21,9 +18,6 @@ import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.messages.internal.com.google.gson.Gson;
-
-import javax.ws.rs.core.Response;
 
 public class PaymentBLStepDef {
     String cid, mid, token;
@@ -94,20 +88,13 @@ public class PaymentBLStepDef {
     public void theMerchantInitiatesAPaymentForKrByTheCustomer(int amount) {
         this.amount = amount;
         valueMerchant = payment.getBalance(payment.userList.get(1)).intValue();
-        System.out.println("Merchant balance before the transaction " + valueMerchant);
-        System.out.println("Actual merchant balance before " + payment.getBalance(mid));
+
         value = payment.getBalance(payment.userList.get(0)).intValue();
-        System.out.println("Customer balance before the transaction " + value);
-        System.out.println("Actual customer balance before " + payment.getBalance(cid));
+
         successful = payment.pay(token, mid, amount);
 
         valueMerchant = payment.getBalance(payment.userList.get(1)).intValue();
         value = payment.getBalance(payment.userList.get(0)).intValue();
-
-        System.out.println("Merchant balance after the transaction " + valueMerchant);
-        System.out.println("Customer balance after the transaction " + value);
-        System.out.println("Actual customer balance after " + payment.getBalance(cid));
-        System.out.println("Actual merchant balance after " + payment.getBalance(mid));
     }
 
     @Then("the payment is successful")
