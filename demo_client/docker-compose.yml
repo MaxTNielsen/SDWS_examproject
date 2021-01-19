@@ -1,0 +1,17 @@
+version: '3'
+services:
+  rabbitMq:
+    image: rabbitmq
+    container_name: rabbitMq_container
+    
+  service2:
+    image: service2 
+    container_name: service2 
+    ports:
+     - "8080:8080"
+    
+  service1:
+    image: service1 
+    container_name: service1 
+
+ 
