@@ -4,7 +4,7 @@ set -e
 
 
 # Build the services
-pushd service1
+pushd token-service
 ./build.sh
 popd 
 
@@ -14,7 +14,7 @@ popd
 
 # Update the set of services and
 # build and execute the system tests
-pushd end_to_end_tests
+pushd demo_client
 ./deploy.sh 
 sleep 20s
 ./test.sh
