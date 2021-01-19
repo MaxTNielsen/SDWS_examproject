@@ -14,4 +14,8 @@ services:
     image: tokenservice 
     container_name: token_container
 
+  accountmanagementservice:
+    image: accountmanagementservice
+    image: accountmanagement_container
+
  

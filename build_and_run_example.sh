@@ -14,6 +14,12 @@ chmod +x ./build.sh
 ./build.sh
 popd 
 
+pushd AccountManagementMS
+chmod +x ./build.sh
+./build.sh
+popd 
+
+
 # Update the set of services and
 # build and execute the system tests
 pushd demo_client

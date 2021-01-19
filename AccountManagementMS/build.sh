@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
 mvn clean package
-docker-compose build accountmanagement
+docker-compose build accountmanagementservice
