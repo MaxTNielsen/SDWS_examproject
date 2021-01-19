@@ -28,3 +28,4 @@ pushd demo_client
 mvn test
 sleep 15s 
 popd
+$SHELL
