@@ -48,7 +48,12 @@ public class TokenManagerSteps {
 	@When("I receive TOKEN_VALIDATION_REQUEST")
 	public void i_recieve_token_validation_request() throws Exception {
 		TokenValidationRequest request = new TokenValidationRequest();
-		Event event = new Event("TOKEN_VALIDATION_REQUEST", new Object[] { request });
+		Object[] objects = new Object[3];
+		objects[0] = "c";
+		objects[1] = "something";
+		objects[2] = request;
+		Event event = new Event("TOKEN_VALIDATION_REQUEST", objects);
+		//Event event = new Event("TOKEN_VALIDATION_REQUEST", new Object[] { request });
 		response = tokenManager.receiveEvent(event);
 	}
 

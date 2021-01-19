@@ -27,5 +27,5 @@ Feature: Payment
 		And the customer has a valid tokens
 		When the merchant initiates a payment for 10 kr by the customer
 		Then the payment is successful
-		And the balance of the customer in the bank is 580
-  		And the balance of the merchant in the bank is 2420
+		And the balance of the customer in the bank is 990
+  		And the balance of the merchant in the bank is 2010
