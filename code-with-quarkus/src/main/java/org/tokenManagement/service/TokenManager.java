@@ -95,7 +95,7 @@ public class TokenManager {
             if (!tokens.get(tokenId).isUsed()) {
                 isValid = true;
                 //after validation, set the token as used
-                //tokens.get(tokenId).setUsed(true); //commented out for testing purpose
+                tokens.get(tokenId).setUsed(true);
             }
         }
         //set response

@@ -31,7 +31,7 @@ public class PaymentBLStepDef {
     Merchant merchant;
     int amount, value, valueMerchant;
     BigDecimal balance;
-    TokenManagementService tokens = new TokenManagementService();
+    TokenManagementService tokenService = new TokenManagementService();
     PaymentService payment = new PaymentService();
     BankService bank = new BankServiceService().getBankServicePort();
     boolean successful, unsuccessful;
@@ -43,19 +43,23 @@ public class PaymentBLStepDef {
         m.setFirstName(name);
         m.setLastName(surname);
         m.setCprNumber(CPR);
-        //try {
-        //cid = bank.createAccountWithBalance(m, this.balance);
-        payment.userList.add("ffee1e7e-6a99-461f-a8a4-213c07ff05fc");// cid
-      /*  } catch (BankServiceException_Exception e) {
+        try {
+        cid = bank.createAccountWithBalance(m, this.balance);
+        payment.userList.add(cid);// cid
+        } catch (BankServiceException_Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }*/
+        }
     }
-
     @Given("the customer is registered with DTUPay")
-    public void theCustomerIsRegisteredWithDTUPay() {
+    public void the_customer_is_registered_with_dtu_pay() {
         payment.registerCustomer(cid);
         customer = new Customer(cid);
+    }
+
+    @Given("the customer has a valid tokens")
+    public void the_customer_has_a_valid_tokens() {
+        token = tokenService.getValidToken(cid);
     }
 
     @Given("the merchant {string} {string} with CPR {string} has a bank account with balance {int}")
@@ -65,13 +69,13 @@ public class PaymentBLStepDef {
         m.setFirstName(name);
         m.setLastName(surname);
         m.setCprNumber(CPR);
-        //try {
-        //mid = bank.createAccountWithBalance(m, this.balance);
-        payment.userList.add("10dfe4da-667c-4d79-99b0-a2fab97a5ec1"); //mid
-        /*} catch (BankServiceException_Exception e) {
+        try {
+        mid = bank.createAccountWithBalance(m, this.balance);
+        payment.userList.add(mid); //mid
+        } catch (BankServiceException_Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }*/
+        }
     }
 
     @Given("the merchant is registered with DTUPay")
@@ -80,18 +84,10 @@ public class PaymentBLStepDef {
         merchant = new Merchant(mid);
     }
 
-    @Given("the customer has {int} tokens")
-    public void theCustomerHasTokens(Integer int1) {
-        /*TokenGenerationRequest request = new TokenGenerationRequest(cid, int1);
-        Gson gson = new Gson();
-        String request_string = gson.toJson(request);
-        response = payment.generateToken(request_string);
-        *//*System.out.println("This is the response " + response.getEntity());
-        output = payment.getToken(request_string);
-        System.out.println("The output is " + output);*/
-        token = "888";
-        /*addToken(new Token("543", "12345"));
-        addToken(new Token("999", "00000"));*/
+    @Given("And the customer has a valid tokens")
+    public void theCustomerHasTokens() {
+        token = tokenService.getValidToken(cid);
+
     }
 
     @When("the merchant initiates a payment for {int} kr by the customer")
@@ -99,15 +95,19 @@ public class PaymentBLStepDef {
         this.amount = amount;
         valueMerchant = payment.getBalance(payment.userList.get(1)).intValue();
         System.out.println("Merchant balance before the transaction " + valueMerchant);
-        System.out.println("Actual merchant balance before " + payment.getBalance("10dfe4da-667c-4d79-99b0-a2fab97a5ec1"));
+        System.out.println("Actual merchant balance before " + payment.getBalance(mid));
         value = payment.getBalance(payment.userList.get(0)).intValue();
         System.out.println("Customer balance before the transaction " + value);
-        System.out.println("Actual customer balance before " + payment.getBalance("ffee1e7e-6a99-461f-a8a4-213c07ff05fc"));
-        successful = payment.pay(token, "10dfe4da-667c-4d79-99b0-a2fab97a5ec1", amount);
+        System.out.println("Actual customer balance before " + payment.getBalance(cid));
+        successful = payment.pay(token, mid, amount);
+
+        valueMerchant = payment.getBalance(payment.userList.get(1)).intValue();
+        value = payment.getBalance(payment.userList.get(0)).intValue();
+
         System.out.println("Merchant balance after the transaction " + valueMerchant);
         System.out.println("Customer balance after the transaction " + value);
-        System.out.println("Actual customer balance after " + payment.getBalance("ffee1e7e-6a99-461f-a8a4-213c07ff05fc"));
-        System.out.println("Actual merchant balance after " + payment.getBalance("10dfe4da-667c-4d79-99b0-a2fab97a5ec1"));
+        System.out.println("Actual customer balance after " + payment.getBalance(cid));
+        System.out.println("Actual merchant balance after " + payment.getBalance(mid));
     }
 
     @Then("the payment is successful")
@@ -121,18 +121,18 @@ public class PaymentBLStepDef {
     }
 
     @Then("the balance of the customer in the bank is {int}")
-    public void theBalanceOfTheCustomerInTheBankIs(Integer int1) {
-        assertEquals(value - 10, payment.getBalance(payment.userList.get(0)).intValue());
+    public void theBalanceOfTheCustomerInTheBankIs(int int1) {
+        assertEquals(value, int1);
     }
 
     @Then("the balance of the merchant in the bank is {int}")
-    public void theBalanceOfTheMerchantInTheBankIs(Integer int1) {
-        assertEquals(valueMerchant + 10, payment.getBalance(payment.userList.get(1)).intValue());
+    public void theBalanceOfTheMerchantInTheBankIs(int int1) {
+        assertEquals(valueMerchant, int1);
     }
 
-    /*@After
+    @After
     public void removeUsers() {
         payment.retireUsers();
-    }*/
+    }
 
 }

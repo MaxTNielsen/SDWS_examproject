@@ -1,9 +1,6 @@
 package payment;
 
-import dtu.ws.fastmoney.BankServiceException_Exception;
-
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.concurrent.TimeoutException;
 
 public class PaymentBL {
@@ -29,16 +26,11 @@ public class PaymentBL {
     }
 
     public boolean makeTransaction(Transaction t) {
+        System.out.println("[Transaction]: " + t.toString());
         if (t.getAmount() > 0) {
-            System.out.println("Transaction object inside bank payment method " + t);
-            System.out.println("Customer amount before " + soap.getBalance(t.getCustomId()));
-            System.out.println("Merchant amount before " + soap.getBalance(t.getMerchId()));
 
             soap.TransferMoney(t);
             if (t.isApproved()) {
-                System.out.println("Transaction object after payment " + t);
-                System.out.println("Customer amount after " + soap.getBalance(t.getCustomId()));
-                System.out.println("Merchant amount after " + soap.getBalance(t.getMerchId()));
                 return true;
             } else return false;
         }

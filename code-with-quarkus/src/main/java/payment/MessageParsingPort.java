@@ -1,17 +1,8 @@
 package payment;
 
 import java.io.IOException;
-import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+
 import java.util.concurrent.TimeoutException;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-
-import org.accountmanager.client.ClientFactory;
-import org.accountmanager.model.AccountManager;
-import org.tokenManagement.messaging.model.TokenValidationRequest;
 
 import com.google.gson.Gson;
 import com.rabbitmq.client.AMQP;
@@ -22,9 +13,7 @@ import com.rabbitmq.client.DeliverCallback;
 
 // @ApplicationScoped
 public class MessageParsingPort {
-    static Transaction t;
 
-    static final String TOKEN_MANAGEMENT_QUEUE = "token_management_queue";
     static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
     static final String PAYMENT_ROUTING_KEY = "payment.transaction";
     static Connection connection;
@@ -52,7 +41,7 @@ public class MessageParsingPort {
         listenForPayment();
     }
 
-    static void listenForPayment() throws TimeoutException {
+    static void listenForPayment() {
         try {
             String queueName = listenDTUPay.queueDeclare("listen payment queue", false, false, false, null).getQueue();
             listenDTUPay.queueBind(queueName, EXCHANGE_NAME, PAYMENT_ROUTING_KEY);
