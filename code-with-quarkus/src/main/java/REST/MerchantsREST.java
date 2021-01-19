@@ -38,6 +38,12 @@ public class MerchantsREST {
         boolean result = dtuPay.DTUPayDoPayment(t);
 
         if (result) {
+            String setRouting = "reporting.payment";
+            String requestType = "NEW_TRANSACTION";
+            Object obj[] = new Object[]{(Object) t};
+            Event request = new Event(requestType, obj);
+            String requestString = gson.toJson(request);
+            Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
             return Response.ok().build();
         } else
         return Response.status(400, "Transaction failed").build();
@@ -65,31 +71,10 @@ public class MerchantsREST {
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     public Response createReport(@QueryParam("originaltoken") String transactionID) throws IOException {
-        String setRouting = "reporting.refund";
-        Object obj1[] = new Object[]{transactionID};
-        Event OriginalTransactionRequest = new Event("GET_TRANSACTION", obj1);
-        String OriginalTransactionRequestString = gson.toJson(OriginalTransactionRequest);
-        Event response = gson.fromJson(dtuPay.forwardMQtoMicroservices(OriginalTransactionRequestString, setRouting), Event.class);
-        System.out.println(response.getEventType());
-        if (response.getEventType() == "TRANSACTION_FOUND") {
-            Transaction originalTransaction = gson.fromJson(response.getArguments()[0].toString(), Transaction.class);
-            Transaction refundTransaction = originalTransaction.createRefund();
-            boolean bankResult = dtuPay.DTUPayDoPayment(refundTransaction);
-            boolean reported = false;
-            if (bankResult) {
-                String requestType = "NEW_REFUND";
-                Object obj[] = new Object[]{transactionID};
-                Event request = new Event(requestType, obj);
-                String requestString = gson.toJson(request);
-                Event reportRefundResponse = gson.fromJson(dtuPay.forwardMQtoMicroservices(requestString, setRouting), Event.class);
-                if (reportRefundResponse.getEventType() == "REFUND_REGISTERED") {
-                    reported = true;
-                }
-            }
-            if (bankResult && reported) {
-                return Response.ok().build();
-            }
+        if (dtuPay.doRefund(transactionID))
+        {
+            return Response.ok().build();
         }
-        return Response.status(404, "Report generation failure").build();
+        return Response.status(404, "Refund failure").build();
     }
 }

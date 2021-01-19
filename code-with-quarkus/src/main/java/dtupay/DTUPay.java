@@ -4,6 +4,7 @@ import Utils.Event;
 import Utils.TokenGenerationRequest;
 import Utils.Transaction;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -19,6 +20,7 @@ import payment.TokenValidationResponse;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 
 import java.util.UUID;
@@ -207,5 +209,56 @@ public class DTUPay implements AutoCloseable
 
         //payment microservice verifies the transaction
         return Boolean.parseBoolean(forwardMQtoMicroservices(s, PAYMENT_ROUTING_KEY));
+    }
+
+    public boolean doRefund(String transactionID)
+    {
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        String setRouting = "reporting.refund";
+        Object obj1[] = new Object[]{transactionID};
+        Event OriginalTransactionRequest = new Event("GET_TRANSACTION", obj1);
+        String OriginalTransactionRequestString = gson.toJson(OriginalTransactionRequest);
+        Event response = gson.fromJson(this.forwardMQtoMicroservices(OriginalTransactionRequestString, setRouting), Event.class);
+        if (response.getEventType().equals("TRANSACTION_FOUND"))
+        {
+            Transaction originalTransaction = gson.fromJson(gson.toJson(response.getArguments()[0]), Transaction.class);
+            if(originalTransaction.isRefunded())
+            {
+                System.out.println("Transaction has been refunded before!");
+                return false;
+            }
+            Transaction refundTransaction = originalTransaction.createRefund();
+            String s = gson.toJson(refundTransaction);
+
+            //Initiate bank transaction
+            boolean bankResult = false;
+            try
+            {
+                bankResult =  Boolean.parseBoolean(forwardMQtoMicroservices(s, PAYMENT_ROUTING_KEY));
+            }
+            catch (Exception e)
+            {
+                bankResult = false;
+            }
+            boolean reported = false;
+            if (bankResult)
+            {
+                String requestType = "NEW_REFUND";
+                Object obj[] = new Object[]{transactionID};
+                Event request = new Event(requestType, obj);
+                String requestString = gson.toJson(request);
+                Event reportRefundResponse = gson.fromJson(this.forwardMQtoMicroservices(requestString, setRouting), Event.class);
+                if (reportRefundResponse.getEventType().equals("REFUND_REGISTERED"))
+                {
+                    reported = true;
+                }
+            }
+            if (bankResult && reported)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
