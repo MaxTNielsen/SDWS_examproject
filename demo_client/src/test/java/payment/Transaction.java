@@ -23,6 +23,14 @@ public class Transaction {
         this.amount = amount;
     }
 
+    public Transaction(String tokenID, String mid, String cid, int amount) {
+        this.token = tokenID;
+        this.merchId = mid;
+        this.amount = amount;
+       this.customId =cid;
+
+    }
+
     public String getMerchId() {
         return merchId;
     }

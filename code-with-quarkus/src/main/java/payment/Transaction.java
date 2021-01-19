@@ -89,4 +89,17 @@ public class Transaction {
     public boolean isRefunded(){return this.refunded;}
 
     public void setToRefunded(){this.refunded = true;}
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "token='" + token + '\'' +
+                ", merchId='" + merchId + '\'' +
+                ", customId='" + customId + '\'' +
+                ", amount=" + amount +
+                ", approved=" + approved +
+                ", timeStamp=" + timeStamp +
+                ", refunded=" + refunded +
+                '}';
+    }
 }

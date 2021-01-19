@@ -10,6 +10,7 @@ public class SOAPPort {
 	BankService bank = new BankServiceService().getBankServicePort();
 	
 	public void TransferMoney(Transaction t) {
+		System.out.println("[SOAP port] "+t.toString());
 		try {
 			bank.transferMoneyFromTo(t.getCustomId(), t.getMerchId(), BigDecimal.valueOf(t.getAmount()), "Payment");
 			t.setApproved(true);

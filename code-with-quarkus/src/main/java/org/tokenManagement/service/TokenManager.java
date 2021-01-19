@@ -25,9 +25,9 @@ public class TokenManager {
 
     public TokenManager() {
         addToken(new Token("123", "000000-0001"));
-        addToken(new Token("888", "0aa0383e-df5a-4afb-85f7-0dd5d33dfb77"));
+        addToken(new Token("888", "1c78cbb5-3b2c-4f75-b325-a0895c135af2"));
         addToken(new Token("999", "cfb38983-1e05-4200-a7dc-86948f405de6"));
-        addToken(new Token("456", "000000-0002"));
+        addToken(new Token("456", "b004c7e5-b0dc-42ad-b55d-a9c8186fc97a"));
         addToken(new Token("789", "000000-0002"));
         RabbitMqListener.listenWithRPCPattern();
 
@@ -96,7 +96,7 @@ public class TokenManager {
             if (!tokens.get(tokenId).isUsed()) {
                 isValid = true;
                 //after validation, set the token as used
-                tokens.get(tokenId).setUsed(true);
+                //tokens.get(tokenId).setUsed(true);
             }
         }
         //set response

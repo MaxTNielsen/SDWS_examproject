@@ -40,7 +40,8 @@ public class MerchantsREST {
         @Path("/payment")
         @POST
         @Consumes(MediaType.APPLICATION_JSON)
-         public Response doTransaction(Transaction t) throws IOException {
+        public Response doTransaction(Transaction t) throws IOException {
+        System.out.println("REST get transaction" + t.toString());
         boolean result = dtuPay.DTUPayDoPayment(t);
 
         System.out.println("Payment is " + result);

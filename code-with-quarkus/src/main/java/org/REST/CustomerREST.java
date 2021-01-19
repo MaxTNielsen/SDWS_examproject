@@ -110,7 +110,7 @@ public class CustomerREST {
     }
 
     @Path("/tokens")
-    @POST
+    @GET
     @Consumes(MediaType.APPLICATION_JSON)
     public Response requestTokens(TokenGenerationRequest request) throws IOException {
         System.out.println("[REST] POST: " + request.toString());
@@ -118,11 +118,15 @@ public class CustomerREST {
         System.out.println("[REST] Response: " + response);
         if (!response.equals("")) {
             System.out.println("TOKEN GENERATION SUCCEED!");
-            return Response.ok().build();
+            return Response
+                    .status(Response.Status.OK)
+                    .entity(response)
+                    .build();
         } else {
             return Response.status(400, "Token Generation Failed").build();
         }
     }
+
 
    /* @Path("/tokens")
     @GET
