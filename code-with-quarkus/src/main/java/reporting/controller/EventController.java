@@ -158,9 +158,8 @@ public class EventController {
                 response = new Event("INVALID_REQUEST_ERROR");
                 return response;
             }
-            // NOTE:
-            // If you put a Transaction instance to the obj[], this is the right way to get it back:
-            Transaction newTransaction = gson.fromJson(obj[0].toString(), Transaction.class);
+
+            Transaction newTransaction = (Transaction) obj[0];//gson.fromJson(obj[0].toString(), Transaction.class);
             transactionManager.addTransaction(newTransaction);
             response = new Event("TRANSACTION_REGISTERED");
         }
