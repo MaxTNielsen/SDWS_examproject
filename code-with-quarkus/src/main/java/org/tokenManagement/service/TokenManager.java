@@ -25,8 +25,8 @@ public class TokenManager {
 
     public TokenManager() {
         addToken(new Token("123", "000000-0001"));
-        addToken(new Token("888", "6243c4c1-d7ba-4ea0-8363-141ca09c9082"));
-        addToken(new Token("999", "d7d42ca5-3923-4def-a7d0-4be6d9622764"));
+        addToken(new Token("888", "ffee1e7e-6a99-461f-a8a4-213c07ff05fc"));
+        addToken(new Token("999", "c70d9b1b-08a2-4149-a1cb-179dc4445603"));
         addToken(new Token("456", "000000-0002"));
         addToken(new Token("789", "000000-0002"));
         RabbitMqListener.listenWithRPCPattern();

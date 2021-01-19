@@ -18,4 +18,15 @@ public class SOAPPort {
 			e.printStackTrace();
 		}
 	}
+
+	public BigDecimal getBalance(String id) {
+		try {
+			return bank.getAccount(id).getBalance();
+		} catch (BankServiceException_Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new BigDecimal(0);
+		}
+	}
+
 }

@@ -45,7 +45,7 @@ public class PaymentBLStepDef {
         m.setCprNumber(CPR);
         //try {
         //cid = bank.createAccountWithBalance(m, this.balance);
-        payment.userList.add("6243c4c1-d7ba-4ea0-8363-141ca09c9082"); // cid
+        payment.userList.add("ffee1e7e-6a99-461f-a8a4-213c07ff05fc");// cid
       /*  } catch (BankServiceException_Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -67,7 +67,7 @@ public class PaymentBLStepDef {
         m.setCprNumber(CPR);
         //try {
         //mid = bank.createAccountWithBalance(m, this.balance);
-        payment.userList.add("f7d779bc-4cc2-40c2-859a-89e5aa7361c4"); //mid
+        payment.userList.add("10dfe4da-667c-4d79-99b0-a2fab97a5ec1"); //mid
         /*} catch (BankServiceException_Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -98,8 +98,16 @@ public class PaymentBLStepDef {
     public void theMerchantInitiatesAPaymentForKrByTheCustomer(int amount) {
         this.amount = amount;
         valueMerchant = payment.getBalance(payment.userList.get(1)).intValue();
+        System.out.println("Merchant balance before the transaction " + valueMerchant);
+        System.out.println("Actual merchant balance before " + payment.getBalance("10dfe4da-667c-4d79-99b0-a2fab97a5ec1"));
         value = payment.getBalance(payment.userList.get(0)).intValue();
-        successful = payment.pay(token, "f7d779bc-4cc2-40c2-859a-89e5aa7361c4", amount);
+        System.out.println("Customer balance before the transaction " + value);
+        System.out.println("Actual customer balance before " + payment.getBalance("ffee1e7e-6a99-461f-a8a4-213c07ff05fc"));
+        successful = payment.pay(token, "10dfe4da-667c-4d79-99b0-a2fab97a5ec1", amount);
+        System.out.println("Merchant balance after the transaction " + valueMerchant);
+        System.out.println("Customer balance after the transaction " + value);
+        System.out.println("Actual customer balance after " + payment.getBalance("ffee1e7e-6a99-461f-a8a4-213c07ff05fc"));
+        System.out.println("Actual merchant balance after " + payment.getBalance("10dfe4da-667c-4d79-99b0-a2fab97a5ec1"));
     }
 
     @Then("the payment is successful")
@@ -122,7 +130,7 @@ public class PaymentBLStepDef {
         assertEquals(valueMerchant + 10, payment.getBalance(payment.userList.get(1)).intValue());
     }
 
-   /* @After
+    /*@After
     public void removeUsers() {
         payment.retireUsers();
     }*/

@@ -2,12 +2,12 @@ Feature: GenerateToken
   Description: New token generation
 
   Scenario: Generate 1 token
-    Given A customer with customerId "6243c4c1-d7ba-4ea0-8363-141ca09c9082"
+    Given A customer with customerId "ffee1e7e-6a99-461f-a8a4-213c07ff05fc"
     When the customer requests to generate 1 new token
     Then token is created
 
   Scenario: Generate 5 tokens
-    Given A customer with customerId "d7d42ca5-3923-4def-a7d0-4be6d9622764"
+    Given A customer with customerId "c70d9b1b-08a2-4149-a1cb-179dc4445603"
     When the customer requests to generate 5 new token
     Then token is created
 
