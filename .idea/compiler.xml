@@ -7,14 +7,16 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="code-with-quarkus" />
-        <module name="reporting-service" />
         <module name="DTUPay" />
+        <module name="account-manager" />
         <module name="payment-service" />
         <module name="demo-client" />
         <module name="token-service" />
+        <module name="reporting-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="account-manager" target="11" />
       <module name="code-with-quarkus" target="11" />
       <module name="demo-client" target="11" />
       <module name="DTUPay" target="11" />

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DTUPay/DTUPay.iml" filepath="$PROJECT_DIR$/DTUPay/DTUPay.iml" />
+      <module fileurl="file://$PROJECT_DIR$/account-manager/account-manager.iml" filepath="$PROJECT_DIR$/account-manager/account-manager.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/accountmanager.iml" filepath="$PROJECT_DIR$/.idea/accountmanager.iml" />
       <module fileurl="file://$PROJECT_DIR$/code-with-quarkus/code-with-quarkus.iml" filepath="$PROJECT_DIR$/code-with-quarkus/code-with-quarkus.iml" />
       <module fileurl="file://$PROJECT_DIR$/demo_client/demo-client.iml" filepath="$PROJECT_DIR$/demo_client/demo-client.iml" />
