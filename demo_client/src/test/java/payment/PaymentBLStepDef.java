@@ -36,6 +36,11 @@ public class PaymentBLStepDef {
     BankService bank = new BankServiceService().getBankServicePort();
     boolean successful, unsuccessful;
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> f4535db95ae1f985b54f8fbceb6e1d31d8685d26
     @Given("the customer {string} {string} with CPR {string} has a bank account with balance {int}")
     public void theCustomerWithCPRHasABankAccountWithBalance(String name, String surname, String CPR, Integer balance) {
         this.balance = BigDecimal.valueOf(balance);
@@ -43,10 +48,17 @@ public class PaymentBLStepDef {
         m.setFirstName(name);
         m.setLastName(surname);
         m.setCprNumber(CPR);
+<<<<<<< HEAD
         //try {
         //cid = bank.createAccountWithBalance(m, this.balance);
         payment.userList.add("6243c4c1-d7ba-4ea0-8363-141ca09c9082"); // cid
       /*  } catch (BankServiceException_Exception e) {
+=======
+        try {
+        cid = bank.createAccountWithBalance(m, this.balance);
+        payment.userList.add(cid); // cid
+      } catch (BankServiceException_Exception e) {
+>>>>>>> f4535db95ae1f985b54f8fbceb6e1d31d8685d26
             // TODO Auto-generated catch block
             e.printStackTrace();
         }*/
@@ -65,10 +77,17 @@ public class PaymentBLStepDef {
         m.setFirstName(name);
         m.setLastName(surname);
         m.setCprNumber(CPR);
+<<<<<<< HEAD
         //try {
         //mid = bank.createAccountWithBalance(m, this.balance);
         payment.userList.add("f7d779bc-4cc2-40c2-859a-89e5aa7361c4"); //mid
         /*} catch (BankServiceException_Exception e) {
+=======
+        try {
+        mid = bank.createAccountWithBalance(m, this.balance);
+        payment.userList.add(mid); //mid
+        } catch (BankServiceException_Exception e) {
+>>>>>>> f4535db95ae1f985b54f8fbceb6e1d31d8685d26
             // TODO Auto-generated catch block
             e.printStackTrace();
         }*/
@@ -99,7 +118,12 @@ public class PaymentBLStepDef {
         this.amount = amount;
         valueMerchant = payment.getBalance(payment.userList.get(1)).intValue();
         value = payment.getBalance(payment.userList.get(0)).intValue();
+<<<<<<< HEAD
         successful = payment.pay(token, "f7d779bc-4cc2-40c2-859a-89e5aa7361c4", amount);
+=======
+        System.out.println("---------"+token+mid+cid+amount);
+        successful = payment.pay(token, mid, cid, amount);
+>>>>>>> f4535db95ae1f985b54f8fbceb6e1d31d8685d26
     }
 
     @Then("the payment is successful")

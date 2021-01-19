@@ -37,10 +37,18 @@ public class MerchantsREST {
         }
     }
 
+<<<<<<< HEAD
     @Path("/payment")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response doTransaction(Transaction t) throws IOException {
+=======
+        @Path("/payment")
+        @POST
+        @Consumes(MediaType.APPLICATION_JSON)
+        public Response doTransaction(Transaction t) throws IOException {
+        System.out.println("REST get transaction" + t.toString());
+>>>>>>> f4535db95ae1f985b54f8fbceb6e1d31d8685d26
         boolean result = dtuPay.DTUPayDoPayment(t);
 
         System.out.println("Payment is " + result);

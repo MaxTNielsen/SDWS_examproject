@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import Client.*;
+import io.cucumber.messages.internal.com.google.gson.Gson;
 import org.apache.http.util.EntityUtils;
 
 import dtu.ws.fastmoney.BankService;
@@ -55,10 +56,18 @@ public class PaymentService {
         return response.getStatus() == 200;
     }
 
-    public boolean pay(String tokenID, String mid, int amount) throws WebApplicationException {
-        Transaction t = new Transaction(tokenID ,mid, amount);
+    public boolean pay(String tokenID, String mid, String cid, int amount) throws WebApplicationException {
 
+<<<<<<< HEAD
         Response response = baseUrl.path("merchants").path("payment").request().post(Entity.entity(t, MediaType.APPLICATION_JSON_TYPE));
+=======
+        Transaction t = new Transaction(tokenID ,mid, cid,amount);
+        System.out.println(t.getCustomId());
+        Gson gson = new Gson();
+        String request_string = gson.toJson(t);
+
+        Response response = baseUrl.path("merchants").path("payment").request().post(Entity.entity(request_string, MediaType.APPLICATION_JSON_TYPE));
+>>>>>>> f4535db95ae1f985b54f8fbceb6e1d31d8685d26
         if (response.getStatus() == 200) {
             response.close();
             t.setApproved(true);

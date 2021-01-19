@@ -37,9 +37,9 @@ public class DTUPay implements AutoCloseable
 {
 
     String hostName = "localhost";
-    private static final String PAYMENT_REQ_QUEUE = "payment_req_queue";
-    private static final String PAYMENT_RESP_QUEUE = "payment_resp_queue";
+
     private static final String TOKEN_ROUTING_KEY = "token.request";
+    private static final String PAYMENT_ROUTING_KEY = "payment.request";
     private static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
     static final String ACCOUNT_VALIDATION_ROUTING_KEY = "accountmanager.validation.*";
     static final String PAYMENT_ROUTING_KEY = "payment.transaction";
@@ -107,8 +107,11 @@ public class DTUPay implements AutoCloseable
         String correlateID = UUID.randomUUID().toString();
         try {
             String replyQueueName = replyChannel.queueDeclare("reply " + routingKey, false, false, false, null).getQueue();
+<<<<<<< HEAD
             replyChannel.queuePurge(replyQueueName);
 
+=======
+>>>>>>> f4535db95ae1f985b54f8fbceb6e1d31d8685d26
             AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().correlationId(correlateID)
                     .replyTo(replyQueueName).build();
             microservicesChannel.exchangeDeclare(EXCHANGE_NAME, "topic");
@@ -173,6 +176,7 @@ public class DTUPay implements AutoCloseable
     }
 
     public boolean DTUPayDoPayment(Transaction t) {
+        //T = token, mid, amount
         Gson gson = new Gson();
         TokenValidationRequest tokenValidationRequest = new TokenValidationRequest(t.getToken());
         Object[] objects = new Object[3];
@@ -182,10 +186,25 @@ public class DTUPay implements AutoCloseable
         Event e = new Event("TOKEN_VALIDATION_REQUEST", objects);
 
         String serilizedmessage = gson.toJson(e);
+        String customerId = "";
 
+<<<<<<< HEAD
         if (!Boolean.parseBoolean(forwardMQtoMicroservices(serilizedmessage, ACCOUNT_VALIDATION_ROUTING_KEY)))
+=======
+        //check whether merchant exists
+        System.out.println("[DTUPay] e.toString is" + e.toString());
+        if (!Boolean.parseBoolean(forwardMQtoMicroservices(serilizedmessage, ACCOUNT_VALIDATION_ROUTING_KEY))) {
+            System.out.println("[DTUPay] Merchant validation failed");
+>>>>>>> f4535db95ae1f985b54f8fbceb6e1d31d8685d26
             return false;
+        }
 
+        //check if token is valid
+        String token_response = forwardMQtoMicroservices(serilizedmessage, TOKEN_ROUTING_KEY);
+        Event validation_result = gson.fromJson(token_response,Event.class);
+        System.out.println("[DTUPay] token_response: "+ token_response);
+
+<<<<<<< HEAD
         String response = forwardMQtoMicroservices(serilizedmessage, TOKEN_ROUTING_KEY);
 
         Event event = gson.fromJson(response, Event.class);
@@ -198,11 +217,31 @@ public class DTUPay implements AutoCloseable
         tokenValidationResponse.isValid();
 
         if (!tokenValidationResponse.isValid())
+=======
+        if (token_response.equals("")) {
+            System.out.println("[DTUPay] Token validation failed");
+>>>>>>> f4535db95ae1f985b54f8fbceb6e1d31d8685d26
             return false;
+        }
+        else
+            {
+                String jsonString = gson.toJson(validation_result.getArguments()[0]);
+                System.out.println("[DTUPay] TokenValidationResponse: "+ jsonString);
+                TokenValidationResponse response = gson.fromJson(jsonString,TokenValidationResponse.class);
+                customerId = response.getCustomerId();
+            }
+
+
+
+<<<<<<< HEAD
+=======
+        //get customerId from token service response
+        t.setCustomId("0aa0383e-df5a-4afb-85f7-0dd5d33dfb77");
 
         String s = gson.toJson(t);
-        System.out.println("From DTUPay messaging Payment with " + t.toString());
-
+        System.out.println("[DTUPay] Sending payment " + s);
+        // prepare the transaction.class
+>>>>>>> f4535db95ae1f985b54f8fbceb6e1d31d8685d26
         if (!Boolean.parseBoolean(forwardMQtoMicroservices(s, PAYMENT_ROUTING_KEY)))
             return false;
 

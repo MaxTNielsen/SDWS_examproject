@@ -168,8 +168,8 @@ public class AccountEventController implements AutoCloseable {
 
                 try {
                     Gson gson = new Gson();
-                    String json = new String(delivery.getBody());
-                    Event e = gson.fromJson(json, Event.class);
+                    String json = new String(delivery.getBody(),"UTF-8");
+                    Event e = gson.fromJson(json,Event.class);
                     String ID = e.getArguments()[1].toString();
                     System.out.println("Inside ID validation: " + ID);
                     boolean ans;
@@ -185,7 +185,7 @@ public class AccountEventController implements AutoCloseable {
                     response = Boolean.toString(ans);
 
                 } catch (RuntimeException e) {
-                    System.out.println(" [.] " + e.toString());
+                    System.out.println(" [Error in listenAccountIDValidation] " + e.toString());
                 } finally {
                     accountValidationChannel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
                     accountValidationChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);

@@ -4,22 +4,20 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
 import org.tokenManagement.messaging.model.Event;
-import org.tokenManagement.messaging.model.TokenGenerationRequest;
+import org.tokenManagement.messaging.model.*;
+import payment.TokenValidationResponse;
 
 public class SendMessage {
 
     private static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
     private static final String QUEUE_TYPE = "topic";
-    private static final String TOPIC = "token.request";
+    private static final String TOPIC = "payment.request";
 
     //for testing 
     public static void main(String[] argv) throws Exception {
-    	//prepare request message
-        TokenGenerationRequest request = new TokenGenerationRequest("2231251",1);
-        Event event = new Event("TOKEN_GENERATION_REQUEST", new Object[] { request });
-//	    TokenValidationRequest request = new TokenValidationRequest("123");
-//	    Event event = new Event("TOKEN_VALIDATION_REQUEST", new Object[] { request });
-//
+        TokenValidationRequest request = new TokenValidationRequest("123");
+        Event event = new Event("TOKEN_VALIDATION_REQUEST", new Object[] {request});
+
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         try (Connection connection = factory.newConnection(); Channel channel = connection.createChannel()) {
