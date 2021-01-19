@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/accountmanager.iml" filepath="$PROJECT_DIR$/.idea/accountmanager.iml" />
       <module fileurl="file://$PROJECT_DIR$/code-with-quarkus/code-with-quarkus.iml" filepath="$PROJECT_DIR$/code-with-quarkus/code-with-quarkus.iml" />
       <module fileurl="file://$PROJECT_DIR$/demo_client/demo-client.iml" filepath="$PROJECT_DIR$/demo_client/demo-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/token-service/token-service.iml" filepath="$PROJECT_DIR$/token-service/token-service.iml" />
     </modules>
   </component>
 </project>
