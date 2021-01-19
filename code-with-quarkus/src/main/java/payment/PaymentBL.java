@@ -6,14 +6,12 @@ import java.util.concurrent.TimeoutException;
 public class PaymentBL {
 
     SOAPPort soap;
-    MessageParsingPort msg;
     static PaymentBL instance;
 
     private PaymentBL() {
         try {
             soap = new SOAPPort();
-            msg = new MessageParsingPort();
-            msg.listen();
+            MessageParsingPort.listen();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         } catch (TimeoutException e) {

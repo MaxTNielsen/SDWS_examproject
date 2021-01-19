@@ -33,7 +33,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ApplicationScoped
-public class DTUPay {
+public class DTUPay implements AutoCloseable 
+{
 
     String hostName = "localhost";
     private static final String PAYMENT_REQ_QUEUE = "payment_req_queue";
@@ -204,5 +205,10 @@ public class DTUPay {
             return false;
 
         return true;
+    }
+
+    @Override
+    public void close() throws Exception {
+        DTUPayConnection.close();
     }
 }
