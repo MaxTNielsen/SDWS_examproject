@@ -1,9 +1,6 @@
 package dtupay;
 
-import Utils.Event;
-import Utils.TokenGenerationRequest;
-import Utils.Transaction;
-import accountmanager.model.AccountManager;
+import Utils.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rabbitmq.client.AMQP;
@@ -11,10 +8,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import io.quarkus.runtime.ShutdownEvent;
-import org.tokenManagement.messaging.model.TokenValidationRequest;
-import org.tokenManagement.service.TokenManager;
-import payment.PaymentBL;
-import payment.TokenValidationResponse;
+
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -55,11 +49,11 @@ public class DTUPay implements AutoCloseable
 
     //Remove all of these when we split into microservices
 
-    AccountManager m = AccountManager.getInstance();
-
-    TokenManager tokenManager = TokenManager.getInstance();
-
-    PaymentBL payment_service = PaymentBL.getInstance();
+//    AccountManager m = AccountManager.getInstance();
+//
+//    TokenManager tokenManager = TokenManager.getInstance();
+//
+//    PaymentBL payment_service = PaymentBL.getInstance();
 
     private Map<String, Boolean> accountRegMap = new HashMap<>();
 
