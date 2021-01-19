@@ -8,7 +8,7 @@ pushd token-service
 ./build.sh
 popd 
 
-pushd service2
+pushd payment-service
 ./build.sh
 popd 
 

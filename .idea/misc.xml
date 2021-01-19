@@ -6,6 +6,7 @@
         <option value="$PROJECT_DIR$/demo_client/pom.xml" />
         <option value="$PROJECT_DIR$/code-with-quarkus/pom.xml" />
         <option value="$PROJECT_DIR$/token-service/pom.xml" />
+        <option value="$PROJECT_DIR$/payment-service/pom.xml" />
       </list>
     </option>
   </component>
