@@ -2,7 +2,9 @@ package payment;
 
 import com.google.gson.Gson;
 import com.rabbitmq.client.*;
+import io.quarkus.runtime.ShutdownEvent;
 
+import javax.enterprise.event.Observes;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
@@ -13,14 +15,18 @@ public class MessageParsingPort {
     static final String PAYMENT_ROUTING_KEY = "payment.transaction";
     static Connection connection;
     private static Channel listenDTUPay;
-    
-    /*void onStop(@Observes ShutdownEvent ev) {
+
+    void onStart(@Observes ShutdownEvent ev) {
+        PaymentBL.getInstance();
+    }
+
+    void onStop(@Observes ShutdownEvent ev) {
         try {
             connection.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-    }*/
+    }
 
     static void startConnection() throws IOException, TimeoutException {
         ConnectionFactory connectionFactory = new ConnectionFactory();

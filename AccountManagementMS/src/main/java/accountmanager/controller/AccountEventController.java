@@ -32,6 +32,17 @@ public class AccountEventController implements AutoCloseable {
     static Channel accountValidationChannel;
     static Channel merchantValidationChannel;
 
+    void onStart(@Observes ShutdownEvent ev) {
+        AccountManager.getInstance();
+    }
+
+    void onStop(@Observes ShutdownEvent ev) {
+        try {
+            accountEventControllerConnection.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
     private static void ACEConnection() {
         try {
             ConnectionFactory connectionFactory = new ConnectionFactory();
