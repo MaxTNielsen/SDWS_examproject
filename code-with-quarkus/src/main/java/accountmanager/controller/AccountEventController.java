@@ -10,8 +10,10 @@ import com.rabbitmq.client.DeliverCallback;
 import Utils.Event;
 import accountmanager.client.ClientFactory;
 import accountmanager.model.AccountManager;
+import io.quarkus.runtime.ShutdownEvent;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 
 import java.io.IOException;
 
@@ -29,17 +31,17 @@ public class AccountEventController implements AutoCloseable {
     static Channel accountValidationChannel;
 
 
-    /* void onStart(@Observes ShutdownEvent ev) {
+    void onStart(@Observes ShutdownEvent ev) {
          listenToEverything();
-     }*/
+     }
 
-    // void onStop(@Observes ShutdownEvent ev) {
-    //     try {
-    //         accountEventControllerConnection.close();
-    //     } catch (IOException e) {
-    //         System.out.println(e.getMessage());
-    //     }
-    // }
+    void onStop(@Observes ShutdownEvent ev) {
+       try {
+            accountEventControllerConnection.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+     }
 
     @Override
     public void close() throws Exception {

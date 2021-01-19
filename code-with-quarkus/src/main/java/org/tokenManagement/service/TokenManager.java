@@ -17,7 +17,6 @@ import org.tokenManagement.messaging.model.TokenGenerationResponse;
 import org.tokenManagement.messaging.model.TokenValidationRequest;
 import org.tokenManagement.messaging.model.TokenValidationResponse;
 
-
 public class TokenManager {
 
     static TokenManager instance;

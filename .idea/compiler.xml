@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="code-with-quarkus" />
         <module name="reporting-service" />
+        <module name="DTUPay" />
         <module name="payment-service" />
         <module name="demo-client" />
         <module name="token-service" />
@@ -16,6 +17,7 @@
     <bytecodeTargetLevel>
       <module name="code-with-quarkus" target="11" />
       <module name="demo-client" target="11" />
+      <module name="DTUPay" target="11" />
       <module name="payment-service" target="11" />
       <module name="reporting-service" target="11" />
       <module name="token-service" target="11" />

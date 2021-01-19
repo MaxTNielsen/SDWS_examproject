@@ -75,6 +75,9 @@ public class AccountManageServiceSteps {
     @When("the customer register in the bank")
     public void theCustomerRegisterInTheBank() {
         customerBankAccountID = service.registerClientAtBank(customerCPR, customerfname, customerlname, balance);
+        System.out.println(service.registerClientAtBank("1232133-121231233123", "Customer12", "A", BigDecimal.valueOf(1000)));
+        System.out.println(service.registerClientAtBank("1234123123112312323123", "Customer22", "b", BigDecimal.valueOf(1000)));
+        System.out.println(service.registerClientAtBank("121212312311231323123", "Merchanttt", "b", BigDecimal.valueOf(1000)));
         bankAccounts.add(customerBankAccountID);
     }
 
@@ -117,9 +120,9 @@ public class AccountManageServiceSteps {
         assertTrue(success);
     }
 
-    @After
+/*    @After
     public void end()
     {
         service.deleteBankAccounts(bankAccounts);
-    }
+    }*/
 }
