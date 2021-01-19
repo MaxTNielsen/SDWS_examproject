@@ -61,12 +61,9 @@ public class CustomerREST {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response requestTokens(TokenGenerationRequest request) throws IOException {
-        System.out.println("[REST] POST: " + request.toString());
         String response = dtuPay.sendTokenGenerationRequest(request);
 
-        System.out.println("[REST] Response: " + response);
         if (!response.equals("")) {
-            System.out.println("TOKEN GENERATION SUCCEED!");
             Event event = gson.fromJson(response,Event.class);
             String jsonString = gson.toJson(event.getArguments()[0]);
             TokenGenerationResponse token = gson.fromJson(jsonString,TokenGenerationResponse.class);
