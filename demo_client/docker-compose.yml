@@ -4,14 +4,14 @@ services:
     image: rabbitmq
     container_name: rabbitMq_container
     
-  service2:
-    image: service2 
-    container_name: service2 
+  paymentservice:
+    image: paymentservice 
+    container_name: payment_container
     ports:
      - "8080:8080"
     
-  service1:
-    image: service1 
-    container_name: service1 
+  tokenservice:
+    image: tokenservice 
+    container_name: token_container
 
  

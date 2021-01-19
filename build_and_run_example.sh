@@ -4,19 +4,23 @@ set -e
 
 
 # Build the services
-pushd service1
+pushd token-service
+chmod +x ./build.sh
 ./build.sh
 popd 
 
-pushd service2
+pushd payment-service
+chmod +x ./build.sh
 ./build.sh
 popd 
 
 # Update the set of services and
 # build and execute the system tests
-pushd end_to_end_tests
+pushd demo_client
+chmod +x ./deploy.sh
 ./deploy.sh 
 sleep 20s
+chmod +x ./test.sh
 ./test.sh
 popd
 
