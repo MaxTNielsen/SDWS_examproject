@@ -2,20 +2,48 @@ package org.accountManagement;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
+
 import org.accountmanager.client.ClientFactory;
 import org.accountmanager.model.AccountManager;
 
+import dtu.ws.fastmoney.BankService;
+import dtu.ws.fastmoney.BankServiceException_Exception;
+import dtu.ws.fastmoney.BankServiceService;
+import dtu.ws.fastmoney.User;
+import io.cucumber.java.After;
 import io.cucumber.java.en.*;
-
+import java.util.ArrayList;
+import java.util.List;
 public class AccountManagementSteps {
 
+    BankService bankService = new BankServiceService().getBankServicePort();
     AccountManager manager = AccountManager.getInstance();
     String customerID;
     String merchantID;
+    String accountID;
+    List<String> bankAccounts = new ArrayList<>();
 
-    @Given("the customer with bank ID account {string} has a bank account")
-    public void theCustomerWithBankIDAccountHasABankAccount(String string) {
-        customerID = string;
+    @Given("A random bank account with CPR {string} and name {string} {string}")
+    public void aRandomBankAccountWithCPRAndName(String cprNo, String firstName, String lastName) {
+        int money = 1000;
+        BigDecimal balance = BigDecimal.valueOf(money);
+        User user = new User();
+        user.setCprNumber(cprNo);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        try {
+            accountID = bankService.createAccountWithBalance(user, balance);
+            bankAccounts.add(accountID);
+        } catch (BankServiceException_Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    @Given("the customer has a bank account")
+    public void theCustomerHasABankAccount() {
+        customerID = accountID;
     }
 
     @When("the customer register in DTUPay")
@@ -29,10 +57,11 @@ public class AccountManagementSteps {
         assertTrue(success);
     }
 
-    @Given("the merchant with bank account ID {string} has a bank account")
-    public void theMerchantWithBankAccountIDHasABankAccount(String string) {
-        merchantID = string;
+    @Given("the merchant has a bank account")
+    public void theMerchantHasABankAccount() {
+        merchantID = accountID;
     }
+
 
     @When("the merchant register in DTUPay")
     public void theMerchantRegisterInDTUPay() {
@@ -43,6 +72,19 @@ public class AccountManagementSteps {
     public void theMerchantIsRegisteredInDTUPay() {
         boolean success = manager.hasMerchant(merchantID);
         assertTrue(success);
+    }
+
+    @After
+    public void end()
+    {
+        for (String account : bankAccounts)
+        {
+            try {
+                bankService.retireAccount(account);
+            } catch (BankServiceException_Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
