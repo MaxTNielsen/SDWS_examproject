@@ -49,7 +49,7 @@ public class RabbitMqListener {
                 String response = "";
 				try {
 					String request = new String(delivery.getBody(), "UTF-8");
-					//System.out.println("Token Service [x] receiving " + request);
+
 					//convert received string to event
 					Gson gson = new Gson();
 					Event event = gson.fromJson(request,Event.class);

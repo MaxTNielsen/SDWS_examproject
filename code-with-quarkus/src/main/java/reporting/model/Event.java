@@ -10,7 +10,11 @@ public class Event {
     private String eventType;
     private Object[] arguments = null;
 
-    public Event() {};
+    public Event() {
+    }
+
+    ;
+
     public Event(String eventType, Object[] arguments) {
         this.eventType = eventType;
         this.arguments = arguments;
@@ -50,6 +54,6 @@ public class Event {
             strs = objs.stream().map(o -> o.toString()).collect(Collectors.toList());
         }
 
-        return String.format("event(%s,%s)", eventType,String.join(",", strs));
+        return String.format("event(%s,%s)", eventType, String.join(",", strs));
     }
 }

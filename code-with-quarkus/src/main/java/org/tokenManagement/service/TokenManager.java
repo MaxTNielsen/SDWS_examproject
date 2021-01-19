@@ -73,13 +73,8 @@ public class TokenManager {
             //create response event
             event_to_sendback = new Event("TOKEN_VALIDATION_RESPONSE", new Object[]{response_event});
 
-            System.out.println("[Token Manager] handled: " + "VALIDATE_TOKEN");
-
-            //System.out.println("[Token Manager] Created response: "+event_to_sendback.toString());
-
         } else {
             System.out.println("[Token Manager] Event ignored: " + event.toString());
-
         }
         return event_to_sendback;
     }
