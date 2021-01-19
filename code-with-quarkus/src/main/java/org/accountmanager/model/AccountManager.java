@@ -25,10 +25,10 @@ public class AccountManager implements IAccountManager {
     }
 
     public AccountManager() {
-        customers.put("038b98b6-2711-461d-83ca-7e3d10acd158", ClientFactory.buildCustomer("038b98b6-2711-461d-83ca-7e3d10acd158"));
+        customers.put("6243c4c1-d7ba-4ea0-8363-141ca09c9082", ClientFactory.buildCustomer("6243c4c1-d7ba-4ea0-8363-141ca09c9082"));
         customers.put("d7d42ca5-3923-4def-a7d0-4be6d9622764", ClientFactory.buildCustomer("d7d42ca5-3923-4def-a7d0-4be6d9622764"));
 
-        merchants.put("06ab138a-3c61-42d9-bbfe-1543d46aa58c", ClientFactory.buildMerchant("06ab138a-3c61-42d9-bbfe-1543d46aa58c"));
+        merchants.put("f7d779bc-4cc2-40c2-859a-89e5aa7361c4", ClientFactory.buildMerchant("f7d779bc-4cc2-40c2-859a-89e5aa7361c4"));
         AccountEventController.listenToEverything();
     }
 

@@ -59,7 +59,6 @@ public class MessageParsingPort {
 
             Object monitor = new Object();
             listenDTUPay.queuePurge(queueName);
-            listenDTUPay.basicQos(0);
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 AMQP.BasicProperties replyProps = new AMQP.BasicProperties
                         .Builder()

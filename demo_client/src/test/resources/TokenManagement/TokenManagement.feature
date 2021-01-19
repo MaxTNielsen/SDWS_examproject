@@ -2,7 +2,7 @@ Feature: GenerateToken
   Description: New token generation
 
   Scenario: Generate 1 token
-    Given A customer with customerId "038b98b6-2711-461d-83ca-7e3d10acd158"
+    Given A customer with customerId "6243c4c1-d7ba-4ea0-8363-141ca09c9082"
     When the customer requests to generate 1 new token
     Then token is created
 

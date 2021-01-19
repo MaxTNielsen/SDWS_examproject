@@ -25,7 +25,7 @@ public class TokenManager {
 
     public TokenManager() {
         addToken(new Token("123", "000000-0001"));
-        addToken(new Token("888", "038b98b6-2711-461d-83ca-7e3d10acd158"));
+        addToken(new Token("888", "6243c4c1-d7ba-4ea0-8363-141ca09c9082"));
         addToken(new Token("999", "d7d42ca5-3923-4def-a7d0-4be6d9622764"));
         addToken(new Token("456", "000000-0002"));
         addToken(new Token("789", "000000-0002"));

@@ -45,7 +45,7 @@ public class PaymentBLStepDef {
         m.setCprNumber(CPR);
         //try {
         //cid = bank.createAccountWithBalance(m, this.balance);
-        payment.userList.add("038b98b6-2711-461d-83ca-7e3d10acd158"); // cid
+        payment.userList.add("6243c4c1-d7ba-4ea0-8363-141ca09c9082"); // cid
       /*  } catch (BankServiceException_Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -67,7 +67,7 @@ public class PaymentBLStepDef {
         m.setCprNumber(CPR);
         //try {
         //mid = bank.createAccountWithBalance(m, this.balance);
-        payment.userList.add("06ab138a-3c61-42d9-bbfe-1543d46aa58c"); //mid
+        payment.userList.add("f7d779bc-4cc2-40c2-859a-89e5aa7361c4"); //mid
         /*} catch (BankServiceException_Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -99,7 +99,7 @@ public class PaymentBLStepDef {
         this.amount = amount;
         valueMerchant = payment.getBalance(payment.userList.get(1)).intValue();
         value = payment.getBalance(payment.userList.get(0)).intValue();
-        successful = payment.pay(token, "06ab138a-3c61-42d9-bbfe-1543d46aa58c", amount);
+        successful = payment.pay(token, "f7d779bc-4cc2-40c2-859a-89e5aa7361c4", amount);
     }
 
     @Then("the payment is successful")

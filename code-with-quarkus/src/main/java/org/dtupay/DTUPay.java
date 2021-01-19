@@ -107,6 +107,8 @@ public class DTUPay implements AutoCloseable
         String correlateID = UUID.randomUUID().toString();
         try {
             String replyQueueName = replyChannel.queueDeclare("reply " + routingKey, false, false, false, null).getQueue();
+            replyChannel.queuePurge(replyQueueName);
+
             AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().correlationId(correlateID)
                     .replyTo(replyQueueName).build();
             microservicesChannel.exchangeDeclare(EXCHANGE_NAME, "topic");

@@ -19,7 +19,7 @@ import javax.enterprise.event.Observes;
 import java.io.IOException;
 
 @ApplicationScoped
-public class AccountEventController {
+public class AccountEventController implements AutoCloseable {
 
     static String hostName = "localhost";
     static final String EXCHANGE_NAME = "MICROSERVICES_EXCHANGE";
@@ -34,13 +34,13 @@ public class AccountEventController {
     static Channel accountValidationChannel;
     static Channel merchantValidationChannel;
 
-    void onStop(@Observes ShutdownEvent ev) {
-        try {
-            accountEventControllerConnection.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-    }
+    // void onStop(@Observes ShutdownEvent ev) {
+    //     try {
+    //         accountEventControllerConnection.close();
+    //     } catch (IOException e) {
+    //         System.out.println(e.getMessage());
+    //     }
+    // }
 
     private static void ACEConnection() {
         try {
@@ -75,7 +75,6 @@ public class AccountEventController {
             customerRegChannel.queueBind(queueName, EXCHANGE_NAME, CUSTOMER_REG_ROUTING_KEY);
             Object monitor = new Object();
             customerRegChannel.queuePurge(queueName);
-            customerRegChannel.basicQos(0);
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 AMQP.BasicProperties replyProps = new AMQP.BasicProperties
@@ -118,7 +117,6 @@ public class AccountEventController {
             // String queueName = merchantRegChannel.queueDeclare().getQueue();
             merchantRegChannel.queueBind(queueName, EXCHANGE_NAME, MERCHANT_REG_ROUTING_KEY);
             customerRegChannel.queuePurge(queueName);
-            customerRegChannel.basicQos(0);
             Object monitor = new Object();
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 AMQP.BasicProperties replyProps = new AMQP.BasicProperties
@@ -202,5 +200,10 @@ public class AccountEventController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        accountEventControllerConnection.close();
     }
 }
