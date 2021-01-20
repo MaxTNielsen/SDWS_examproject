@@ -1,21 +1,27 @@
 version: '3'
 services:
-  rabbitMq:
+  rabbitmq:
     image: rabbitmq
-    container_name: rabbitMq_container
-    
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+     - "5672:5672"
+
+
   paymentservice:
     image: paymentservice 
     container_name: payment_container
-    ports:
-     - "8080:8080"
+    build: ../payment-service
+    network_mode: host
     
   tokenservice:
     image: tokenservice 
     container_name: token_container
+    build: ../token-service
+    network_mode: host
 
   accountmanagementservice:
+    container_name: accountmanagementservice 
+    network_mode: host
     image: accountmanagementservice
-    image: accountmanagement_container
-
- 
+    build: ../accountManager

@@ -19,10 +19,6 @@ public class RabbitMqListener {
     private static final String TOPIC = "token.request";
     static Connection tokenConnection;
 
-    void onStart(@Observes StartupEvent ev) {
-        TokenManager.getInstance();
-    }
-
     void onStop(@Observes ShutdownEvent ev) {
         try {
             tokenConnection.close();

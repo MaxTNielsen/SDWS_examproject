@@ -9,12 +9,23 @@ import tokenManagement.utils.TokenGenerator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import io.quarkus.runtime.annotations.QuarkusMain;
 
+@QuarkusMain  
 
 public class TokenManager {
 
     static TokenManager instance;
     public Map<String, Token> tokens = new HashMap<>();
+
+
+    public static void main(String ... args) {
+        System.out.println("Running TokenManager manager main method");
+        System.out.println("Before get instance");
+        TokenManager manager = TokenManager.getInstance();
+        System.out.println("After get instance");
+
+    }
 
     public TokenManager() {
         addToken(new Token("123", "000000-0001"));
@@ -36,6 +47,7 @@ public class TokenManager {
         Gson gson = new Gson();
 
         Event event_to_sendback = null;
+        System.out.println("Token event: " + event.toString());
 
         if (event.getEventType().equals("TOKEN_GENERATION_REQUEST")) {
 
