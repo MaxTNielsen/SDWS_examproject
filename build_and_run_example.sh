@@ -25,7 +25,7 @@ popd
 pushd DTUPay
 chmod +x ./build.sh
 ./build.sh
-java -jar target/code-with-quarkus-1.0.0-SNAPSHOT-runner.jar &
+java -jar target/DTUPay-1.0.0-SNAPSHOT-runner.jar &
 server_pid=$!
 trap 'kill $server_pid' err exit
 popd 
