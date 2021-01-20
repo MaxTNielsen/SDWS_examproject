@@ -7,15 +7,25 @@ import controller.AccountEventController;
 import dtu.ws.fastmoney.BankService;
 import dtu.ws.fastmoney.BankServiceException_Exception;
 import dtu.ws.fastmoney.BankServiceService;
+import io.quarkus.runtime.annotations.QuarkusMain;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@QuarkusMain  
 public class AccountManager implements IAccountManager {
     static AccountManager instance;
     BankService bank = new BankServiceService().getBankServicePort();
     Map<String, Customer> customers = new HashMap<>();
     Map<String, Merchant> merchants = new HashMap<>();
+
+    public static void main(String ... args) {
+        System.out.println("Running account manager main method");
+        System.out.println("Before get instance");
+        AccountManager manager = AccountManager.getInstance();
+        System.out.println("After get instance");
+
+    }
 
     public static AccountManager getInstance() {
         if (instance == null)

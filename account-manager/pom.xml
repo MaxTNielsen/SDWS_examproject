@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.acme</groupId>
-    <artifactId>code-with-quarkus</artifactId>
-    <name>code-with-quarkus</name>
+    <artifactId>account-manager</artifactId>
+    <name>account-manager</name>
     <version>1.0.0-SNAPSHOT</version>
     <properties>
         <surefire-plugin.version>2.22.1</surefire-plugin.version>

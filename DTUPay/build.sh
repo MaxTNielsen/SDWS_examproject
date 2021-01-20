@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
-mvn clean package
-docker-compose build DTUPayservice
+mvn package
+# docker-compose build DTUPayservice

@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>BankServiceException complex type的 Java 类。
+ * <p>Java class for BankServiceException complex type.
  * 
- * <p>以下模式片段指定包含在此类中的预期内容。
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="BankServiceException"&gt;
@@ -37,7 +37,7 @@ public class BankServiceException {
     protected String message;
 
     /**
-     * 获取errorMessage属性的值。
+     * Gets the value of the errorMessage property.
      * 
      * @return
      *     possible object is
@@ -49,7 +49,7 @@ public class BankServiceException {
     }
 
     /**
-     * 设置errorMessage属性的值。
+     * Sets the value of the errorMessage property.
      * 
      * @param value
      *     allowed object is
@@ -61,7 +61,7 @@ public class BankServiceException {
     }
 
     /**
-     * 获取message属性的值。
+     * Gets the value of the message property.
      * 
      * @return
      *     possible object is
@@ -73,7 +73,7 @@ public class BankServiceException {
     }
 
     /**
-     * 设置message属性的值。
+     * Sets the value of the message property.
      * 
      * @param value
      *     allowed object is
