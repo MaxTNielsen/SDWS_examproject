@@ -34,12 +34,12 @@ public class DTUPay implements AutoCloseable
     Channel microservicesChannel;
     Channel replyChannel;
 
-    void onStop(@Observes ShutdownEvent ev) {
-        try {
-            DTUPayConnection.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+    // void onStop(@Observes ShutdownEvent ev) {
+    //     try {
+    //         DTUPayConnection.close();
+    //     } catch (IOException e) {
+    //         System.out.println(e.getMessage());
+    //     }
     }
 
     @Override
