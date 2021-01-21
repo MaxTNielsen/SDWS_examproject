@@ -14,6 +14,7 @@ import model.AccountManager;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -31,7 +32,8 @@ public class AccountManagementSteps {
         int money = 1000;
         BigDecimal balance = BigDecimal.valueOf(money);
         User user = new User();
-        user.setCprNumber(cprNo);
+        String randomCPR = UUID.randomUUID().toString();
+        user.setCprNumber(randomCPR);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         try {
