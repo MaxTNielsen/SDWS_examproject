@@ -19,21 +19,22 @@ public class RabbitMqListener {
     private static final String TOPIC = "token.request";
     static Connection tokenConnection;
 
-    void onStop(@Observes ShutdownEvent ev) {
-        try {
-            tokenConnection.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-    }
+    // void onStop(@Observes ShutdownEvent ev) {
+    //     try {
+    //         tokenConnection.close();
+    //     } catch (IOException e) {
+    //         System.out.println(e.getMessage());
+    //     }
+    // }
 
     public static void listenWithRPCPattern() {
+        System.out.println("RabbitMqListener listenWithRPCPattern");
         try {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setHost(hostName);
             tokenConnection = factory.newConnection();
             Channel channel = tokenConnection.createChannel();
-            String queueName = channel.queueDeclare().getQueue();
+            String queueName = channel.queueDeclare("token manager channel", false, false, false, null).getQueue();
             channel.queueBind(queueName, EXCHANGE_NAME, TOPIC);
             Object monitor = new Object();
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
@@ -46,7 +47,8 @@ public class RabbitMqListener {
 				try {
 					String request = new String(delivery.getBody(), "UTF-8");
 
-					//convert received string to event
+                    System.out.println("request: " + request);
+                    //convert received string to event
 					Gson gson = new Gson();
 					Event event = gson.fromJson(request,Event.class);
 
