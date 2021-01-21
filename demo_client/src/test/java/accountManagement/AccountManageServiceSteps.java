@@ -10,6 +10,7 @@ import io.cucumber.java.en.When;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AccountManageServiceSteps {
     String customerCPR;
@@ -67,7 +68,8 @@ public class AccountManageServiceSteps {
     @Given("the customer with CPR {string} and with the name {string} {string} and the balance {int} kr")
     public void theCustomerWithIDAndWithTheNameAndTheBalanceKr(String customerCPR, String customerfname, String customerlname, Integer int1) {
         balance = BigDecimal.valueOf(int1);
-        this.customerCPR = customerCPR;
+        String randomStr = UUID.randomUUID().toString();
+        this.customerCPR = randomStr;
         this.customerfname = customerfname;
         this.customerlname = customerlname;
     }
@@ -95,7 +97,8 @@ public class AccountManageServiceSteps {
     @Given("the merchant with CPR {string} and with the name {string} {string} and the balance {int} kr")
     public void theMerchantWithCPRAndWithTheNameAndTheBalanceKr(String merchantCPR, String merchantfname, String merchantlname, Integer int1) {
         balance = BigDecimal.valueOf(int1);
-        this.merchantCPR = merchantCPR;
+        String randomStr = UUID.randomUUID().toString();
+        this.merchantCPR = randomStr;
         this.merchantfname = merchantfname;
         this.merchantlname = merchantlname;
     }
