@@ -40,7 +40,7 @@ public class DTUPay implements AutoCloseable
     //     } catch (IOException e) {
     //         System.out.println(e.getMessage());
     //     }
-    }
+    // }
 
     @Override
     public void close() throws Exception {
